@@ -7,9 +7,8 @@
 
 int main()
 {
-    Program program;
-    if(program.Init())program.Run();
-  
+    
+    if(Program::GetInstance().Init())Program::GetInstance().Run(); 
 
     return 0;
 }

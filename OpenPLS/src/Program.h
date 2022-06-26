@@ -15,7 +15,7 @@
 class Program
 {
 	
-
+	Program();
 	Program(const Program&) = delete;
 	Program(Program&&) = delete;
 	Program& operator=(const Program&) = delete;
@@ -28,7 +28,7 @@ class Program
 	static unsigned int windowHeight;
 
 public:
-	Program();
+	
 	
 	static Program& GetInstance();
 

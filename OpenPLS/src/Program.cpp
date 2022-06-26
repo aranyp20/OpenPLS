@@ -15,10 +15,9 @@ Program& Program::GetInstance()
 	
 }
 
+//returns TRUE if init was successful
 bool Program::Init()
 {
-
-
     if (!glfwInit())
         return false;
 
@@ -156,10 +155,12 @@ void Program::Run()
 
     vec3 eye = vec3(2, 1, 0);
 
+    glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
+
     while (!glfwWindowShouldClose(window))
     {
-        glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        
+        
         
 
         Mod = Mod * RotationMatrix(0.0002f, vec3(0, 1, 0));
