@@ -45,6 +45,38 @@ bool Program::Init()
 
 void Program::Run()
 {
+    std::vector<Point*> v;
+    std::vector<Point*> points;
+    points.push_back(new Point());
+    points.push_back(new Point());
+    points.push_back(new Point());
+    points.push_back(new Point());
+
+    Mesh cube;
+
+
+    cube.AddPoint(points[0], v);
+
+    v.push_back(points[0]);
+
+
+    cube.AddPoint(points[1], v);
+
+    v.clear();
+    v.push_back(points[0]);
+    v.push_back(points[1]);
+
+    cube.AddPoint(points[2], v);
+
+    v.clear();
+    v.push_back(points[1]);
+
+
+    cube.AddPoint(points[3], v);
+
+    cube.PrintVerts();
+
+
  
     float positions[] = {
         //A

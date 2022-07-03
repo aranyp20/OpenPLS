@@ -10,6 +10,7 @@
 #include "VAO.h"
 #include "Shader.h"
 #include "Camera.h"
+#include "Mesh.h"
 
 
 class Program
