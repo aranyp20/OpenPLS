@@ -6,12 +6,15 @@
 
 class VBO
 {
+private:
+	const void* myData;
 protected:
 	unsigned int ID;
 	typedef std::map<unsigned int, unsigned int> sizeMap;
 	static sizeMap sm;
 public:
 	VBO(const void* data, unsigned int size);
+	VBO(const std::vector<float>&);
 	~VBO();
 	virtual void TellData() const =0 ;
 	void Bind() const;
@@ -29,5 +32,6 @@ class VBO3f3f : public VBO
 {
 public:
 	VBO3f3f(const void* data, unsigned int size) : VBO(data, size) {}
+	VBO3f3f(const std::vector<float>& v) : VBO(v) {}
 	void TellData() const;
 };

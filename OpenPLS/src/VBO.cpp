@@ -5,14 +5,32 @@ VBO::sizeMap VBO::sm = { { GL_FLOAT,4 }, { GL_UNSIGNED_INT,4 } };
 
 VBO::VBO(const void* data, unsigned int size)
 {
+	myData = data;
 	glGenBuffers(1, &ID);
 	glBindBuffer(GL_ARRAY_BUFFER, ID);
 	glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
 }
 
+VBO::VBO(const std::vector<float>& v)
+{
+	
+	float* dataT = new float[v.size()];
+	for (int i = 0; i < v.size();i++) {
+		dataT[i] = v[i];
+	}
+
+	myData = dataT;
+	glGenBuffers(1, &ID);
+	glBindBuffer(GL_ARRAY_BUFFER, ID);
+	glBufferData(GL_ARRAY_BUFFER, v.size() * sizeof(float), dataT, GL_STATIC_DRAW);
+}
+
 VBO::~VBO()
 {
+	
 	glDeleteBuffers(1, &ID);
+
+	free((float*)myData);
 }
 
 void VBO::Bind() const

@@ -47,121 +47,140 @@ void Program::Run()
 {
     std::vector<Point*> v;
     std::vector<Point*> points;
-    points.push_back(new Point());
-    points.push_back(new Point());
-    points.push_back(new Point());
-    points.push_back(new Point());
+    points.push_back(new Point(-0.5f, -0.5f, 0.5f));
+    points.push_back(new Point(0.5f, -0.5f, 0.5f));
+    points.push_back(new Point(0.5f, -0.5f, -0.5f));
+    points.push_back(new Point(-0.5f, -0.5f, -0.5f));
+    points.push_back(new Point(-0.5f, 0.5f, 0.5f));
+    points.push_back(new Point(0.5f, 0.5f, 0.5f));
+    points.push_back(new Point(0.5f, 0.5f, -0.5f));
+    points.push_back(new Point(-0.5f, 0.5f, -0.5f));
+
+    points.push_back(new Point(0.0f, 1.0f, 0.5f));
+    points.push_back(new Point(0.0f, 1.0f, -0.5f));
 
     Mesh cube;
 
-
-    cube.AddPoint(points[0], v);
-
-    v.push_back(points[0]);
+   
 
 
-    cube.AddPoint(points[1], v);
+    for (int i = 0; i<points.size(); i++) {
+        cube.AddPoint(points[i], v);
+    }
 
-    v.clear();
-    v.push_back(points[0]);
-    v.push_back(points[1]);
+    std::vector<unsigned int> sinds{0, 1, 2, 3};
+    cube.AddSide(sinds);
+    sinds = { 4,5,6,7 };
+    cube.AddSide(sinds);
+    //sinds = { 0,1,5,4 };
+    //cube.AddSide(sinds);
+    sinds = { 1,2,6,5 };
+    cube.AddSide(sinds);
+    sinds = { 2,6,7,3 };
+    cube.AddSide(sinds);
+    sinds = { 0,3,7,4 };
+    cube.AddSide(sinds);
 
-    cube.AddPoint(points[2], v);
-
-    v.clear();
-    v.push_back(points[1]);
-
-
-    cube.AddPoint(points[3], v);
-
-    cube.PrintVerts();
+    sinds = { 8,9,7,4 };
+    cube.AddSide(sinds);
+    sinds = { 8,9,6,5 };
+    cube.AddSide(sinds);
 
 
+    RenderData rData = MeshRenderer::GiveSides(cube);
+    
+
+    //float positions[] = {
+    //    //A
+    //    -0.5f,-0.5f,0.5f,
+    //    0,0,1,
+    //    0.5f,-0.5f,0.5f,
+    //    0,0,1,
+    //    0.5f,0.5f,0.5f,
+    //    0,0,1,
+    //    -0.5f,0.5f,0.5f,
+    //    0,0,1,
+    //    //B
+    //    0.5f,0.5f,0.5f,
+    //    1,0,0,
+    //    0.5f,-0.5f,0.5f,
+    //    1,0,0,
+    //    0.5f,-0.5f,-0.5f,
+    //    1,0,0,
+    //    0.5f,0.5f,-0.5f,
+    //    1,0,0,
+    //    //C
+    //     -0.5f,-0.5f,-0.5f,
+    //    0,0,-1,
+    //    0.5f,-0.5f,-0.5f,
+    //    0,0,-1,
+    //    0.5f,0.5f,-0.5f,
+    //    0,0,-1,
+    //    -0.5f,0.5f,-0.5f,
+    //    0,0,-1,
+    //    //D
+    //    -0.5f,0.5f,0.5f,
+    //    -1,0,0,
+    //    -0.5f,-0.5f,0.5f,
+    //    -1,0,0,
+    //    -0.5f,-0.5f,-0.5f,
+    //    -1,0,0,
+    //    -0.5f,0.5f,-0.5f,
+    //    -1,0,0,
+    //    //e
+    //    -0.5f,0.5f,0.5f,
+    //    0,1,0,
+    //    0.5f,0.5f,0.5f,
+    //    0,1,0,
+    //    0.5f,0.5f,-0.5f,
+    //    0,1,0,
+    //    -0.5f,0.5f,-0.5f,
+    //    0,1,0,
+    //    //f
+    //    -0.5f,-0.5f,0.5f,
+    //    0,-1,0,
+    //    0.5f,-0.5f,0.5f,
+    //    0,-1,0,
+    //    0.5f,-0.5f,-0.5f,
+    //    0,-1,0,
+    //    -0.5f,-0.5f,-0.5f,
+    //    0,-1,0
+    //};
  
-    float positions[] = {
-        //A
-        -0.5f,-0.5f,0.5f,
-        0,0,1,
-        0.5f,-0.5f,0.5f,
-        0,0,1,
-        0.5f,0.5f,0.5f,
-        0,0,1,
-        -0.5f,0.5f,0.5f,
-        0,0,1,
-        //B
-        0.5f,0.5f,0.5f,
-        1,0,0,
-        0.5f,-0.5f,0.5f,
-        1,0,0,
-        0.5f,-0.5f,-0.5f,
-        1,0,0,
-        0.5f,0.5f,-0.5f,
-        1,0,0,
-        //C
-         -0.5f,-0.5f,-0.5f,
-        0,0,-1,
-        0.5f,-0.5f,-0.5f,
-        0,0,-1,
-        0.5f,0.5f,-0.5f,
-        0,0,-1,
-        -0.5f,0.5f,-0.5f,
-        0,0,-1,
-        //D
-        -0.5f,0.5f,0.5f,
-        -1,0,0,
-        -0.5f,-0.5f,0.5f,
-        -1,0,0,
-        -0.5f,-0.5f,-0.5f,
-        -1,0,0,
-        -0.5f,0.5f,-0.5f,
-        -1,0,0,
-        //e
-        -0.5f,0.5f,0.5f,
-        0,1,0,
-        0.5f,0.5f,0.5f,
-        0,1,0,
-        0.5f,0.5f,-0.5f,
-        0,1,0,
-        -0.5f,0.5f,-0.5f,
-        0,1,0,
-        //f
-        -0.5f,-0.5f,0.5f,
-        0,-1,0,
-        0.5f,-0.5f,0.5f,
-        0,-1,0,
-        0.5f,-0.5f,-0.5f,
-        0,-1,0,
-        -0.5f,-0.5f,-0.5f,
-        0,-1,0
-    };
- 
-    unsigned int indicies[] = {
-        //A
-        0,1,2,
-        0,2,3,
-        //B
-        4,5,6,
-        4,6,7,
-        //C
-        8,9,10,
-        8,10,11,
-        //D
-        12,13,14,
-        12,14,15,
-        //E
-        16,17,18,
-        16,18,19,
-        //F
-        20,21,22,
-        20,22,23
-    };
+    //unsigned int indicies[] = {
+    //    //A
+    //    0,1,2,
+    //    0,2,3,
+    //    //B
+    //    4,5,6,
+    //    4,6,7,
+    //    //C
+    //    8,9,10,
+    //    8,10,11,
+    //    //D
+    //    12,13,14,
+    //    12,14,15,
+    //    //E
+    //    16,17,18,
+    //    16,18,19,
+    //    //F
+    //    20,21,22,
+    //    20,22,23
+    //};
 
-
+    //std::vector<float> tempV;
+    //for (int i = 0; i < 144; i++) {
+    //    tempV.push_back(positions[i]);
+    //}
+    //std::vector<unsigned int> tempI;
+    //for (int i = 0; i < 36; i++) {
+    //    tempI.push_back(indicies[i]);
+    //}
 
     VAO va;
-    VBO3f3f vb(positions, 216 * sizeof(float));
-    va.AddVBO(vb);
-    IBO ib(indicies, 36);
+    //VBO3f3f vb(tempV);
+    va.AddVBO(*(rData.vbo));
+    //IBO ib(tempI);
 
 
     Shader shader("shaders/GouraudShader.shader");
@@ -207,7 +226,7 @@ void Program::Run()
 
 
 
-        renderer.Draw(va, ib, shader);
+        renderer.Draw(va, *(rData.ibo), shader);
 
         glfwSwapBuffers(window);
 

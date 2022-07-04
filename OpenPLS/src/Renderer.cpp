@@ -9,3 +9,4 @@ void Renderer::Draw(const VAO& va, const IBO& ib, const Shader& shader) const
 	glDrawElements(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_INT, nullptr);
 
 }
+

@@ -4,6 +4,16 @@
 #include "IBO.h"
 #include "Shader.h"
 
+struct RenderData
+{
+	inline RenderData() { vbo = nullptr; ibo = nullptr; }
+
+
+
+	VBO* vbo;
+	IBO* ibo;
+};
+
 class Renderer
 {
 public:

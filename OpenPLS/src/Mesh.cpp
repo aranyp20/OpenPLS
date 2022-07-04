@@ -30,11 +30,26 @@ void Mesh::AddPoint(Point* vert, const std::vector<Point*> conns)
 	for (Point* c : conns) {
 		newColumn[edgeMatrix.elementIndex(c)] = 1;
 	}
+
+
 		
 	points.push_back(vert);
 	edgeMatrix.orderVec.push_back(vert);
 
 	edgeMatrix.matrix.push_back(newColumn);
+}
+
+void Mesh::AddSide(std::vector<unsigned int>& is)
+{
+	std::vector<Point*> res;
+	for (int i : is) {
+		if (i >= 0 && i < points.size()) {
+			res.push_back(points[i]);
+
+			
+		}
+	}
+	sides.push_back(res);
 }
 
 
@@ -105,4 +120,45 @@ Point* Mesh::EdgeMatrix::indexElement(int i)
 	return orderVec[i];
 }
 
+RenderData MeshRenderer::GiveSides(Mesh& m)
+{
+	RenderData res;
+	
+	std::vector<float> f;
+	std::vector<unsigned int> inds;
+	
 
+	unsigned int iHelp = 0;
+
+	for (Mesh::Side s : m.sides) {
+		if (s.points.size() == 4) {
+			vec3 norm = cross(s.points[1]->pos - s.points[0]->pos, s.points[3]->pos - s.points[0]->pos);
+
+			for (int i = 0; i < 4; i++) {
+				f.push_back(s.points[i]->pos.x);
+				f.push_back(s.points[i]->pos.y);
+				f.push_back(s.points[i]->pos.z);
+				f.push_back(norm.x);
+				f.push_back(norm.y);
+				f.push_back(norm.z);
+
+			}
+
+
+			inds.push_back(iHelp * 4);
+			inds.push_back(iHelp * 4 + 1);
+			inds.push_back(iHelp * 4 + 2);
+
+			inds.push_back(iHelp * 4);
+			inds.push_back(iHelp * 4 + 2);
+			inds.push_back(iHelp * 4 + 3);
+
+			iHelp++;
+		}
+	}
+
+	res.ibo = new IBO(inds);
+	res.vbo = new VBO3f3f(f);
+
+	return res;
+}
