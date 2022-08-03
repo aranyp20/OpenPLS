@@ -11,6 +11,8 @@
 #include "Shader.h"
 #include "Camera.h"
 #include "Mesh.h"
+#include "InputManager.h"
+#include "Surface.h"
 
 
 class Program
@@ -24,6 +26,8 @@ class Program
 
 
 	GLFWwindow* window;
+
+	static Surface* surface;
 
 	static unsigned int windowWidth;
 	static unsigned int windowHeight;

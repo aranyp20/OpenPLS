@@ -7,3 +7,14 @@ int main()
 
     return 0;
 }
+
+/*  BUGS:
+
+-ha a kamerát alulról akarod flippeltetni akkor néha eltûnik az object
+
+
+
+
+
+
+*/

@@ -14,8 +14,23 @@ struct RenderData
 	IBO* ibo;
 };
 
+
 class Renderer
 {
 public:
-	void Draw(const VAO& va, const IBO& ib, const Shader& shader) const;
+
+	struct TriangleData {
+		const VAO& va; const IBO& ib; const Shader& shader;
+		TriangleData(const VAO& _va, const IBO& _ib, const Shader& _shader) : va(_va),ib(_ib),shader(_shader){}
+	};
+	struct LineData {
+		const VAO& va; const Shader& shader;
+		LineData(const VAO& _va, const Shader& _shader) : va(_va), shader(_shader) {}
+	};
+	struct PointData {
+		const VAO& va; const Shader& shader;
+		PointData(const VAO& _va, const Shader& _shader) : va(_va), shader(_shader) {}
+	};
+
+	void Draw(TriangleData,PointData,LineData) const;
 };

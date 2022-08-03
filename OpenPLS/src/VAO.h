@@ -7,6 +7,7 @@ class VAO
 {
 private:
 	unsigned int ID;
+	unsigned int count;
 public:
 	VAO();
 	~VAO();
@@ -14,5 +15,5 @@ public:
 	void AddVBO(const VBO& vb);
 
 	void Bind() const;
-
+	unsigned int GetCount() const { return count; }
 };

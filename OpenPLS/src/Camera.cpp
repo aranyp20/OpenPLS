@@ -5,13 +5,15 @@ Camera::Camera()
 {
 	wLookat = vec3(0, 0, 0);
 	wUp = vec3(0, 1, 0);
-	wEye = vec3(-1, 0, 0);
+	wEye = vec3(2, 1, 0);
 
-
+	fp = 1; bp = 20;
 
 	aspect = (float)(Program::GetInstance().WindowWidth()) / Program::GetInstance().WindowHeight();
+	
 	fov = 70.0f * (float)M_PI / 180.0f;
-	fp = 1; bp = 20;
+	
+	
 }
 
 mat4 Camera::V()
@@ -50,4 +52,19 @@ void Camera::ReplaceEye(vec3 _wEye)
 void Camera::ReplaceLookat(vec3 _wLookat)
 {
 	wLookat = _wLookat;
+}
+
+std::vector<vec3> Camera::GetWUV()
+{
+	std::vector<vec3> res;
+
+	vec3 w = (wEye - wLookat); w.normalize();
+	vec3 u = (cross(wUp, w)); u.normalize();
+	vec3 v = cross(w, u); //normalized by default
+
+	res.push_back(w);
+	res.push_back(u);
+	res.push_back(v);
+
+	return res;
 }

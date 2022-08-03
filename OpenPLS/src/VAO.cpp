@@ -4,6 +4,7 @@
 
 VAO::VAO()
 {
+	count = 0;
 	glGenVertexArrays(1, &ID);
 	glBindVertexArray(ID);
 	Bind();
@@ -18,7 +19,7 @@ void VAO::AddVBO(const VBO& vb)
 {
 	vb.Bind();
 	vb.TellData();
-
+	count += vb.GetCount();
 }
 
 void VAO::Bind() const

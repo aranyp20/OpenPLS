@@ -8,6 +8,18 @@
 
 
 
+////////////////////////////////VEC2/////////////////////////////////////////
+struct vec2 {
+	float x, y;
+	explicit vec2(float _x, float _y):x(_x),y(_y){}
+
+	inline void Rotate() { float a = y; y = -x; x = a; }
+	inline float length() { return sqrt(x * x + y * y); }
+
+	vec2 operator-(const vec2& v) const { return vec2(x - v.x, y - v.y); }
+};
+
+
 ////////////////////////////////VEC3/////////////////////////////////////////
 
 struct vec3 {
@@ -15,6 +27,8 @@ struct vec3 {
 	float x, y, z;
 
 	explicit vec3(float _x = 0, float _y = 0, float _z = 0) : x(_x), y(_y), z(_z) {}
+	
+	
 	vec3 operator*(float num) const { return vec3(x * num, y * num, z * num); }
 	vec3 operator/(float num) const { return vec3(x / num, y / num, z / num); }
 	vec3 operator+(const vec3& v) const { return vec3(x + v.x, y + v.y, z + v.z); }
@@ -44,6 +58,7 @@ struct vec4 {
 	float x, y, z, w;
 
 	explicit vec4(float _x = 0, float _y = 0, float _z = 0, float _w = 0) : x(_x), y(_y), z(_z),w(_w) {}
+	explicit vec4(const vec3& v, float _w = 1) : x(v.x), y(v.y), z(v.z), w(_w) {}
 
 	vec4 operator*(float num) const { return vec4(x * num, y * num, z * num, w * num); }
 	vec4 operator/(float num) const { return vec4(x / num, y / num, z / num, w / num); }
@@ -166,9 +181,14 @@ inline mat4 RotationMatrix(float angle, vec3 w) {
 
 	return m;
 }
+////////////////////////////////MIX/////////////////////////////////////////
 
-
-
+inline void TransformPoint(vec3& v, const mat4& m) {
+	vec4 temp = vec4(v);
+	temp = temp * m;
+	temp = temp / temp.w;
+	v = vec3(temp.x,temp.y,temp.z);
+}
 
 
 

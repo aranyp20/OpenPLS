@@ -1,7 +1,9 @@
 #include "Program.h"
 
-unsigned int Program::windowWidth = 640;
-unsigned int Program::windowHeight = 480;
+unsigned int Program::windowWidth = 1000;
+unsigned int Program::windowHeight = 600;
+
+Surface* Program::surface = NULL;
 
 Program::Program()
 {
@@ -40,33 +42,69 @@ bool Program::Init()
     glEnable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
 
+
+    surface = new Surface();
+    MeshHandler* mh = new MeshHandler(surface);
+    surface->meshHandler = mh;
+
+
+    InputManager::AddIP(mh);
+    InputManager::AddIP(surface);
+    InputManager::SetCallbacks(window);
+
+
+    surface->viewCamera = new Camera();
+
     return true;
 }
 
 void Program::Run()
 {
-    std::vector<Point*> v;
-    std::vector<Point*> points;
-    points.push_back(new Point(-0.5f, -0.5f, 0.5f));
-    points.push_back(new Point(0.5f, -0.5f, 0.5f));
-    points.push_back(new Point(0.5f, -0.5f, -0.5f));
-    points.push_back(new Point(-0.5f, -0.5f, -0.5f));
-    points.push_back(new Point(-0.5f, 0.5f, 0.5f));
-    points.push_back(new Point(0.5f, 0.5f, 0.5f));
-    points.push_back(new Point(0.5f, 0.5f, -0.5f));
-    points.push_back(new Point(-0.5f, 0.5f, -0.5f));
+    std::vector<Mesh::Point*> v;
+    std::vector<Mesh::Point*> points;
+    points.push_back(new Mesh::Point(-0.5f, -0.5f, 0.5f));
+    points.push_back(new Mesh::Point(0.5f, -0.5f, 0.5f));
+    points.push_back(new Mesh::Point(0.5f, -0.5f, -0.5f));
+    points.push_back(new Mesh::Point(-0.5f, -0.5f, -0.5f));
+    points.push_back(new Mesh::Point(-0.5f, 0.5f, 0.5f));
+    points.push_back(new Mesh::Point(0.5f, 0.5f, 0.5f));
+    points.push_back(new Mesh::Point(0.5f, 0.5f, -0.5f));
+    points.push_back(new Mesh::Point(-0.5f, 0.5f, -0.5f));
 
-    points.push_back(new Point(0.0f, 1.0f, 0.5f));
-    points.push_back(new Point(0.0f, 1.0f, -0.5f));
+    points.push_back(new Mesh::Point(0.0f, 1.0f, 0.5f));
+    points.push_back(new Mesh::Point(0.0f, 1.0f, -0.5f));
 
     Mesh cube;
-
+    surface->meshHandler->AddMesh(&cube);
    
-
-
-    for (int i = 0; i<points.size(); i++) {
-        cube.AddPoint(points[i], v);
-    }
+    cube.AddPoint(points[0], v);
+    v = { points[0] };
+    cube.AddPoint(points[1], v);
+    v.clear();
+    v = { points[1] };
+    cube.AddPoint(points[2], v);
+    v.clear();
+    v = { points[2],points[0]};
+    cube.AddPoint(points[3], v);
+    v.clear();
+    v = { points[0] };
+    cube.AddPoint(points[4], v);
+    v.clear();
+    v = { points[1],points[4]};
+    cube.AddPoint(points[5], v);
+    v.clear();
+    v = { points[2],points[5] };
+    cube.AddPoint(points[6], v);
+    v.clear();
+    v = { points[3],points[6],points[4]};
+    cube.AddPoint(points[7], v);
+    v.clear();
+    v = { points[5],points[4] };
+    cube.AddPoint(points[8], v);
+    v.clear();
+    v = { points[6],points[7],points[8]};
+    cube.AddPoint(points[9], v);
+    v.clear();
 
     std::vector<unsigned int> sinds{0, 1, 2, 3};
     cube.AddSide(sinds);
@@ -86,103 +124,28 @@ void Program::Run()
     sinds = { 8,9,6,5 };
     cube.AddSide(sinds);
 
+    cube.PrintVerts();
 
     RenderData rData = MeshRenderer::GiveSides(cube);
-    
-
-    //float positions[] = {
-    //    //A
-    //    -0.5f,-0.5f,0.5f,
-    //    0,0,1,
-    //    0.5f,-0.5f,0.5f,
-    //    0,0,1,
-    //    0.5f,0.5f,0.5f,
-    //    0,0,1,
-    //    -0.5f,0.5f,0.5f,
-    //    0,0,1,
-    //    //B
-    //    0.5f,0.5f,0.5f,
-    //    1,0,0,
-    //    0.5f,-0.5f,0.5f,
-    //    1,0,0,
-    //    0.5f,-0.5f,-0.5f,
-    //    1,0,0,
-    //    0.5f,0.5f,-0.5f,
-    //    1,0,0,
-    //    //C
-    //     -0.5f,-0.5f,-0.5f,
-    //    0,0,-1,
-    //    0.5f,-0.5f,-0.5f,
-    //    0,0,-1,
-    //    0.5f,0.5f,-0.5f,
-    //    0,0,-1,
-    //    -0.5f,0.5f,-0.5f,
-    //    0,0,-1,
-    //    //D
-    //    -0.5f,0.5f,0.5f,
-    //    -1,0,0,
-    //    -0.5f,-0.5f,0.5f,
-    //    -1,0,0,
-    //    -0.5f,-0.5f,-0.5f,
-    //    -1,0,0,
-    //    -0.5f,0.5f,-0.5f,
-    //    -1,0,0,
-    //    //e
-    //    -0.5f,0.5f,0.5f,
-    //    0,1,0,
-    //    0.5f,0.5f,0.5f,
-    //    0,1,0,
-    //    0.5f,0.5f,-0.5f,
-    //    0,1,0,
-    //    -0.5f,0.5f,-0.5f,
-    //    0,1,0,
-    //    //f
-    //    -0.5f,-0.5f,0.5f,
-    //    0,-1,0,
-    //    0.5f,-0.5f,0.5f,
-    //    0,-1,0,
-    //    0.5f,-0.5f,-0.5f,
-    //    0,-1,0,
-    //    -0.5f,-0.5f,-0.5f,
-    //    0,-1,0
-    //};
- 
-    //unsigned int indicies[] = {
-    //    //A
-    //    0,1,2,
-    //    0,2,3,
-    //    //B
-    //    4,5,6,
-    //    4,6,7,
-    //    //C
-    //    8,9,10,
-    //    8,10,11,
-    //    //D
-    //    12,13,14,
-    //    12,14,15,
-    //    //E
-    //    16,17,18,
-    //    16,18,19,
-    //    //F
-    //    20,21,22,
-    //    20,22,23
-    //};
-
-    //std::vector<float> tempV;
-    //for (int i = 0; i < 144; i++) {
-    //    tempV.push_back(positions[i]);
-    //}
-    //std::vector<unsigned int> tempI;
-    //for (int i = 0; i < 36; i++) {
-    //    tempI.push_back(indicies[i]);
-    //}
+    VBO* vVBO = new VBO3f3f(MeshRenderer::GiveVertices(cube));
+    VBO* eVBO = MeshRenderer::GiveEdges(cube);
+  
 
     VAO va;
     //VBO3f3f vb(tempV);
     va.AddVBO(*(rData.vbo));
     //IBO ib(tempI);
+    VAO va1;
+    va1.AddVBO(*vVBO);
+
+    Shader shader1("shaders/Shader1.shader");
+    Shader shader2("shaders/Shader1.shader");
+
+    VAO va2;
+    va2.AddVBO(*eVBO);
 
 
+    va.Bind();
     Shader shader("shaders/GouraudShader.shader");
     shader.Bind();
 
@@ -195,16 +158,18 @@ void Program::Run()
     light->wLightPos = vec4(5, 5, 4, 1);
     light->La = vec3(1, 1, 1);
     light->Le = vec3(1, 1, 3);
-    Camera* camera = new Camera();
+    
     shader.SetUniform("material", *material);
     shader.SetUniform("light", *light);
+  
 
     mat4 Mod = mat4();
     mat4 Modinv = mat4();
 
     Renderer renderer;
 
-    vec3 eye = vec3(2, 1, 0);
+   
+    
 
     glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
 
@@ -214,20 +179,34 @@ void Program::Run()
         
         
 
-        Mod = Mod * RotationMatrix(0.0002f, vec3(0, 1, 0));
-        Modinv = RotationMatrix(-0.0002f, vec3(0, 1, 0)) * Modinv;
-
-        shader.SetUniform("wEye", eye);
-        camera->ReplaceEye(eye);
-        shader.SetUniform("V", camera->V());
-        shader.SetUniform("P", camera->P());
+        //Mod = Mod * RotationMatrix(0.0002f, vec3(0, 1, 0));
+        //Modinv = RotationMatrix(-0.0002f, vec3(0, 1, 0)) * Modinv;
+        shader.Bind();
+        shader.SetUniform("wEye", surface->viewCamera->GetEye());
+        shader.SetUniform("V", surface->viewCamera->V());
+        shader.SetUniform("P", surface->viewCamera->P());
         shader.SetUniform("M", Mod);
         shader.SetUniform("Minv", Modinv);
+        shader1.Bind();
+        shader1.SetUniform("V", surface->viewCamera->V());
+        shader1.SetUniform("P", surface->viewCamera->P());
+        shader1.SetUniform("M", Mod);
+        shader2.Bind();
+        shader2.SetUniform("V", surface->viewCamera->V());
+        shader2.SetUniform("P", surface->viewCamera->P());
+        shader2.SetUniform("M", Mod);
 
-
-
-        renderer.Draw(va, *(rData.ibo), shader);
-
+        renderer.Draw(Renderer::TriangleData(va, *(rData.ibo), shader),Renderer::PointData(va1,shader1),Renderer::LineData(va2,shader2));
+        
+        if (cube.Corrupted()) {
+            
+            va1.Bind();
+            vVBO->RefreshData(MeshRenderer::GiveVertices(cube));
+         
+            
+            cube.UnCorrupt();
+        }
+        
         glfwSwapBuffers(window);
 
         glfwPollEvents();

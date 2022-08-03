@@ -3,12 +3,18 @@
 
 
 
-layout(location = 0) in vec2 position;
+layout(location = 0) in vec3 position;
+layout(location = 1) in vec3 color;
+out vec4 colorpass;
+
+uniform mat4 M, V, P;
 
 void main()
 {
-	gl_Position = vec4(position.x, position.y, 0.0, 1.0);
-
+	colorpass = vec4(color, 1);
+	vec4 temp = vec4(position, 1.0) * M * V * P;
+	temp.z = temp.z - 0.01f;
+	gl_Position = temp;
 }
 
 
@@ -18,13 +24,11 @@ void main()
 #version 330 core
 
 
-
+in vec4 colorpass;
 out vec4 color;
 
 
-uniform vec4 uColor;
-
 void main()
 {
-	color = uColor;
+	color = colorpass;
 }
