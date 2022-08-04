@@ -1,4 +1,5 @@
-#pragma once
+#ifndef IBO_H
+#define IBO_H
 
 #include <vector>
 
@@ -14,3 +15,5 @@ public:
 	void Bind() const;
 	inline unsigned int GetCount() const { return count; }
 };
+
+#endif

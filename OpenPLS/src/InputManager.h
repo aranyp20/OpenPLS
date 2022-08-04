@@ -1,4 +1,6 @@
-#pragma once
+#ifndef INPUTMANAGER_H
+#define INPUTMANAGER_H
+
 #include <GLFW/glfw3.h>
 #include <vector>
 #include "mymath.h"
@@ -56,3 +58,5 @@ public:
 
 	static vec2 ChangeInput(const vec2&);
 };
+
+#endif

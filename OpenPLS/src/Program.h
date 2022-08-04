@@ -1,4 +1,6 @@
-#pragma once
+#ifndef PROGRAM_H
+#define PROGRAM_H
+
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
@@ -44,3 +46,5 @@ public:
 	unsigned int WindowHeight();
 
 };
+
+#endif

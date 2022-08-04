@@ -1,7 +1,9 @@
-#pragma once
+#ifndef VBO_H
+#define VBO_H
+
 #include <vector>
 #include <map>
-#include "GL/glew.h"
+#include <GL/glew.h>
 
 
 class VBO
@@ -49,3 +51,5 @@ public:
 	VBO3f3f(const std::vector<float>& v) : VBO(v) {}
 	void TellData() const;
 };
+
+#endif

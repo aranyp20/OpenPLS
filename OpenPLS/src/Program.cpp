@@ -1,3 +1,5 @@
+
+
 #include "Program.h"
 
 unsigned int Program::windowWidth = 1000;
@@ -128,7 +130,7 @@ void Program::Run()
 
     RenderData rData = MeshRenderer::GiveSides(cube);
     VBO* vVBO = new VBO3f3f(MeshRenderer::GiveVertices(cube));
-    VBO* eVBO = MeshRenderer::GiveEdges(cube);
+    VBO* eVBO = new VBO3f3f(MeshRenderer::GiveEdges(cube));
   
 
     VAO va;
@@ -138,15 +140,19 @@ void Program::Run()
     VAO va1;
     va1.AddVBO(*vVBO);
 
-    Shader shader1("shaders/Shader1.shader");
-    Shader shader2("shaders/Shader1.shader");
+    std::string sh1 = "../shaders/Shader1.shader";
+    std::string shg = "../shaders/GouraudShader.shader";
+
+
+    Shader shader1(sh1);
+    Shader shader2(sh1);
 
     VAO va2;
     va2.AddVBO(*eVBO);
 
 
     va.Bind();
-    Shader shader("shaders/GouraudShader.shader");
+    Shader shader(shg);
     shader.Bind();
 
     Material* material = new Material();
@@ -202,8 +208,8 @@ void Program::Run()
             
             va1.Bind();
             vVBO->RefreshData(MeshRenderer::GiveVertices(cube));
-         
-            
+            va2.Bind();
+            eVBO->RefreshData(MeshRenderer::GiveEdges(cube));   
             cube.UnCorrupt();
         }
         

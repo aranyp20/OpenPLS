@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SHADER_H
+#define SHADER_H
 
 #include <string>
 #include <iostream>
@@ -38,3 +39,4 @@ private:
 	unsigned int CompileShader(unsigned int type, const std::string& source);
 	bool CompileErrorHandler(unsigned int shaderID) const;
 };
+#endif

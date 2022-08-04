@@ -6,6 +6,7 @@ InputAnswer Surface::ProcessKey(int key)
 		return InputAnswer(InputAnswer::ReactionType::BINDED, new OCameraMove(viewCamera));
 	}
 
+	return InputAnswer(InputAnswer::ReactionType::IGNORED, NULL);
 	
 }
 

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ADDONS_HPP
+#define ADDONS_HPP
 #include "InputManager.h"
 
 
@@ -16,3 +17,4 @@ bool VectorContains(std::vector<T*> where, T* what)
 	}
 	return false;
 }
+#endif

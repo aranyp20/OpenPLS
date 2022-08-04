@@ -1,4 +1,6 @@
-#pragma once
+#ifndef RENDERER_H
+#define RENDERER_H
+
 #include <GL/glew.h>
 #include "VAO.h"
 #include "IBO.h"
@@ -34,3 +36,5 @@ public:
 
 	void Draw(TriangleData,PointData,LineData) const;
 };
+
+#endif

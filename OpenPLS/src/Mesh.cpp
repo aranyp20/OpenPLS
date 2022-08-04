@@ -22,15 +22,16 @@ Mesh::Mesh()
 }
 
 
-
 void Mesh::AddPoint(Point* vert, const std::vector<Point*> conns)
 {
 
-	std::vector<int> newColumn(edgeMatrix.Size() + 1);
+	vert->owner=this;
+
+	std::vector<Edge*> newColumn(edgeMatrix.Size() + 1);
 
 
 	for (Point* c : conns) {
-		newColumn[edgeMatrix.elementIndex(c)] = 1;
+		newColumn[edgeMatrix.elementIndex(c)] = new Edge(c,vert);
 	}
 
 
@@ -51,33 +52,36 @@ void Mesh::AddSide(std::vector<unsigned int>& is)
 			
 		}
 	}
-	sides.push_back(res);
+	sides.push_back(new Side(res));
 }
 
 bool Mesh::CheckHit(const vec2& p, const mat4& MVP)
 {
-	//ez a mesh intersectje legyen, ami ebben van az kb megy a Point intersecjebe
 
-	float closestZ = 2.0f;
-	Point* closestHit = NULL;
+
 	vec2 pp = InputManager::ChangeInput(p);
 
-	for (int i = 0; i < points.size(); i++) {
-		vec3 vpos = points[i]->pos;
-		TransformPoint(vpos, MVP);
-		vpos = vpos ;
-		vec2 spos = vec2(vpos.x, vpos.y);
-		
-		if (vpos.z<1 && vpos.z>-1 && closestZ > vpos.z && (pp - spos).length() < 0.015f) {
-			closestHit = points[i];
-			closestZ = vpos.z;
+	std::vector<Hittable*> potHits;
+	for(Point* p : points){
+		potHits.push_back(p);
+	}
+	float closestZ = 2.0f;
+	Hittable* closestHit = NULL;
+	for(Hittable* h : potHits){
+		Hittable::Hit curHit = h->Intersect(pp,MVP);
+		if(curHit.z<1&&curHit.z>-1&&curHit.z<closestZ){
+			closestHit=curHit.hittable;
+			closestZ = curHit.z;
 		}
 	}
+	
 	if (closestHit != NULL) {
-		selectedPoints.push_back(closestHit);
+		closestHit->NotifyWin();
 		Corrupt();
+
+		return true;
 	}
-	return (closestHit!=NULL);
+	return false;
 }
 
 bool Mesh::ReleaseSelection()
@@ -122,6 +126,12 @@ Mesh::Point* Mesh::EdgeIterator::GetElement2()
 	return parent.edgeMatrix.indexElement(column);
 }
 
+
+Mesh::Edge* Mesh::EdgeIterator::GetElementEdge() 
+{
+	return parent.edgeMatrix.matrix[row][column];
+}
+
 bool Mesh::EdgeIterator::hasNext()
 {
 	
@@ -140,7 +150,7 @@ bool Mesh::EdgeIterator::hasNext()
 		else {
 			row++;
 		}
-	} while (parent.edgeMatrix.matrix[column][row] == 0);
+	} while (parent.edgeMatrix.matrix[column][row] == NULL);
 	
 	return true;
 }
@@ -178,6 +188,12 @@ Mesh::Point* Mesh::EdgeMatrix::indexElement(int i)
 	return orderVec[i];
 }
 
+
+void Mesh::SelectPoint(Point* p) 
+{
+	selectedPoints.push_back(p);
+}
+
 RenderData MeshRenderer::GiveSides(Mesh& m)
 {
 	RenderData res;
@@ -188,14 +204,14 @@ RenderData MeshRenderer::GiveSides(Mesh& m)
 
 	unsigned int iHelp = 0;
 
-	for (Mesh::Side s : m.sides) {
-		if (s.points.size() == 4) {
-			vec3 norm = cross(s.points[1]->pos - s.points[0]->pos, s.points[3]->pos - s.points[0]->pos);
+	for (Mesh::Side *s : m.sides) {
+		if (s->points.size() == 4) {
+			vec3 norm = cross(s->points[1]->pos - s->points[0]->pos, s->points[3]->pos - s->points[0]->pos);
 
 			for (int i = 0; i < 4; i++) {
-				f.push_back(s.points[i]->pos.x);
-				f.push_back(s.points[i]->pos.y);
-				f.push_back(s.points[i]->pos.z);
+				f.push_back(s->points[i]->pos.x);
+				f.push_back(s->points[i]->pos.y);
+				f.push_back(s->points[i]->pos.z);
 				f.push_back(norm.x);
 				f.push_back(norm.y);
 				f.push_back(norm.z);
@@ -240,21 +256,32 @@ std::vector<float> MeshRenderer::GiveVertices(Mesh& m)
 	return res;
 }
 
-VBO* MeshRenderer::GiveEdges(Mesh& m)
+std::vector<float> MeshRenderer::GiveEdges(Mesh& m)
 {
+	
 	std::vector<float> res;
 	Mesh::EdgeIterator it = m.begin();
 	while (it.hasNext()) {
+
 		res.push_back(it.GetElement1()->pos.x);
 		res.push_back(it.GetElement1()->pos.y);
 		res.push_back(it.GetElement1()->pos.z);
-		res.push_back(1); res.push_back(0); res.push_back(0);
+		if(VectorContains<Mesh::Point>(m.selectedPoints,it.GetElement1())){
+			res.push_back(1); res.push_back(0); res.push_back(0);
+		}else{
+			res.push_back(0); res.push_back(1); res.push_back(0);
+		}
+		
 		res.push_back(it.GetElement2()->pos.x);
 		res.push_back(it.GetElement2()->pos.y);
 		res.push_back(it.GetElement2()->pos.z);
-		res.push_back(1); res.push_back(0); res.push_back(0);
+		if(VectorContains<Mesh::Point>(m.selectedPoints,it.GetElement2())){
+			res.push_back(1); res.push_back(0); res.push_back(0);
+		}else{
+			res.push_back(0); res.push_back(1); res.push_back(0);
+		}
 	}
-	return new VBO3f3f(res);
+	return res;
 }
 
 void MeshRenderer::RenderThisMesh(Renderer& renderer,VAO& vao,Shader& shader, Mesh& mesh)
@@ -300,4 +327,23 @@ OVertMove::OVertMove(Surface* surf, vec3 dir, vec3 sp) : surface(surf), directio
 
 void OVertMove::Update()
 {
+}
+
+Hittable::Hit Mesh::Point::Intersect(const vec2& pp, const mat4& MVP) 
+{
+	
+	Hittable::Hit result;
+	vec3 vpos = pos;
+	TransformPoint(vpos, MVP);
+	if((pp-vec2(vpos.x,vpos.y)).length()<0.015f){
+		result.z = vpos.z;
+		result.hittable = this;
+	}
+	return result;
+}
+
+
+void Mesh::Point::NotifyWin() 
+{
+	owner->SelectPoint(this);
 }

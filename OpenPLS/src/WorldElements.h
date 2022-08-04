@@ -1,4 +1,6 @@
-#pragma once
+#ifndef WORLDELEMENTS_H
+#define WORLDELEMENTS_H
+
 #include "mymath.h"
 
 struct Material
@@ -13,3 +15,5 @@ struct Light
 	vec3 La, Le;
 	vec4 wLightPos;
 };
+
+#endif

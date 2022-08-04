@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SURFACE_H
+#define SURFACE_H
 
 #include "Mesh.h"
 #include "Addons.hpp"
@@ -11,7 +12,7 @@ public:
 	Camera* viewCamera;
 	MeshHandler* meshHandler;
 
-	//itt kell a camerat meg mh-t megcsinálni
+	//itt kell a camerat meg mh-t megcsinï¿½lni
 	Surface(){}
 
 
@@ -33,3 +34,5 @@ public:
 
 	void Update();
 };
+
+#endif

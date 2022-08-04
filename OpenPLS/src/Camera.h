@@ -1,4 +1,6 @@
-#pragma once
+#ifndef CAMERA_H
+#define CAMERA_H
+
 #include <vector>
 #include "mymath.h"
 
@@ -25,3 +27,6 @@ public:
 	inline vec3 GetEye() { return wEye; }
 	inline vec3 GetLookat() { return wLookat; }
 };
+
+
+#endif

@@ -1,12 +1,15 @@
-#pragma once
+#ifndef MYMATH_H
+#define MYMATH_H
 
-#define _USE_MATH_DEFINES
+
 
 #include <cmath>
 #include <math.h>
 #include <iostream>
 
 
+
+#define _USE_MATH_DEFINES
 
 ////////////////////////////////VEC2/////////////////////////////////////////
 struct vec2 {
@@ -191,4 +194,4 @@ inline void TransformPoint(vec3& v, const mat4& m) {
 }
 
 
-
+#endif

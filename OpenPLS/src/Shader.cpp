@@ -1,3 +1,4 @@
+
 #include "Shader.h"
 
 
@@ -113,6 +114,8 @@ ShaderProgramSource Shader::ParseShader(const std::string& filePath)
             ss[(int)shaderType] << line << '\n';
         }
     }
+
+
 
     return { ss[0].str(),ss[1].str() };
 }
