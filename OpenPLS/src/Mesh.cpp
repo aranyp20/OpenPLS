@@ -219,9 +219,34 @@ RenderData MeshRenderer::GiveSides(Mesh& m)
 
 	for (Mesh::Side *s : m.sides) {
 		if (s->points.size() == 4) {
-			vec3 norm = cross(s->points[1]->pos - s->points[0]->pos, s->points[3]->pos - s->points[0]->pos);
+			vec3 norm1 = cross(s->points[0]->pos - s->points[1]->pos, s->points[0]->pos - s->points[2]->pos);
+			vec3 norm2 = cross(s->points[3]->pos - s->points[2]->pos, s->points[3]->pos - s->points[0]->pos);
 
+			for (int i = 0; i < 3; i++) {
+				f.push_back(s->points[i]->pos.x);
+				f.push_back(s->points[i]->pos.y);
+				f.push_back(s->points[i]->pos.z);
+				f.push_back(norm1.x);
+				f.push_back(norm1.y);
+				f.push_back(norm1.z);
+
+			}
 			for (int i = 0; i < 4; i++) {
+				if(i!=1){
+					f.push_back(s->points[i]->pos.x);
+					f.push_back(s->points[i]->pos.y);
+					f.push_back(s->points[i]->pos.z);
+					f.push_back(norm2.x);
+					f.push_back(norm2.y);
+					f.push_back(norm2.z);
+				}
+				
+
+			}
+
+
+
+/* 			for (int i = 0; i < 4; i++) {
 				f.push_back(s->points[i]->pos.x);
 				f.push_back(s->points[i]->pos.y);
 				f.push_back(s->points[i]->pos.z);
@@ -238,12 +263,12 @@ RenderData MeshRenderer::GiveSides(Mesh& m)
 
 			inds.push_back(iHelp * 4);
 			inds.push_back(iHelp * 4 + 2);
-			inds.push_back(iHelp * 4 + 3);
+			inds.push_back(iHelp * 4 + 3); 
 
-			iHelp++;
+			iHelp++; */
 		}
 	}
-
+	res.raw = f;
 	res.ibo = new IBO(inds);
 	res.vbo = new VBO3f3f(f);
 
@@ -329,10 +354,10 @@ bool MeshHandler::CheckHit(const vec2& p)
 {
 	
 	if (activeMesh->CheckHit(p, owner->viewCamera->V() * owner->viewCamera->P())) {
-		owner->toloka.WakeUp(activeMesh->GiveSelecteds());//nyilvan szebben lesz
+		owner->toloka->WakeUp(activeMesh->GiveSelecteds());//nyilvan szebben lesz
 		return true; 
 	}
-	if(activeMesh->ReleaseSelection()){owner->toloka.Sleep();return true;} 
+	if(activeMesh->ReleaseSelection()){owner->toloka->Sleep();return true;} 
 	return false;
 }
 

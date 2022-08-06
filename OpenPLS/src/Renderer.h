@@ -10,7 +10,7 @@ struct RenderData
 {
 	inline RenderData() { vbo = nullptr; ibo = nullptr; }
 
-
+	std::vector<float> raw;
 
 	VBO* vbo;
 	IBO* ibo;

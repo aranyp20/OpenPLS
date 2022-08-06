@@ -8,7 +8,7 @@
 
 class Toloka : public InputBindable {
 
-	struct Arrow : public InputBindable{
+	struct Arrow {
 		vec3 center;
 		vec3 direction;
 		vec3 color;
@@ -20,6 +20,8 @@ class Toloka : public InputBindable {
 
 		void Replace(const vec3&);
 
+		bool CheckHit(const vec2&, const mat4&);
+
 		std::vector<float> GiveData();
 	};
 
@@ -27,11 +29,13 @@ class Toloka : public InputBindable {
 	bool active;
 	vec3 center;
 
-	std::vector<Mesh::Point*> controlledPoints;
+	std::vector<Mesh::Point*> controlledPoints; //pointernek kene lennie, hogy ha mozgatas kozben valtozik mennyi pont van akkor jo legyen
 	Surface* owner;
 
 	Toloka::Arrow arrowX, arrowY,arrowZ; //lehet ezeket inkabb tombben kene
 	Toloka::Arrow* arrowActive;
+
+	void Replace(const vec3&);
 
 public:
 
@@ -43,6 +47,9 @@ public:
 	void WakeUp(std::vector<Mesh::Point*>);
 	void Sleep();
 
+
+	bool CheckHit();
+
 	std::vector<float> GiveData();
 };
 
@@ -51,11 +58,10 @@ class Surface : public InputProcessor {
 public:
 	Camera* viewCamera;
 	MeshHandler* meshHandler;
-
-	Toloka toloka;
+	Toloka *toloka;
 
 	//itt kell a camerat meg mh-t megcsin�lni
-	Surface():toloka(this){}
+	Surface():toloka(new Toloka(this)){}
 
 
 

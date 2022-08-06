@@ -135,7 +135,7 @@ void Program::Run()
     VBO* vVBO = new VBO3f3f(MeshRenderer::GiveVertices(cube));
     VBO* eVBO = new VBO3f3f(MeshRenderer::GiveEdges(cube));
   
-    VBO* tVBO = new VBO3f3f(surface->toloka.GiveData());
+    VBO* tVBO = new VBO3f3f(surface->toloka->GiveData());
     VAO vat;
 
     vat.AddVBO(*tVBO);
@@ -212,12 +212,14 @@ void Program::Run()
 
        
         
-        if (cube.Corrupted()) {
+        if (cube.Corrupted() || true) {
             
             va1.Bind();
             vVBO->RefreshData(MeshRenderer::GiveVertices(cube));
             va2.Bind();
-            eVBO->RefreshData(MeshRenderer::GiveEdges(cube));   
+            eVBO->RefreshData(MeshRenderer::GiveEdges(cube));  
+            va.Bind();
+            rData.vbo->RefreshData(MeshRenderer::GiveSides(cube).raw);
             cube.UnCorrupt();
         }
 
@@ -228,7 +230,7 @@ void Program::Run()
     
         
     
-        tVBO->RefreshData(surface->toloka.GiveData());
+        tVBO->RefreshData(surface->toloka->GiveData());
         renderer.DrawL(vat,shader2);
         
         glfwSwapBuffers(window);

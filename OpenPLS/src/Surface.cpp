@@ -1,15 +1,45 @@
 #include "Surface.h"
+#include "Geometry.h"
 
 InputAnswer Surface::ProcessKey(int key)
 {
 	if (key == GLFW_KEY_Q) {
 		return InputAnswer(InputAnswer::ReactionType::BINDED, new OCameraMove(viewCamera));
+	}else if(key == GLFW_KEY_A){
+		if(toloka->CheckHit()){
+			return InputAnswer(InputAnswer::ReactionType::BINDED, toloka);
+		}
 	}
 
 	return InputAnswer(InputAnswer::ReactionType::IGNORED, NULL);
 	
 }
 
+bool Toloka::CheckHit()
+{
+	if(!active)return false;
+	if(arrowX.CheckHit(InputManager::ChangeInput(InputManager::GetMousePos2()),owner->viewCamera->V()*owner->viewCamera->P())){
+		arrowActive = &(this->arrowX);
+
+		return true;
+	}else if(arrowY.CheckHit(InputManager::ChangeInput(InputManager::GetMousePos2()),owner->viewCamera->V()*owner->viewCamera->P())){
+		arrowActive = &(this->arrowY);
+
+		return true;
+	}else if(arrowZ.CheckHit(InputManager::ChangeInput(InputManager::GetMousePos2()),owner->viewCamera->V()*owner->viewCamera->P())){
+		arrowActive = &(this->arrowZ);
+
+		return true;
+	}
+	return false;
+}
+
+bool Toloka::Arrow::CheckHit(const vec2& p, const mat4& m)
+{
+	vec3 tp3 = vec3(center+direction); TransformPoint(tp3,m);
+	vec2 tp2 = vec2(tp3.x,tp3.y);
+	return Circle(tp2,0.035f).Contains(p);
+}
 
 Toloka::Arrow::Arrow(vec3 _direction,vec3 _color, vec3 _center = vec3(0,0,0)) :direction(_direction), color(_color), center(_center)
 {
@@ -44,11 +74,44 @@ Toloka::Toloka(Surface* surface) : active(false), owner(surface) , arrowX(Toloka
 	
 }
 
+void Toloka::Replace(const vec3& v)
+{
+	
+	center = v;
+	arrowX.Replace(v);
+	arrowY.Replace(v);
+	arrowZ.Replace(v);
+}
 
+
+//valami nem jo vele
+//ami biztos hiba az a pontatlansag hogy mindig adogatok egy vektort, de azon kivul is lehet nem tul jo
 void Toloka::Update() 
 {
+	mat4 VP = owner->viewCamera->V()*owner->viewCamera->P();
+	vec3 wEye = owner->viewCamera->GetEye();
 
+	vec3 centerCam = center; TransformPoint(centerCam,VP); centerCam = owner->viewCamera->PutToWorld(vec2(centerCam.x,centerCam.y));
+	vec3 endWorld = center + arrowActive->direction;
+	vec3 endCam = endWorld; TransformPoint(endCam,VP);endCam = owner->viewCamera->PutToWorld(vec2(endCam.x,endCam.y));
+	vec3 mouseCamLast = owner->viewCamera->PutToWorld(InputManager::ChangeInput(InputManager::GetMousePos1()));
+	vec3 mouseCam = owner->viewCamera->PutToWorld(InputManager::ChangeInput(InputManager::GetMousePos2()));
+	vec3 projTemp = normalize(centerCam-endCam); 
+	vec3 moveCam = projTemp * dot(vec3(mouseCam-mouseCamLast),projTemp);
+	vec3 moveWorld = moveCam *  ((wEye-endWorld).length() / (wEye-endCam).length());
 	
+
+
+	vec3 moveVector = normalize(arrowActive->direction) * dot(moveWorld,normalize(arrowActive->direction));
+
+
+	for(Mesh::Point* p : controlledPoints){ //ez nem jo hogy belenyul
+		p->pos = p->pos + moveVector;
+
+	}
+	
+
+	Replace(center + moveVector);
 }
 
 
@@ -62,12 +125,10 @@ void Toloka::WakeUp(std::vector<Mesh::Point*> ps)
 	}
 	c =  c / ps.size();
 
+	controlledPoints = ps;
 
 
-	center = c;
-	arrowX.Replace(c);
-	arrowY.Replace(c);
-	arrowZ.Replace(c);
+	Replace(c);
 	active = true;
 }
 

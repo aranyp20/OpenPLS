@@ -16,6 +16,14 @@ float SolveQuadratic(float a, float b, float c)
 
 }
 
+Circle::Circle(vec2 _center,float _radius) : center(_center), radius(_radius){}
+
+
+bool Circle::Contains(const vec2& p)
+{
+    
+    return (p-center).length()<=radius;
+}
 
 Line2D::Line2D(vec2 _p1,vec2 _p2) : p1(_p1), p2(_p2) 
 {  

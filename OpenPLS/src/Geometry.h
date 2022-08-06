@@ -29,6 +29,14 @@ struct Rect{
     bool Contains(const vec2&);
 };
 
+struct Circle{
+    vec2 center;
+    float radius;
+
+    Circle(vec2,float);
+
+    bool Contains(const vec2&);
+};
 
 //Untested class!!!
 struct Line2D{

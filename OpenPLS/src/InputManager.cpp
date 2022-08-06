@@ -34,7 +34,7 @@ void InputManager::key_callback(GLFWwindow* window, int key, int scancode, int a
 	}
 	else if (action == GLFW_RELEASE) {
 		if (lastBind != NULL) {
-			delete lastBind;
+			//delete lastBind;
 			lastBind = NULL;
 			return;
 		}

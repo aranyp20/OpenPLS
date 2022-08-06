@@ -51,7 +51,7 @@ struct vec3 {
 	vec3 operator-(const vec3& v) const { return vec3(x - v.x, y - v.y, z - v.z); }
 	vec3 operator*(const vec3& v) const { return vec3(x * v.x, y * v.y, z * v.z); }
 
-	inline float length() { return sqrtf(x*x+y*y+z*z); }
+	inline float length() const { return sqrtf(x*x+y*y+z*z); }
 
 	inline void normalize() { 
 		
@@ -60,7 +60,14 @@ struct vec3 {
 		y = newVec.y;
 		z = newVec.z;
 	}
+	
 };
+inline std::ostream& operator<<(std::ostream& os, const vec3& v){
+	os<<v.x<<" "<<v.y<<" "<<v.z<<std::endl;
+	return os;
+}
+
+inline vec3 normalize(const vec3& v){ return v / v.length();}
 
 inline float dot(const vec3& v1, const vec3& v2) { return (v1.x * v2.x + v1.y * v2.y + v1.z * v2.z); }
 

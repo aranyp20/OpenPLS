@@ -7,7 +7,8 @@ void Renderer::Draw(TriangleData t,PointData p, LineData l) const
 	t.shader.Bind();
 	t.va.Bind();
 	t.ib.Bind();
-	glDrawElements(GL_TRIANGLES, t.ib.GetCount(), GL_UNSIGNED_INT, nullptr);
+	//glDrawElements(GL_TRIANGLES, t.ib.GetCount(), GL_UNSIGNED_INT, nullptr);
+	glDrawArrays(GL_TRIANGLES,0,t.va.GetCount() / 6);
 
 	glPointSize(7);
 	p.shader.Bind();
