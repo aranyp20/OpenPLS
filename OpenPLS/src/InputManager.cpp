@@ -76,6 +76,8 @@ vec2 InputManager::ChangeInput(const vec2& v)
 void InputManager::AddIP(InputProcessor* ip) 
 {
 	inputProcessors.push_back(ip);
+
+
 }
 
 

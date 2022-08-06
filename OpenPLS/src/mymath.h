@@ -16,12 +16,25 @@ struct vec2 {
 	float x, y;
 	explicit vec2(float _x, float _y):x(_x),y(_y){}
 
-	inline void Rotate() { float a = y; y = -x; x = a; }
-	inline float length() { return sqrt(x * x + y * y); }
-
+	vec2 operator*(float num) const { return vec2(x * num, y * num); }
+	vec2 operator/(float num) const { return vec2(x / num, y / num); }
 	vec2 operator-(const vec2& v) const { return vec2(x - v.x, y - v.y); }
+	vec2 operator+(const vec2& v) const { return vec2(x + v.x, y + v.y); }
+
+	inline void Rotate() { float a = y; y = -x; x = a; }
+	inline float length() const { return sqrt(x * x + y * y); }
+	inline void Normalize() {
+		vec2 newVec = vec2(x, y) / length();
+		x = newVec.x;
+		y = newVec.y;
+	}
+
+	
 };
 
+inline float dot(const vec2& v1, const vec2& v2) { return (v1.x * v2.x + v1.y * v2.y); }
+
+inline float angle(const vec2& v1, const vec2& v2){return acos(dot(v1,v2)/(v1.length()*v2.length()));}
 
 ////////////////////////////////VEC3/////////////////////////////////////////
 
@@ -193,5 +206,14 @@ inline void TransformPoint(vec3& v, const mat4& m) {
 	v = vec3(temp.x,temp.y,temp.z);
 }
 
+
+inline bool FE(float a, float b){
+	return fabs(a-b)<0.0001f;
+}
+
+inline float MIN(float a, float b){
+	if(a<b)return a;
+	return b;
+}
 
 #endif

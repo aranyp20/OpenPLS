@@ -44,6 +44,7 @@ void VBO::RefreshData(const std::vector<float>& v)
 {
 
 	count = v.size();
+	owner->count = count;
 	float* dataT = new float[v.size()];
 	for (int i = 0; i < v.size(); i++) {
 		dataT[i] = v[i];
@@ -51,7 +52,8 @@ void VBO::RefreshData(const std::vector<float>& v)
 
 	myData = dataT;
 	glBindBuffer(GL_ARRAY_BUFFER, ID);
-	glBufferSubData(GL_ARRAY_BUFFER, 0,v.size() * sizeof(float), dataT);
+	glBufferData(GL_ARRAY_BUFFER, v.size() * sizeof(float), dataT, GL_DYNAMIC_DRAW);
+
 }
 
 

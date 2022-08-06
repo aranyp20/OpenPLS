@@ -3,9 +3,10 @@
 #include "Mesh.h"
 #include "Surface.h"
 #include "Addons.hpp"
+#include "Geometry.h"
 
 void Mesh::PrintVerts() 
-{
+{/*
 	std::cout << "Matrix is:\n";
 
 	for (int i = 0; i < edgeMatrix.Size(); i++) {
@@ -13,7 +14,7 @@ void Mesh::PrintVerts()
 			std::cout << edgeMatrix.matrix[i][j];
 		}
 		std::cout << "\n";
-	}
+	}*/
 }
 
 Mesh::Mesh()
@@ -31,7 +32,7 @@ void Mesh::AddPoint(Point* vert, const std::vector<Point*> conns)
 
 
 	for (Point* c : conns) {
-		newColumn[edgeMatrix.elementIndex(c)] = new Edge(c,vert);
+		newColumn[edgeMatrix.elementIndex(c)] = new Edge(c,vert,this);
 	}
 
 
@@ -65,6 +66,13 @@ bool Mesh::CheckHit(const vec2& p, const mat4& MVP)
 	for(Point* p : points){
 		potHits.push_back(p);
 	}
+	
+	EdgeIterator eit = this->begin();
+	while(eit.hasNext()){
+		potHits.push_back(eit.GetElementEdge());
+	}
+
+
 	float closestZ = 2.0f;
 	Hittable* closestHit = NULL;
 	for(Hittable* h : potHits){
@@ -99,6 +107,10 @@ void Mesh::Transform(const mat4& m)
 	M = M * m;
 }
 
+std::vector<Mesh::Point*> Mesh::GiveSelecteds()
+{
+	return selectedPoints;
+}
 
 Mesh::EdgeIterator::EdgeIterator(Mesh& _parent, int _row = 0, int _column = 0):parent(_parent),row(_row),column(_column)
 {
@@ -129,7 +141,7 @@ Mesh::Point* Mesh::EdgeIterator::GetElement2()
 
 Mesh::Edge* Mesh::EdgeIterator::GetElementEdge() 
 {
-	return parent.edgeMatrix.matrix[row][column];
+	return parent.edgeMatrix.matrix[column][row];
 }
 
 bool Mesh::EdgeIterator::hasNext()
@@ -191,6 +203,7 @@ Mesh::Point* Mesh::EdgeMatrix::indexElement(int i)
 
 void Mesh::SelectPoint(Point* p) 
 {
+	if(VectorContains<Point>(selectedPoints,p))return;
 	selectedPoints.push_back(p);
 }
 
@@ -316,18 +329,22 @@ bool MeshHandler::CheckHit(const vec2& p)
 {
 	
 	if (activeMesh->CheckHit(p, owner->viewCamera->V() * owner->viewCamera->P())) {
-		return true; activeMesh->Corrupt();
+		owner->toloka.WakeUp(activeMesh->GiveSelecteds());//nyilvan szebben lesz
+		return true; 
 	}
-	return activeMesh->ReleaseSelection();
+	if(activeMesh->ReleaseSelection()){owner->toloka.Sleep();return true;} 
+	return false;
 }
 
-OVertMove::OVertMove(Surface* surf, vec3 dir, vec3 sp) : surface(surf), direction(dir), startingPosition(sp)
+
+
+/* OVertMove::OVertMove(Surface* surf, vec3 dir, vec3 sp) : surface(surf), direction(dir), startingPosition(sp)
 {
 }
 
 void OVertMove::Update()
 {
-}
+} */
 
 Hittable::Hit Mesh::Point::Intersect(const vec2& pp, const mat4& MVP) 
 {
@@ -336,14 +353,44 @@ Hittable::Hit Mesh::Point::Intersect(const vec2& pp, const mat4& MVP)
 	vec3 vpos = pos;
 	TransformPoint(vpos, MVP);
 	if((pp-vec2(vpos.x,vpos.y)).length()<0.015f){
-		result.z = vpos.z;
+		result.z = vpos.z - 0.01f;
 		result.hittable = this;
 	}
 	return result;
 }
 
-
 void Mesh::Point::NotifyWin() 
 {
 	owner->SelectPoint(this);
+}
+
+Hittable::Hit Mesh::Edge::Intersect(const vec2& p, const mat4& MVP) 
+{
+	Hittable::Hit result;
+	vec3 pos1 = p1->pos;
+	vec3 pos2 = p2->pos;
+	TransformPoint(pos1,MVP);
+	TransformPoint(pos2,MVP);
+	try{
+		float dist = Line2D(vec2(pos1.x,pos1.y),vec2(pos2.x,pos2.y)).DistanceFromSection(p,false);
+		
+		if(dist < 0.015f && dist>-0.5f){
+		
+			result.hittable=this;
+
+			result.z = pos1.z + (pos2.z - pos1.z) * Interpolate(vec2(pos1.x,pos1.y),vec2(pos2.x,pos2.y),p); //cylinderes megoldas kene mert a projekcio torzizja
+		}
+	}catch(std::string){
+		return result;
+	}
+	
+	return result;
+	
+}
+
+
+void Mesh::Edge::NotifyWin() 
+{
+	owner->SelectPoint(p1);
+	owner->SelectPoint(p2);
 }

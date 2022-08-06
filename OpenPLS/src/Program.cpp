@@ -128,10 +128,18 @@ void Program::Run()
 
     cube.PrintVerts();
 
+
+
+
     RenderData rData = MeshRenderer::GiveSides(cube);
     VBO* vVBO = new VBO3f3f(MeshRenderer::GiveVertices(cube));
     VBO* eVBO = new VBO3f3f(MeshRenderer::GiveEdges(cube));
   
+    VBO* tVBO = new VBO3f3f(surface->toloka.GiveData());
+    VAO vat;
+
+    vat.AddVBO(*tVBO);
+
 
     VAO va;
     //VBO3f3f vb(tempV);
@@ -143,7 +151,7 @@ void Program::Run()
     std::string sh1 = "../shaders/Shader1.shader";
     std::string shg = "../shaders/GouraudShader.shader";
 
-
+    //ezek kozott van kulonbseg?
     Shader shader1(sh1);
     Shader shader2(sh1);
 
@@ -202,7 +210,7 @@ void Program::Run()
         shader2.SetUniform("P", surface->viewCamera->P());
         shader2.SetUniform("M", Mod);
 
-        renderer.Draw(Renderer::TriangleData(va, *(rData.ibo), shader),Renderer::PointData(va1,shader1),Renderer::LineData(va2,shader2));
+       
         
         if (cube.Corrupted()) {
             
@@ -212,6 +220,16 @@ void Program::Run()
             eVBO->RefreshData(MeshRenderer::GiveEdges(cube));   
             cube.UnCorrupt();
         }
+
+        renderer.Draw(Renderer::TriangleData(va, *(rData.ibo), shader),Renderer::PointData(va1,shader1),Renderer::LineData(va2,shader2));
+
+        glClear(GL_DEPTH_BUFFER_BIT);
+        vat.Bind();
+    
+        
+    
+        tVBO->RefreshData(surface->toloka.GiveData());
+        renderer.DrawL(vat,shader2);
         
         glfwSwapBuffers(window);
 

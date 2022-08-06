@@ -5,12 +5,14 @@
 #include <map>
 #include <GL/glew.h>
 
+class VAO;
 
 class VBO
 {
 private:
 	const void* myData;
 	unsigned int count;
+	VAO* owner;
 protected:
 	unsigned int ID;
 	typedef std::map<unsigned int, unsigned int> sizeMap;
@@ -25,7 +27,7 @@ public:
 	unsigned int GetCount() const { return count; }
 	void Bind() const;
 	void RefreshData(const std::vector<float>&);
-
+	void SetOwner(VAO* o){owner =o;}
 };
 //Vertex buffer containing: 2 float / data
 class VBO2f : public VBO

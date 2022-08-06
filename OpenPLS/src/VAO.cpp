@@ -15,8 +15,9 @@ VAO::~VAO()
 	glDeleteVertexArrays(1, &ID);
 }
 
-void VAO::AddVBO(const VBO& vb)
+void VAO::AddVBO(VBO& vb)
 {
+	vb.SetOwner(this);
 	vb.Bind();
 	vb.TellData();
 	count += vb.GetCount();

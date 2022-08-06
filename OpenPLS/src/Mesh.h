@@ -37,11 +37,15 @@ public: // valamikor private lesz
 		Hittable::Hit Intersect(const vec2 &, const mat4 &);
 		void NotifyWin();
 	};
-	struct Edge
+	struct Edge : public Hittable
 	{
 		Point *p1, *p2;
+		Mesh* owner;
 
-		inline Edge(Point *_p1, Point *_p2) : p1(_p1), p2(_p2) {}
+		inline Edge(Point *_p1, Point *_p2, Mesh* _owner) : p1(_p1), p2(_p2),owner(_owner) {}
+
+		Hittable::Hit Intersect(const vec2 &, const mat4 &);
+		void NotifyWin();
 	};
 	struct Side
 	{
@@ -55,7 +59,6 @@ private:
 
 	std::vector<Point *> points;
 	std::vector<Point *> selectedPoints;
-
 
 
 	std::vector<Side *> sides;
@@ -116,6 +119,9 @@ public:
 	bool Corrupted() { return corrupted; }
 	void Corrupt() { corrupted = true; }
 	void UnCorrupt() { corrupted = false; }
+
+	std::vector<Mesh::Point*> GiveSelecteds();
+
 	friend class MeshRenderer;
 };
 
@@ -146,7 +152,7 @@ public:
 	bool CheckHit(const vec2 &);
 };
 
-class OVertMove : public Operation
+/* class OVertMove : public Operation
 {
 	Surface *surface;
 	vec3 direction;
@@ -156,6 +162,7 @@ public:
 	OVertMove(Surface *, vec3 dir, vec3 sp);
 
 	void Update();
-};
+}; */
+
 
 #endif

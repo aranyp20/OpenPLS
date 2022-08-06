@@ -35,6 +35,8 @@ public:
 	};
 
 	void Draw(TriangleData,PointData,LineData) const;
+
+	void DrawL(const VAO&, const Shader&) const;
 };
 
 #endif

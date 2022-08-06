@@ -10,11 +10,11 @@ int main()
 
 /*  BUGS:
 
--ha a kamerát alulról akarod flippeltetni akkor néha eltûnik az object
+-ha a kamerï¿½t alulrï¿½l akarod flippeltetni akkor nï¿½ha eltï¿½nik az object
 
 
+-push_back-re valami megoldast(vbodata adÃ¡snÃ¡l)
 
-
-
+-selectedPoints.pushBacket Selectpoint()-ra
 
 */

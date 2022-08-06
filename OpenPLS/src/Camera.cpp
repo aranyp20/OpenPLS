@@ -58,13 +58,23 @@ std::vector<vec3> Camera::GetWUV()
 {
 	std::vector<vec3> res;
 
-	vec3 w = (wEye - wLookat); w.normalize();
-	vec3 u = (cross(wUp, w)); u.normalize();
-	vec3 v = cross(w, u); //normalized by default
+	vec3 w = (wEye - wLookat); w.normalize(); //forward
+	vec3 u = (cross(wUp, w)); u.normalize(); //right
+	//normalized by default
+	vec3 v = cross(w, u); //up
 
 	res.push_back(w);
 	res.push_back(u);
 	res.push_back(v);
 
 	return res;
+}
+
+
+vec3 Camera::PutToWorld(const vec2& p) 
+{
+	std::vector<vec3> wuv = GetWUV();
+	vec3 midPoint = wEye + wuv[0] * fp;
+
+	return wuv[1] * p.x + wuv[2] * p.y + midPoint;
 }

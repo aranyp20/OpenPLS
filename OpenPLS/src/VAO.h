@@ -9,12 +9,14 @@ class VAO
 {
 private:
 	unsigned int ID;
-	unsigned int count;
+	
 public:
+	unsigned int count; //kell egy map hogy melyik vbo mennyit tarol, most igy nem jo es ez nyilvan priv lesz
+
 	VAO();
 	~VAO();
 
-	void AddVBO(const VBO& vb);
+	void AddVBO(VBO& vb);
 
 	void Bind() const;
 	unsigned int GetCount() const { return count; }

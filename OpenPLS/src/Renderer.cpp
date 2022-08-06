@@ -2,7 +2,7 @@
 
 void Renderer::Draw(TriangleData t,PointData p, LineData l) const
 {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //itt csak a depthet kell majd torolni es depthet belerakni a masikba vagy valahogy layert megoldani
 
 	t.shader.Bind();
 	t.va.Bind();
@@ -12,11 +12,21 @@ void Renderer::Draw(TriangleData t,PointData p, LineData l) const
 	glPointSize(7);
 	p.shader.Bind();
 	p.va.Bind();	
-	glDrawArrays(GL_POINTS, 0, p.va.GetCount() / 6);
+	glDrawArrays(GL_POINTS, 0, p.va.GetCount() / 6); //ezeket a /6 /3-akat rendesen megoldani
 	
 	glLineWidth(4);
 	l.shader.Bind();
 	l.va.Bind();
 	glDrawArrays(GL_LINES, 0, l.va.GetCount() / 3);
+}
+
+void Renderer::DrawL(const VAO& vao, const Shader& shader) const
+{
+
+	glLineWidth(2);
+	shader.Bind();
+	vao.Bind();
+	glDrawArrays(GL_LINES, 0, vao.GetCount() / 3);
+	
 }
 

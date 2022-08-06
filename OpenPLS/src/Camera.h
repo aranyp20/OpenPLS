@@ -26,6 +26,9 @@ public:
 
 	inline vec3 GetEye() { return wEye; }
 	inline vec3 GetLookat() { return wLookat; }
+	inline float GetDepth() {return fp; }
+
+	vec3 PutToWorld(const vec2&);
 };
 
 
