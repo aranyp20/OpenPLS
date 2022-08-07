@@ -46,12 +46,13 @@ bool Program::Init()
 
 
     surface = new Surface();
-    MeshHandler* mh = new MeshHandler(surface);
-    surface->meshHandler = mh;
+    surface->meshHandler = new MeshHandler(surface);
+    
 
 
-    InputManager::AddIP(mh);
+    InputManager::AddIP(surface->meshHandler);
     InputManager::AddIP(surface);
+    
     InputManager::SetCallbacks(window);
 
 
@@ -65,26 +66,17 @@ void Program::Run()
    
     Mesh cube(Mesh::Shape::CUBE);
     
+   
+
     surface->meshHandler->AddMesh(&cube);
 
 
 
-    RenderData rData = MeshRenderer::GiveSides(cube);
-    VBO* vVBO = new VBO3f3f(MeshRenderer::GiveVertices(cube));
-    VBO* eVBO = new VBO3f3f(MeshRenderer::GiveEdges(cube));
-  
     VBO* tVBO = new VBO3f3f(surface->toloka->GiveData());
     VAO vat;
-
     vat.AddVBO(*tVBO);
 
 
-    VAO va;
-    //VBO3f3f vb(tempV);
-    va.AddVBO(*(rData.vbo));
-    //IBO ib(tempI);
-    VAO va1;
-    va1.AddVBO(*vVBO);
 
     std::string sh1 = "../shaders/Shader1.shader";
     std::string shg = "../shaders/GouraudShader.shader";
@@ -93,11 +85,7 @@ void Program::Run()
     Shader shader1(sh1);
     Shader shader2(sh1);
 
-    VAO va2;
-    va2.AddVBO(*eVBO);
-
-
-    va.Bind();
+   
     Shader shader(shg);
     shader.Bind();
 
@@ -149,25 +137,11 @@ void Program::Run()
         shader2.SetUniform("M", Mod);
 
        
-        
-        if (cube.Corrupted() || true) {
-            
-            va1.Bind();
-            vVBO->RefreshData(MeshRenderer::GiveVertices(cube));
-            va2.Bind();
-            eVBO->RefreshData(MeshRenderer::GiveEdges(cube));  
-            va.Bind();
-            rData.vbo->RefreshData(MeshRenderer::GiveSides(cube).raw);
-            cube.UnCorrupt();
-        }
-
-        renderer.Draw(Renderer::TriangleData(va, *(rData.ibo), shader),Renderer::PointData(va1,shader1),Renderer::LineData(va2,shader2));
+        cube.Render(renderer,shader1,shader1,shader);
 
         glClear(GL_DEPTH_BUFFER_BIT);
         vat.Bind();
-    
-        
-    
+
         tVBO->RefreshData(surface->toloka->GiveData());
         renderer.DrawL(vat,shader2);
         

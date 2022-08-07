@@ -17,6 +17,7 @@ VAO::~VAO()
 
 void VAO::AddVBO(VBO& vb)
 {
+	Bind();
 	vb.SetOwner(this);
 	vb.Bind();
 	vb.TellData();

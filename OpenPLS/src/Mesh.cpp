@@ -78,7 +78,7 @@ void Mesh::TransformToCube()
 
 Mesh::Mesh(Mesh::Shape shape) : corrupted(false)
 {
-	
+
 
 	switch(shape){
 		case CUBE: 
@@ -87,8 +87,52 @@ Mesh::Mesh(Mesh::Shape shape) : corrupted(false)
 	}
 
 
+	meshRenderer = new MeshRenderer(this);//vegen kell lennie
 }
 
+
+void Mesh::Render(const Renderer& r, const Shader& vs,const Shader& es,const Shader& ss)
+{
+	 
+
+	meshRenderer->Render(r, vs, es, ss);
+
+
+}
+
+void MeshRenderer::Render(const Renderer& r, const Shader& vs,const Shader& es,const Shader& ss)
+{
+
+	sideVAO->Bind();
+	RenderData rData = GiveSides();
+	sideVBO->RefreshData(rData.raw);	
+	
+	vertVAO->Bind();
+	vertVBO->RefreshData(GiveVertices());
+	edgeVAO->Bind();
+	edgeVBO->RefreshData(GiveEdges());
+	
+	
+
+	r.Draw(Renderer::TriangleData(sideVAO,*(rData.ibo),ss),Renderer::PointData(vertVAO,vs),Renderer::LineData(edgeVAO,es));
+}
+
+MeshRenderer::MeshRenderer(Mesh* _owner) : owner(_owner)
+{
+	vertVAO = new VAO();
+	edgeVAO = new VAO();
+	sideVAO = new VAO();
+	vertVBO = new VBO3f3f(GiveVertices());
+	edgeVBO = new VBO3f3f(GiveEdges());
+	sideVBO = new VBO3f3f(GiveSides().raw);
+
+
+	vertVAO->AddVBO(*vertVBO);
+
+	edgeVAO->AddVBO(*edgeVBO);
+
+	sideVAO->AddVBO(*sideVBO);
+}
 
 void Mesh::AddPoint(Point* vert, const std::vector<Point*> conns)
 {
@@ -274,7 +318,7 @@ void Mesh::SelectPoint(Point* p)
 	selectedPoints.push_back(p);
 }
 
-RenderData MeshRenderer::GiveSides(Mesh& m)
+RenderData MeshRenderer::GiveSides()
 {
 	RenderData res;
 	
@@ -284,7 +328,7 @@ RenderData MeshRenderer::GiveSides(Mesh& m)
 
 	unsigned int iHelp = 0;
 
-	for (Mesh::Side *s : m.sides) {
+	for (Mesh::Side *s : owner->sides) {
 		if (s->points.size() == 4) {
 			vec3 norm1 = cross(s->points[0]->pos - s->points[1]->pos, s->points[0]->pos - s->points[2]->pos);
 			vec3 norm2 = cross(s->points[3]->pos - s->points[2]->pos, s->points[3]->pos - s->points[0]->pos);
@@ -342,14 +386,14 @@ RenderData MeshRenderer::GiveSides(Mesh& m)
 	return res;
 }
 
-std::vector<float> MeshRenderer::GiveVertices(Mesh& m)
+std::vector<float> MeshRenderer::GiveVertices()
 {
 	std::vector<float> res;
-	for (Mesh::Point* p : m.points) {
+	for (Mesh::Point* p : owner->points) {
 		res.push_back(p->pos.x);
 		res.push_back(p->pos.y);
 		res.push_back(p->pos.z);
-		if (VectorContains<Mesh::Point>(m.selectedPoints, p)) {
+		if (VectorContains<Mesh::Point>(owner->selectedPoints, p)) {
 			res.push_back(1); res.push_back(1); res.push_back(1);
 		}
 		else {
@@ -361,17 +405,17 @@ std::vector<float> MeshRenderer::GiveVertices(Mesh& m)
 	return res;
 }
 
-std::vector<float> MeshRenderer::GiveEdges(Mesh& m)
+std::vector<float> MeshRenderer::GiveEdges()
 {
 	
 	std::vector<float> res;
-	Mesh::EdgeIterator it = m.begin();
+	Mesh::EdgeIterator it = owner->begin();
 	while (it.hasNext()) {
 
 		res.push_back(it.GetElement1()->pos.x);
 		res.push_back(it.GetElement1()->pos.y);
 		res.push_back(it.GetElement1()->pos.z);
-		if(VectorContains<Mesh::Point>(m.selectedPoints,it.GetElement1())){
+		if(VectorContains<Mesh::Point>(owner->selectedPoints,it.GetElement1())){
 			res.push_back(1); res.push_back(1); res.push_back(1);
 		}else{
 			res.push_back(0); res.push_back(0); res.push_back(0);
@@ -380,7 +424,7 @@ std::vector<float> MeshRenderer::GiveEdges(Mesh& m)
 		res.push_back(it.GetElement2()->pos.x);
 		res.push_back(it.GetElement2()->pos.y);
 		res.push_back(it.GetElement2()->pos.z);
-		if(VectorContains<Mesh::Point>(m.selectedPoints,it.GetElement2())){
+		if(VectorContains<Mesh::Point>(owner->selectedPoints,it.GetElement2())){
 			res.push_back(1); res.push_back(1); res.push_back(1);
 		}else{
 			res.push_back(0); res.push_back(0); res.push_back(0);
@@ -389,12 +433,7 @@ std::vector<float> MeshRenderer::GiveEdges(Mesh& m)
 	return res;
 }
 
-void MeshRenderer::RenderThisMesh(Renderer& renderer,VAO& vao,Shader& shader, Mesh& mesh)
-{
-	RenderData rd = GiveSides(mesh);
-	//vao.AddVBO(*(rd.vbo));
-	//renderer.Draw(Renderer::TriangleData(vao, *(rd.ibo), shader));
-}
+
 
 MeshHandler::MeshHandler(Surface* s) : owner(s)
 {

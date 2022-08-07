@@ -16,12 +16,11 @@ int main()
  /////////////////////// TODO /////////////////////////
 
 -Meshnek legyen meshranderee es annak vbo-ja vagy valahogy observeresen de a  mostrani nem jo
- -Mesh-es operationoknak kulon os
+-shader setuniformozzon
+
 -push_back-re valami megoldast(vbodata adásnál)
--surface csinalja a meshhandlerert
 -selectedPoints.pushBacket Selectpoint()-ra
 -operationokat torolni, nem operation inputbindablleket mehagyni
--find midpoint 
 -fg selectedpointsokat valahogy rendezni kell
 -InputManager Getmouse changginputttal kene
 -Renderer mennyi csucsot nyomjon ki
@@ -31,6 +30,24 @@ int main()
 
  /////////////////////// TODO DONE ////////////////////////
  -Mesh konstruktor stringgel h mit csinaljon
+ -Mesh-es operationoknak kulon os
+-find midpoint 
+
+
+
+
+
+
+
+
+/////////////////////// NOPE ////////////////////////
+-surface csinalja a meshhandlerert
+
+
+
+
+
+
 
 
 */

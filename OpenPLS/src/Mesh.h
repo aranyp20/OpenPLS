@@ -10,6 +10,7 @@
 #include "Addons.hpp"
 
 class Surface;
+class MeshRenderer;
 
 class Hittable
 {
@@ -65,10 +66,11 @@ private:
 	std::vector<Point *> points;
 	std::vector<Point *> selectedPoints;
 
-
 	std::vector<Side *> sides;
 
 	bool corrupted;
+
+	MeshRenderer* meshRenderer;
 
 	struct EdgeMatrix
 	{
@@ -89,6 +91,8 @@ private:
 
 
 	void TransformToCube();
+
+	
 
 public:
 	struct EdgeIterator
@@ -130,6 +134,9 @@ public:
 
 	std::vector<Mesh::Point*> GiveSelecteds();
 
+
+
+	void Render(const Renderer& r, const Shader& vs,const Shader& es,const Shader& ss);
 	friend class MeshRenderer;
 };
 
@@ -139,13 +146,24 @@ public:
 //� birtokolja majd a vbo-kat
 class MeshRenderer
 {
+	Mesh* owner;
 
+	VAO* vertVAO;
+	VAO* edgeVAO;
+	VAO* sideVAO;
+	VBO* vertVBO;
+	VBO* edgeVBO;
+	VBO* sideVBO;
+
+	RenderData GiveSides();
+	std::vector<float> GiveVertices();
+	std::vector<float> GiveEdges();
 public:
-	static RenderData GiveSides(Mesh &); // private lesz
-	static std::vector<float> GiveVertices(Mesh &);
-	static std::vector<float> GiveEdges(Mesh &);
+	
 
-	static void RenderThisMesh(Renderer &, VAO &, Shader &, Mesh &);
+	MeshRenderer(Mesh*);
+
+	void Render(const Renderer& r, const Shader& vs,const Shader& es,const Shader& ss);
 };
 
 class MeshHandler : public InputProcessor
