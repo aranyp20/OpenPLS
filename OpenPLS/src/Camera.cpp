@@ -5,7 +5,7 @@ Camera::Camera()
 {
 	wLookat = vec3(0, 0, 0);
 	wUp = vec3(0, 1, 0);
-	wEye = vec3(2, 1, 0);
+	wEye = vec3(3, 1, 0);
 
 	fp = 1; bp = 20;
 

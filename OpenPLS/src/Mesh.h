@@ -27,6 +27,11 @@ public:
 class Mesh
 {
 public: // valamikor private lesz
+
+	enum Shape{
+		CUBE
+	};
+
 	struct Point : public Hittable
 	{
 		vec3 pos;
@@ -82,6 +87,9 @@ private:
 
 	void SelectPoint(Point *);
 
+
+	void TransformToCube();
+
 public:
 	struct EdgeIterator
 	{
@@ -107,7 +115,7 @@ public:
 
 	void PrintVerts();
 
-	Mesh();
+	Mesh(Mesh::Shape);
 
 	void AddPoint(Point *vert, const std::vector<Point *> conns);
 	void AddSide(std::vector<unsigned int> &);
@@ -155,27 +163,35 @@ public:
 	bool CheckHit(const vec2 &);
 };
 
-/* class OVertMove : public Operation
-{
-	Surface *surface;
-	vec3 direction;
-	vec3 startingPosition;
-
-public:
-	OVertMove(Surface *, vec3 dir, vec3 sp);
-
-	void Update();
-}; */
-
-class OVertScale : public Operation{
+class MeshOperation : public Operation{
+	protected:
 	std::vector<Mesh::Point*> controlledPoints;
-	std::vector<vec3> originalDefficit;
-	vec3 midPoint;
 	vec2 startingPos;
+	vec3 midPoint;
+
+	void FindMidPoint();
+
 	public:
-	OVertScale(std::vector<Mesh::Point*>);
+
+	MeshOperation(Mesh*);
+	virtual void Update() = 0;
+
+};
+
+//OVertMove nem lenne rossz
+class OVertScale : public MeshOperation{
+	std::vector<vec3> originalDefficit;
+	public:
+	OVertScale(Mesh*);
 	void Update();
 };
 
+class OVertRotate : public MeshOperation{
+	vec3 axis;
+	public:
+	OVertRotate(Mesh*,vec3);
+	void Update();
+
+};
 
 #endif

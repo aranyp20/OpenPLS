@@ -17,9 +17,76 @@ void Mesh::PrintVerts()
 	}*/
 }
 
-Mesh::Mesh()
+
+
+
+
+void Mesh::TransformToCube()
 {
-	corrupted = false;
+	 std::vector<Mesh::Point*> v;
+    std::vector<Mesh::Point*> points;
+    points.push_back(new Mesh::Point(-0.5f, -0.5f, 0.5f));
+    points.push_back(new Mesh::Point(0.5f, -0.5f, 0.5f));
+    points.push_back(new Mesh::Point(0.5f, -0.5f, -0.5f));
+    points.push_back(new Mesh::Point(-0.5f, -0.5f, -0.5f));
+    points.push_back(new Mesh::Point(-0.5f, 0.5f, 0.5f));
+    points.push_back(new Mesh::Point(0.5f, 0.5f, 0.5f));
+    points.push_back(new Mesh::Point(0.5f, 0.5f, -0.5f));
+    points.push_back(new Mesh::Point(-0.5f, 0.5f, -0.5f));
+
+
+ 
+    this->AddPoint(points[0], v);
+    v = { points[0] };
+    this->AddPoint(points[1], v);
+    v.clear();
+    v = { points[1] };
+    this->AddPoint(points[2], v);
+    v.clear();
+    v = { points[2],points[0]};
+    this->AddPoint(points[3], v);
+    v.clear();
+    v = { points[0] };
+    this->AddPoint(points[4], v);
+    v.clear();
+    v = { points[1],points[4]};
+    this->AddPoint(points[5], v);
+    v.clear();
+    v = { points[2],points[5] };
+   this->AddPoint(points[6], v);
+    v.clear();
+    v = { points[3],points[6],points[4]};
+   this->AddPoint(points[7], v);
+    v.clear();
+
+
+    std::vector<unsigned int> sinds{0, 1, 2, 3};
+    this->AddSide(sinds);
+    sinds = { 4,5,6,7 };
+    this->AddSide(sinds);
+    sinds = { 1,2,6,5 };
+    this->AddSide(sinds);
+    sinds = { 2,6,7,3 };
+    this->AddSide(sinds);
+    sinds = { 0,3,7,4 };
+    this->AddSide(sinds);
+	sinds = {0,1,5,4};
+	this->AddSide(sinds);
+
+}
+
+
+Mesh::Mesh(Mesh::Shape shape) : corrupted(false)
+{
+	
+
+	switch(shape){
+		case CUBE: 
+			this->TransformToCube();
+			break;
+	}
+
+
 }
 
 
@@ -283,10 +350,10 @@ std::vector<float> MeshRenderer::GiveVertices(Mesh& m)
 		res.push_back(p->pos.y);
 		res.push_back(p->pos.z);
 		if (VectorContains<Mesh::Point>(m.selectedPoints, p)) {
-			res.push_back(0); res.push_back(0); res.push_back(1);
+			res.push_back(1); res.push_back(1); res.push_back(1);
 		}
 		else {
-			res.push_back(0); res.push_back(1); res.push_back(0);
+			res.push_back(0); res.push_back(0); res.push_back(0);
 		}
 		
 	}
@@ -305,18 +372,18 @@ std::vector<float> MeshRenderer::GiveEdges(Mesh& m)
 		res.push_back(it.GetElement1()->pos.y);
 		res.push_back(it.GetElement1()->pos.z);
 		if(VectorContains<Mesh::Point>(m.selectedPoints,it.GetElement1())){
-			res.push_back(1); res.push_back(0); res.push_back(0);
+			res.push_back(1); res.push_back(1); res.push_back(1);
 		}else{
-			res.push_back(0); res.push_back(1); res.push_back(0);
+			res.push_back(0); res.push_back(0); res.push_back(0);
 		}
 		
 		res.push_back(it.GetElement2()->pos.x);
 		res.push_back(it.GetElement2()->pos.y);
 		res.push_back(it.GetElement2()->pos.z);
 		if(VectorContains<Mesh::Point>(m.selectedPoints,it.GetElement2())){
-			res.push_back(1); res.push_back(0); res.push_back(0);
+			res.push_back(1); res.push_back(1); res.push_back(1);
 		}else{
-			res.push_back(0); res.push_back(1); res.push_back(0);
+			res.push_back(0); res.push_back(0); res.push_back(0);
 		}
 	}
 	return res;
@@ -338,9 +405,13 @@ InputAnswer MeshHandler::ProcessKey(int key)
 	if (key == GLFW_KEY_W && CheckHit(InputManager::GetMousePos2())) {
 		return InputAnswer(InputAnswer::ReactionType::PROCESSED, NULL);
 	}
-	if(key == GLFW_KEY_S){
-		return InputAnswer(InputAnswer::ReactionType::BINDED,new OVertScale(activeMesh->GiveSelecteds()));
+	else if(key == GLFW_KEY_S){
+		return InputAnswer(InputAnswer::ReactionType::BINDED,new OVertScale(activeMesh));
 	}
+	else if(key == GLFW_KEY_R){
+		return InputAnswer(InputAnswer::ReactionType::BINDED,new OVertRotate(activeMesh,vec3(1,0,0)));
+	}
+	
 
 
 	return InputAnswer(InputAnswer::ReactionType::IGNORED,NULL);
@@ -422,18 +493,30 @@ void Mesh::Edge::NotifyWin()
 	owner->SelectPoint(p2);
 }
 
-OVertScale::OVertScale(std::vector<Mesh::Point*> _cp) : controlledPoints(_cp), startingPos(InputManager::ChangeInput(InputManager::GetMousePos2()))
+void MeshOperation::FindMidPoint()
 {
-
 	for(Mesh::Point* p : controlledPoints){
 		midPoint = midPoint + p->pos;
 	}
 	midPoint = midPoint / controlledPoints.size();
+}
+
+MeshOperation::MeshOperation(Mesh* m) : controlledPoints(m->GiveSelecteds()), startingPos(InputManager::ChangeInput(InputManager::GetMousePos2()))
+{
+	FindMidPoint();
+
+}
+
+OVertScale::OVertScale(Mesh* m) : MeshOperation(m)
+{
+
+
 
 	for(Mesh::Point* p : controlledPoints){
 		originalDefficit.push_back((p->pos-midPoint));
 	}
 }
+
 void OVertScale::Update()
 {
 	float multiplier = dot(InputManager::ChangeInput(InputManager::GetMousePos2())-startingPos,vec2(1,0));
@@ -442,3 +525,24 @@ void OVertScale::Update()
 		controlledPoints[i]->pos = midPoint + originalDefficit[i] * (multiplier + 1);
 	}
 }
+
+
+OVertRotate::OVertRotate(Mesh* m, vec3 _axis) : MeshOperation(m), axis(_axis)
+{
+
+}
+
+void OVertRotate::Update()
+{
+	float multiplier = dot((InputManager::ChangeInput(InputManager::GetMousePos2()) - InputManager::ChangeInput(InputManager::GetMousePos1())),vec2(1,0));
+	mat4 transformator = RotationMatrix(multiplier,axis);
+	for(Mesh::Point* p : controlledPoints){
+		p->pos = p->pos -  midPoint;
+		TransformPoint(p->pos,transformator);
+		p->pos = p->pos + midPoint;
+	}
+}
+
+
+
+

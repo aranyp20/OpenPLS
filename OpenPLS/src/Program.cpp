@@ -62,72 +62,10 @@ bool Program::Init()
 
 void Program::Run()
 {
-    std::vector<Mesh::Point*> v;
-    std::vector<Mesh::Point*> points;
-    points.push_back(new Mesh::Point(-0.5f, -0.5f, 0.5f));
-    points.push_back(new Mesh::Point(0.5f, -0.5f, 0.5f));
-    points.push_back(new Mesh::Point(0.5f, -0.5f, -0.5f));
-    points.push_back(new Mesh::Point(-0.5f, -0.5f, -0.5f));
-    points.push_back(new Mesh::Point(-0.5f, 0.5f, 0.5f));
-    points.push_back(new Mesh::Point(0.5f, 0.5f, 0.5f));
-    points.push_back(new Mesh::Point(0.5f, 0.5f, -0.5f));
-    points.push_back(new Mesh::Point(-0.5f, 0.5f, -0.5f));
-
-    points.push_back(new Mesh::Point(0.0f, 1.0f, 0.5f));
-    points.push_back(new Mesh::Point(0.0f, 1.0f, -0.5f));
-
-    Mesh cube;
-    surface->meshHandler->AddMesh(&cube);
    
-    cube.AddPoint(points[0], v);
-    v = { points[0] };
-    cube.AddPoint(points[1], v);
-    v.clear();
-    v = { points[1] };
-    cube.AddPoint(points[2], v);
-    v.clear();
-    v = { points[2],points[0]};
-    cube.AddPoint(points[3], v);
-    v.clear();
-    v = { points[0] };
-    cube.AddPoint(points[4], v);
-    v.clear();
-    v = { points[1],points[4]};
-    cube.AddPoint(points[5], v);
-    v.clear();
-    v = { points[2],points[5] };
-    cube.AddPoint(points[6], v);
-    v.clear();
-    v = { points[3],points[6],points[4]};
-    cube.AddPoint(points[7], v);
-    v.clear();
-    v = { points[5],points[4] };
-    cube.AddPoint(points[8], v);
-    v.clear();
-    v = { points[6],points[7],points[8]};
-    cube.AddPoint(points[9], v);
-    v.clear();
-
-    std::vector<unsigned int> sinds{0, 1, 2, 3};
-    cube.AddSide(sinds);
-    sinds = { 4,5,6,7 };
-    cube.AddSide(sinds);
-    //sinds = { 0,1,5,4 };
-    //cube.AddSide(sinds);
-    sinds = { 1,2,6,5 };
-    cube.AddSide(sinds);
-    sinds = { 2,6,7,3 };
-    cube.AddSide(sinds);
-    sinds = { 0,3,7,4 };
-    cube.AddSide(sinds);
-
-    sinds = { 8,9,7,4 };
-    cube.AddSide(sinds);
-    sinds = { 8,9,6,5 };
-    cube.AddSide(sinds);
-
-    cube.PrintVerts();
-
+    Mesh cube(Mesh::Shape::CUBE);
+    
+    surface->meshHandler->AddMesh(&cube);
 
 
 
