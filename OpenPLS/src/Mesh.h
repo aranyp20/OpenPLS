@@ -125,6 +125,9 @@ public:
 	friend class MeshRenderer;
 };
 
+
+
+
 //� birtokolja majd a vbo-kat
 class MeshRenderer
 {
@@ -163,6 +166,16 @@ public:
 
 	void Update();
 }; */
+
+class OVertScale : public Operation{
+	std::vector<Mesh::Point*> controlledPoints;
+	std::vector<vec3> originalDefficit;
+	vec3 midPoint;
+	vec2 startingPos;
+	public:
+	OVertScale(std::vector<Mesh::Point*>);
+	void Update();
+};
 
 
 #endif

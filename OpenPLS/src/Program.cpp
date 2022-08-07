@@ -2,8 +2,8 @@
 
 #include "Program.h"
 
-unsigned int Program::windowWidth = 1000;
-unsigned int Program::windowHeight = 600;
+unsigned int Program::windowWidth = 1200;
+unsigned int Program::windowHeight = 800;
 
 Surface* Program::surface = NULL;
 

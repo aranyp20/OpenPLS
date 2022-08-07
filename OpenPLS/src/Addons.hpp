@@ -18,6 +18,24 @@ bool VectorContains(std::vector<T*> where, T* what)
 	return false;
 }
 
+
+//ennek egy konnyebben peldanyosíthato formajat kene
+template<typename T, typename F>
+struct VectorPair{
+	struct InitMethod{
+		virtual F InitFun(T);
+	};
+
+	std::vector<T> mainValue;
+	std::vector<F> sideValue;
+
+	VectorPair(T, F,InitMethod& im){
+		for(T mv : mainValue){
+			sideValue.push_back(im(mv));
+		}
+	}
+};
+
 //improve this
 //from v1.
 //expect: v1:v2 section contains p

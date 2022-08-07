@@ -338,7 +338,9 @@ InputAnswer MeshHandler::ProcessKey(int key)
 	if (key == GLFW_KEY_W && CheckHit(InputManager::GetMousePos2())) {
 		return InputAnswer(InputAnswer::ReactionType::PROCESSED, NULL);
 	}
-
+	if(key == GLFW_KEY_S){
+		return InputAnswer(InputAnswer::ReactionType::BINDED,new OVertScale(activeMesh->GiveSelecteds()));
+	}
 
 
 	return InputAnswer(InputAnswer::ReactionType::IGNORED,NULL);
@@ -418,4 +420,25 @@ void Mesh::Edge::NotifyWin()
 {
 	owner->SelectPoint(p1);
 	owner->SelectPoint(p2);
+}
+
+OVertScale::OVertScale(std::vector<Mesh::Point*> _cp) : controlledPoints(_cp), startingPos(InputManager::ChangeInput(InputManager::GetMousePos2()))
+{
+
+	for(Mesh::Point* p : controlledPoints){
+		midPoint = midPoint + p->pos;
+	}
+	midPoint = midPoint / controlledPoints.size();
+
+	for(Mesh::Point* p : controlledPoints){
+		originalDefficit.push_back((p->pos-midPoint));
+	}
+}
+void OVertScale::Update()
+{
+	float multiplier = dot(InputManager::ChangeInput(InputManager::GetMousePos2())-startingPos,vec2(1,0));
+
+	for(int i = 0; i< controlledPoints.size();i++){
+		controlledPoints[i]->pos = midPoint + originalDefficit[i] * (multiplier + 1);
+	}
 }

@@ -15,7 +15,7 @@ void Renderer::Draw(TriangleData t,PointData p, LineData l) const
 	p.va.Bind();	
 	glDrawArrays(GL_POINTS, 0, p.va.GetCount() / 6); //ezeket a /6 /3-akat rendesen megoldani
 	
-	glLineWidth(4);
+	glLineWidth(2);
 	l.shader.Bind();
 	l.va.Bind();
 	glDrawArrays(GL_LINES, 0, l.va.GetCount() / 3);
@@ -24,7 +24,7 @@ void Renderer::Draw(TriangleData t,PointData p, LineData l) const
 void Renderer::DrawL(const VAO& vao, const Shader& shader) const
 {
 
-	glLineWidth(2);
+	glLineWidth(4);
 	shader.Bind();
 	vao.Bind();
 	glDrawArrays(GL_LINES, 0, vao.GetCount() / 3);

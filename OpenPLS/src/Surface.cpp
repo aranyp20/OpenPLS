@@ -69,7 +69,7 @@ std::vector<float> Toloka::Arrow::GiveData()
 }
 
 
-Toloka::Toloka(Surface* surface) : active(false), owner(surface) , arrowX(Toloka::Arrow(vec3(0.3f,0,0),vec3(1,0,0))), arrowY(Toloka::Arrow(vec3(0,0.3f,0),vec3(0.4,0.4,0.2))), arrowZ(Toloka::Arrow(vec3(0,0,0.3f),vec3(0,0,1))), arrowActive(NULL)
+Toloka::Toloka(Surface* surface) : active(false), owner(surface) , arrowX(Toloka::Arrow(vec3(0.2f,0,0),vec3(1,0,0))), arrowY(Toloka::Arrow(vec3(0,0.2f,0),vec3(0.4,0.4,0.2))), arrowZ(Toloka::Arrow(vec3(0,0,0.2f),vec3(0,0,1))), arrowActive(NULL)
 {
 	
 }
