@@ -92,16 +92,6 @@ void Program::WorldInit()
 void Program::Run()
 {
    
-    
-
-
-
-
-
-
- 
-  
-
 
 
     Renderer renderer;

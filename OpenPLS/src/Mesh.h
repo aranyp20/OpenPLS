@@ -8,6 +8,7 @@
 #include "Renderer.h"
 #include "InputManager.h"
 #include "Addons.hpp"
+#include "Camera.h"
 
 class Surface;
 class MeshRenderer;
@@ -171,11 +172,12 @@ public:
 class MeshHandler : public InputProcessor
 {
 	std::vector<Mesh *> meshes;
-	Mesh *activeMesh;
+
 
 	Surface *owner;
 
 public:
+	Mesh *activeMesh;
 	MeshHandler(Surface *);
 
 	InputAnswer ProcessKey(int key);
@@ -199,7 +201,7 @@ class MeshOperation : public Operation{
 
 };
 
-//OVertMove nem lenne rossz
+
 class OVertScale : public MeshOperation{
 	std::vector<vec3> originalDefficit;
 	public:
@@ -213,6 +215,15 @@ class OVertRotate : public MeshOperation{
 	OVertRotate(Mesh*,vec3);
 	void Update();
 
+};
+
+class OVertMove : public MeshOperation{
+	vec3 axis;
+	Camera* camera;
+	public:
+	OVertMove(Mesh*,vec3,Camera*);
+	void Update();
+	vec3 GetMidPoint();
 };
 
 #endif

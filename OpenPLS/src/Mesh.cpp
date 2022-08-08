@@ -481,13 +481,13 @@ bool MeshHandler::CheckHit(const vec2& p)
 
 
 
-/* OVertMove::OVertMove(Surface* surf, vec3 dir, vec3 sp) : surface(surf), direction(dir), startingPosition(sp)
-{
+vec3 OVertMove::GetMidPoint(){return midPoint;}
+
+OVertMove::OVertMove(Mesh* _mesh,vec3 _axis,Camera* _camera) : MeshOperation(_mesh) , axis(_axis) ,  camera(_camera) 
+{	
 }
 
-void OVertMove::Update()
-{
-} */
+
 
 Hittable::Hit Mesh::Point::Intersect(const vec2& pp, const mat4& MVP) 
 {
@@ -540,10 +540,11 @@ void Mesh::Edge::NotifyWin()
 
 void MeshOperation::FindMidPoint()
 {
+	vec3 newMidPoint;
 	for(Mesh::Point* p : controlledPoints){
-		midPoint = midPoint + p->pos;
+		newMidPoint = newMidPoint + p->pos;
 	}
-	midPoint = midPoint / controlledPoints.size();
+	midPoint = newMidPoint / controlledPoints.size();
 }
 
 MeshOperation::MeshOperation(Mesh* m) : controlledPoints(m->GiveSelecteds()), startingPos(InputManager::ChangeInput(InputManager::GetMousePos2()))

@@ -18,18 +18,13 @@ InputAnswer Surface::ProcessKey(int key)
 bool Toloka::CheckHit()
 {
 	if(!active)return false;
-	if(arrowX.CheckHit(InputManager::ChangeInput(InputManager::GetMousePos2()),owner->viewCamera->V()*owner->viewCamera->P())){
-		arrowActive = &(this->arrowX);
 
-		return true;
-	}else if(arrowY.CheckHit(InputManager::ChangeInput(InputManager::GetMousePos2()),owner->viewCamera->V()*owner->viewCamera->P())){
-		arrowActive = &(this->arrowY);
-
-		return true;
-	}else if(arrowZ.CheckHit(InputManager::ChangeInput(InputManager::GetMousePos2()),owner->viewCamera->V()*owner->viewCamera->P())){
-		arrowActive = &(this->arrowZ);
-
-		return true;
+	for(auto arrow : arrows){
+		if(arrow.CheckHit(InputManager::ChangeInput(InputManager::GetMousePos2()),owner->viewCamera->V()*owner->viewCamera->P())){
+			arrowActive = arrow;
+			moveOperation = new OVertMove(owner->meshHandler->activeMesh,arrowActive.direction,owner->viewCamera);
+			return true;
+		}
 	}
 	return false;
 }
@@ -86,49 +81,58 @@ std::vector<float> Toloka::Arrow::GiveData()
 }
 
 
-Toloka::Toloka(Surface* surface) : active(false), owner(surface) , arrowX(Toloka::Arrow(vec3(0.2f,0,0),vec3(1,0,0))), arrowY(Toloka::Arrow(vec3(0,0.2f,0),vec3(0,1,0))), arrowZ(Toloka::Arrow(vec3(0,0,0.2f),vec3(0,0,1))), arrowActive(NULL)
+Toloka::Toloka(Surface* surface) : active(false), owner(surface) 
 {
-	
+	arrows.push_back(Toloka::Arrow(vec3(0.2f,0,0),vec3(1,0,0)));
+	arrows.push_back(Toloka::Arrow(vec3(0,0.2f,0),vec3(0,1,0)));
+	arrows.push_back(Toloka::Arrow(vec3(0,0,0.2f),vec3(0,0,1)));
 }
 
 void Toloka::Replace(const vec3& v)
 {
 	
 	center = v;
-	arrowX.Replace(v);
-	arrowY.Replace(v);
-	arrowZ.Replace(v);
+	for (auto& arrow : arrows){
+		arrow.Replace(v);
+	}
+
 }
 
 
-//valami nem jo vele
-//ami biztos hiba az a pontatlansag hogy mindig adogatok egy vektort, de azon kivul is lehet nem tul jo
+
 void Toloka::Update() 
 {
-	mat4 VP = owner->viewCamera->V()*owner->viewCamera->P();
-	vec3 wEye = owner->viewCamera->GetEye();
+	moveOperation->Update();
+	Replace(moveOperation->GetMidPoint());
+}
 
-	vec3 centerCam = center; TransformPoint(centerCam,VP); centerCam = owner->viewCamera->PutToWorld(vec2(centerCam.x,centerCam.y));
-	vec3 endWorld = center + arrowActive->direction;
-	vec3 endCam = endWorld; TransformPoint(endCam,VP);endCam = owner->viewCamera->PutToWorld(vec2(endCam.x,endCam.y));
-	vec3 mouseCamLast = owner->viewCamera->PutToWorld(InputManager::ChangeInput(InputManager::GetMousePos1()));
-	vec3 mouseCam = owner->viewCamera->PutToWorld(InputManager::ChangeInput(InputManager::GetMousePos2()));
+
+
+void OVertMove::Update()
+{
+	FindMidPoint();
+	mat4 VP = camera->V()*camera->P();
+	vec3 wEye = camera->GetEye();
+
+	vec3 centerCam = midPoint; TransformPoint(centerCam,VP); centerCam = camera->PutToWorld(vec2(centerCam.x,centerCam.y));
+	vec3 endWorld = midPoint + axis;
+	vec3 endCam = endWorld; TransformPoint(endCam,VP);endCam = camera->PutToWorld(vec2(endCam.x,endCam.y));
+	vec3 mouseCamLast = camera->PutToWorld(InputManager::ChangeInput(InputManager::GetMousePos1()));
+	vec3 mouseCam = camera->PutToWorld(InputManager::ChangeInput(InputManager::GetMousePos2()));
 	vec3 projTemp = normalize(centerCam-endCam); 
 	vec3 moveCam = projTemp * dot(vec3(mouseCam-mouseCamLast),projTemp);
 	vec3 moveWorld = moveCam *  ((wEye-endWorld).length() / (wEye-endCam).length());
 	
 
 
-	vec3 moveVector = normalize(arrowActive->direction) * dot(moveWorld,normalize(arrowActive->direction));
+	vec3 moveVector = normalize(axis) * dot(moveWorld,normalize(axis));
 
 
 	for(Mesh::Point* p : controlledPoints){ //ez nem jo hogy belenyul
 		p->pos = p->pos + moveVector;
 
 	}
-	
-
-	Replace(center + moveVector);
+	FindMidPoint();
 }
 
 
@@ -164,16 +168,13 @@ std::vector<float> Toloka::GiveData()
 	if(!active)return result;
 
 
-	std::vector<float> r1 = arrowX.GiveData();
-	std::vector<float> r2 = arrowY.GiveData();
-	std::vector<float> r3 = arrowZ.GiveData();
 
-	result.insert(result.end(),r1.begin(),r1.end());
-	result.insert(result.end(),r2.begin(),r2.end());
-	result.insert(result.end(),r3.begin(),r3.end());
-
-
+	for(auto arrow: arrows){
+		std::vector<float> r = arrow.GiveData();
+		result.insert(result.end(),r.begin(),r.end());
+	} 
 	
+
 
 	return result;
 }

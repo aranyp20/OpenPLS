@@ -14,7 +14,7 @@ class Toloka : public InputBindable {
 		vec3 direction;
 		vec3 color;
 
-		
+		Arrow(){}
 		Arrow(vec3 _direction,vec3 _color, vec3 _center);
 
 		void Update();
@@ -33,8 +33,10 @@ class Toloka : public InputBindable {
 	std::vector<Mesh::Point*> controlledPoints; //pointernek kene lennie, hogy ha mozgatas kozben valtozik mennyi pont van akkor jo legyen
 	Surface* owner;
 
-	Toloka::Arrow arrowX, arrowY,arrowZ; //lehet ezeket inkabb tombben kene
-	Toloka::Arrow* arrowActive;
+	std::vector<Toloka::Arrow> arrows;
+	Toloka::Arrow arrowActive;
+
+	OVertMove* moveOperation;
 
 	void Replace(const vec3&);
 
