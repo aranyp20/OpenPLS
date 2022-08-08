@@ -114,6 +114,8 @@ public:
 		int row;
 		int column;
 	};
+	Material* material;
+
 	EdgeIterator begin();
 	EdgeIterator end();
 
@@ -136,7 +138,7 @@ public:
 
 
 
-	void Render(const Renderer& r, const Shader& vs,const Shader& es,const Shader& ss);
+	void Render(const Renderer& r, const Shader& vs,const Shader& es,Shader& ss);
 	friend class MeshRenderer;
 };
 
@@ -163,7 +165,7 @@ public:
 
 	MeshRenderer(Mesh*);
 
-	void Render(const Renderer& r, const Shader& vs,const Shader& es,const Shader& ss);
+	void Render(const Renderer& r, const Shader& vs,const Shader& es,Shader& ss);
 };
 
 class MeshHandler : public InputProcessor
@@ -179,6 +181,7 @@ public:
 	InputAnswer ProcessKey(int key);
 	void AddMesh(Mesh *);
 	bool CheckHit(const vec2 &);
+	void Render(const Renderer& r, const Shader& vs,const Shader& es,Shader& ss);
 };
 
 class MeshOperation : public Operation{

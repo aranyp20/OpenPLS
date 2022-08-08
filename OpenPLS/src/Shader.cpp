@@ -1,4 +1,3 @@
-
 #include "Shader.h"
 
 
@@ -156,3 +155,26 @@ bool Shader::CompileErrorHandler(unsigned int shaderID) const
     }
     return true;
 }
+
+
+void GouraudShader::PrepareForRendering(GouraudShader::Data d)
+{
+ 
+    Bind();
+    SetUniform("light", *(d.light));
+    SetUniform("wEye", d.wEye);
+    SetUniform("V", d.V);
+    SetUniform("P", d.P);
+    SetUniform("M", d.M);
+    SetUniform("Minv", d.Minv);
+}  
+
+void NormalShader::PrepareForRendering(NormalShader::Data d)
+{
+
+    Bind();
+    SetUniform("V", d.V);
+    SetUniform("P", d.P);
+    SetUniform("M", d.M);
+
+}  

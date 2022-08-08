@@ -40,6 +40,7 @@ public:
 	static Program& GetInstance();
 
 	bool Init();
+	void WorldInit();
 	void Run();
 
 	unsigned int WindowWidth();

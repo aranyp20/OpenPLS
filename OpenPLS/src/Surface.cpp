@@ -46,6 +46,23 @@ Toloka::Arrow::Arrow(vec3 _direction,vec3 _color, vec3 _center = vec3(0,0,0)) :d
 	
 }
 
+void Surface::Render(Renderer& renderer)
+{
+	glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
+
+	mat4 mod;
+	shader.PrepareForRendering(GouraudShader::Data(light,viewCamera->GetEye(),mod,viewCamera->V(),viewCamera->P(),mod));
+    shader1.PrepareForRendering(NormalShader::Data(mod,viewCamera->V(),viewCamera->P()));
+  
+    meshHandler->Render(renderer,shader1,shader1,shader);
+
+	glClear(GL_DEPTH_BUFFER_BIT);
+
+    topLayerVAO->Bind();
+    topLayerVBO->RefreshData(toloka->GiveData());
+    renderer.DrawL(*topLayerVAO,shader1);
+
+}
 
 void Toloka::Arrow::Update() 
 {
@@ -179,4 +196,11 @@ void OCameraMove::Update()
 	newEye = newEye + camera->GetLookat();
 	camera->ReplaceEye(newEye);
 	
+}
+
+Surface::Surface() : toloka(new Toloka(this))
+{
+	topLayerVAO = new VAO();
+	topLayerVBO = new VBO3f3f(toloka->GiveData());
+	topLayerVAO->AddVBO(*topLayerVBO);
 }

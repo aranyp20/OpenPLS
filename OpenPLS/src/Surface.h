@@ -6,6 +6,7 @@
 #include "Camera.h"
 
 
+
 class Toloka : public InputBindable {
 
 	struct Arrow {
@@ -54,19 +55,28 @@ public:
 };
 
 class Surface : public InputProcessor {
+	
+    GouraudShader shader;
+
+	VAO* topLayerVAO;
+	VBO* topLayerVBO;
 
 public:
+	NormalShader shader1;
+
 	Camera* viewCamera;
 	MeshHandler* meshHandler;
 	Toloka *toloka;
+	Light* light;
 
 	//itt kell a camerat meg mh-t megcsin�lni
-	Surface():toloka(new Toloka(this)){}
+	Surface();
 
 
 
 	InputAnswer ProcessKey(int key);
 
+	void Render(Renderer&);
 
 };
 

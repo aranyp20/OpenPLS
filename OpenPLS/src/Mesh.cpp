@@ -20,7 +20,6 @@ void Mesh::PrintVerts()
 
 
 
-
 void Mesh::TransformToCube()
 {
 	 std::vector<Mesh::Point*> v;
@@ -91,7 +90,7 @@ Mesh::Mesh(Mesh::Shape shape) : corrupted(false)
 }
 
 
-void Mesh::Render(const Renderer& r, const Shader& vs,const Shader& es,const Shader& ss)
+void Mesh::Render(const Renderer& r, const Shader& vs,const Shader& es,Shader& ss)
 {
 	 
 
@@ -100,8 +99,10 @@ void Mesh::Render(const Renderer& r, const Shader& vs,const Shader& es,const Sha
 
 }
 
-void MeshRenderer::Render(const Renderer& r, const Shader& vs,const Shader& es,const Shader& ss)
+void MeshRenderer::Render(const Renderer& r, const Shader& vs,const Shader& es,Shader& ss)
 {
+	ss.Bind(); ss.SetUniform("material",*(owner->material));
+
 
 	sideVAO->Bind();
 	RenderData rData = GiveSides();
@@ -132,6 +133,11 @@ MeshRenderer::MeshRenderer(Mesh* _owner) : owner(_owner)
 	edgeVAO->AddVBO(*edgeVBO);
 
 	sideVAO->AddVBO(*sideVBO);
+}
+
+void MeshHandler::Render(const Renderer& r, const Shader& vs,const Shader& es,Shader& ss)
+{
+	activeMesh->Render(r,vs,es,ss);
 }
 
 void Mesh::AddPoint(Point* vert, const std::vector<Point*> conns)
