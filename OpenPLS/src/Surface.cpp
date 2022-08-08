@@ -128,7 +128,7 @@ void OVertMove::Update()
 	vec3 moveVector = normalize(axis) * dot(moveWorld,normalize(axis));
 
 
-	for(Mesh::Point* p : controlledPoints){ //ez nem jo hogy belenyul
+	for(auto p : controlledPoints){ //ez nem jo hogy belenyul
 		p->pos = p->pos + moveVector;
 
 	}
@@ -141,7 +141,7 @@ void Toloka::WakeUp(std::vector<Mesh::Point*> ps)
 
 
  	vec3 c;
-	for(Mesh::Point* p : ps){
+	for(auto p : ps){
 		c =  c + p->pos;
 	}
 	c =  c / ps.size();

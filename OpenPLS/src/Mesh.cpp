@@ -147,11 +147,32 @@ void Mesh::AddPoint(Point* vert, const std::vector<Point*> conns)
 
 	std::vector<Edge*> newColumn(edgeMatrix.Size() + 1);
 
+	for(auto& e : newColumn){
+		e = NULL;
+	}
+
 
 	for (Point* c : conns) {
 		newColumn[edgeMatrix.elementIndex(c)] = new Edge(c,vert,this);
 	}
 
+
+		
+	points.push_back(vert);
+	edgeMatrix.orderVec.push_back(vert);
+
+	edgeMatrix.matrix.push_back(newColumn);
+}
+
+void Mesh::AddPoint(Point *vert)
+{
+	vert->owner=this;
+
+	std::vector<Edge*> newColumn(edgeMatrix.Size() + 1);
+
+	for(auto& e : newColumn){
+		e = NULL;
+	}
 
 		
 	points.push_back(vert);
@@ -303,7 +324,7 @@ bool Mesh::EdgeIterator::hasNext()
 //	return *this;
 //}
 
-int Mesh::EdgeMatrix::elementIndex(Point* p)
+unsigned int Mesh::EdgeMatrix::elementIndex(Point* p)
 {
 	std::vector<Point*>::iterator tempIterator = std::find(orderVec.begin(), orderVec.end(), p);
 
@@ -324,6 +345,7 @@ void Mesh::SelectPoint(Point* p)
 	selectedPoints.push_back(p);
 }
 
+//MEMORY LEAK
 RenderData MeshRenderer::GiveSides()
 {
 	RenderData res;
@@ -331,6 +353,7 @@ RenderData MeshRenderer::GiveSides()
 	std::vector<float> f;
 	std::vector<unsigned int> inds;
 	
+
 
 	unsigned int iHelp = 0;
 
@@ -455,6 +478,9 @@ InputAnswer MeshHandler::ProcessKey(int key)
 	}
 	else if(key == GLFW_KEY_R){
 		return InputAnswer(InputAnswer::ReactionType::BINDED,new OVertRotate(activeMesh,vec3(1,0,0)));
+	}else if(key == GLFW_KEY_E){
+		OVertExtrude ov(activeMesh);
+		return InputAnswer(InputAnswer::ReactionType::PROCESSED, NULL);
 	}
 	
 
@@ -592,3 +618,122 @@ void OVertRotate::Update()
 
 
 
+OVertExtrude::OVertExtrude(Mesh* mesh) : MeshOperation(mesh)
+{
+	std::vector<Mesh::Point*> newPoints;
+	
+	for(auto p : controlledPoints){
+		Mesh::Point* newPoint = new Mesh::Point(*p);
+		newPoints.push_back(newPoint);
+		mesh->AddPoint(newPoint);
+	}
+
+	std::map<int,int> foundPairs;
+
+	std::vector<std::vector<Mesh::Point*>> emptyFrames;
+
+	for(int i=0;i<newPoints.size();i++){
+		for(int j=0;j<newPoints.size();j++){
+			if(i!=j && foundPairs[j] != i && mesh->edgeMatrix.GetRelationshipBetweenPoints(controlledPoints[i],controlledPoints[j]) != NULL){
+				foundPairs.insert({i,j});
+				mesh->edgeMatrix.SetRelationshipBetweenPoints(newPoints[i],newPoints[j],new Mesh::Edge(newPoints[i],newPoints[j],mesh));
+				std::vector<Mesh::Point*> tempP;tempP.push_back(newPoints[i]);tempP.push_back(newPoints[j]);tempP.push_back(controlledPoints[i]);tempP.push_back(controlledPoints[j]);
+				
+				
+				emptyFrames.push_back({newPoints[i],newPoints[j],controlledPoints[i],controlledPoints[j]});
+			}
+		}
+	}
+
+	for(int i = 0;i<newPoints.size();i++){
+		mesh->edgeMatrix.SetRelationshipBetweenPoints(newPoints[i],controlledPoints[i],new Mesh::Edge(newPoints[i],controlledPoints[i],mesh));
+	}
+
+	for(auto& a : emptyFrames){
+		mesh->AddSideExtra(a);
+	}
+
+	mesh->selectedPoints = newPoints;
+}
+
+void Mesh::AddSideExtra(std::vector<Point*> p)
+{
+	std::vector<Point*> ordered;
+	std::vector<Point*> remaining;
+
+	std::copy(p.begin(), p.end(), back_inserter(remaining));
+
+	ordered.push_back(remaining[0]);
+	remaining.erase(remaining.begin());
+
+	for(int i=0;i<p.size();i++){
+
+		EdgeIterator it = begin();
+		bool found = false;
+
+		while(!found && it.hasNext()){
+			
+
+
+			if(it.GetElement1() == ordered[i] && std::find(remaining.begin(),remaining.end(),it.GetElement2())!=remaining.end()){	
+				remaining.erase(std::remove(remaining.begin(), remaining.end(), it.GetElement2()), remaining.end());
+				ordered.push_back(it.GetElement2());
+				
+				
+			
+				found=true;
+				
+			}else if(it.GetElement2() == ordered[i] && std::find(remaining.begin(),remaining.end(),it.GetElement1())!=remaining.end()){		
+				remaining.erase(std::remove(remaining.begin(), remaining.end(), it.GetElement1()), remaining.end());
+				ordered.push_back(it.GetElement1());
+				found=true;
+			}
+		}
+	}
+
+	std::vector<unsigned int> result;
+
+	for(auto& l : ordered){
+		result.push_back(edgeMatrix.elementIndex(l));
+	}
+	
+
+
+
+	AddSide(result);
+}
+
+void OVertExtrude::Update()
+{
+
+}
+
+Mesh::Edge* Mesh::EdgeMatrix::GetRelationshipBetweenPoints(Point* p1,Point* p2)
+{
+	int placeP1 = elementIndex(p1);
+	int placeP2 = elementIndex(p2);
+
+
+	if(placeP1<matrix[placeP2].size() && matrix[placeP2][placeP1] != NULL){
+		return matrix[placeP2][placeP1];
+	}else if(placeP2<matrix[placeP1].size() && matrix[placeP1][placeP2] != NULL){
+		return matrix[placeP1][placeP2];
+	}
+
+	return NULL;
+
+}
+
+void Mesh::EdgeMatrix::SetRelationshipBetweenPoints(Point* p1, Point* p2, Edge* edge)
+{
+	int placeP1 = elementIndex(p1);
+	int placeP2 = elementIndex(p2);
+
+
+	if(placeP1<matrix[placeP2].size() ){
+		matrix[placeP2][placeP1] = edge;
+	}else if(placeP2<matrix[placeP1].size()){
+		matrix[placeP1][placeP2] = edge;
+	}
+
+}

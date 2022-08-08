@@ -40,6 +40,8 @@ public: // valamikor private lesz
 		Mesh* owner;
 
 		inline Point(float x = 0, float y = 0, float z = 0) : pos(x, y, z),owner(NULL) {}
+		inline Point(const Point& p) : pos(p.pos), owner(p.owner) {}
+
 
 		Hittable::Hit Intersect(const vec2 &, const mat4 &);
 		void NotifyWin();
@@ -77,8 +79,11 @@ private:
 	{
 		inline int Size() { return matrix.size(); }
 
-		int elementIndex(Point *);
+		unsigned int elementIndex(Point *);
 		Point *indexElement(int);
+
+		Edge* GetRelationshipBetweenPoints(Point*,Point*);
+		void SetRelationshipBetweenPoints(Point*,Point*,Edge*);
 
 		std::vector<std::vector<Edge *>> matrix;
 
@@ -96,6 +101,7 @@ private:
 	
 
 public:
+	//az nem tul jo hogy mindig mindket oldalrol meg kell vizsgalni a dolgokat
 	struct EdgeIterator
 	{
 		EdgeIterator(Mesh &_parent, int _row, int _column);
@@ -125,7 +131,9 @@ public:
 	Mesh(Mesh::Shape);
 
 	void AddPoint(Point *vert, const std::vector<Point *> conns);
+	void AddPoint(Point *vert);
 	void AddSide(std::vector<unsigned int> &);
+	void AddSideExtra(std::vector<Point*>);
 
 	bool CheckHit(const vec2 &, const mat4 &);
 	bool ReleaseSelection();
@@ -141,6 +149,7 @@ public:
 
 	void Render(const Renderer& r, const Shader& vs,const Shader& es,Shader& ss);
 	friend class MeshRenderer;
+	friend class OVertExtrude;
 };
 
 
@@ -201,7 +210,6 @@ class MeshOperation : public Operation{
 
 };
 
-
 class OVertScale : public MeshOperation{
 	std::vector<vec3> originalDefficit;
 	public:
@@ -224,6 +232,14 @@ class OVertMove : public MeshOperation{
 	OVertMove(Mesh*,vec3,Camera*);
 	void Update();
 	vec3 GetMidPoint();
+};
+
+class OVertExtrude : public MeshOperation{
+
+	public:
+	OVertExtrude(Mesh*);
+	void Update();
+
 };
 
 #endif
