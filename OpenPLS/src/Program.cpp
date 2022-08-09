@@ -2,10 +2,35 @@
 
 #include "Program.h"
 
-unsigned int Program::windowWidth = 1200;
-unsigned int Program::windowHeight = 800;
+unsigned int Program::windowWidthR = 1200;
+unsigned int Program::windowHeightR = 800;
+
+unsigned int Program::surfaceWidth = 900;
+unsigned int Program::surfaceHeight = 600;
+unsigned int Program::surfaceStartingX= 50;
+unsigned int Program::surfaceStartingY = 50;
+
+
+unsigned int Program::SurfaceWidth()
+{
+    return surfaceWidth;
+}
+unsigned int Program::SurfaceHeight()
+{
+    return surfaceHeight;
+}
+unsigned int Program::SurfaceStartingX()
+{
+    return surfaceStartingX;
+}
+unsigned int Program::SurfaceStartingY()
+{
+    return surfaceStartingY;
+}
+
 
 Surface* Program::surface = NULL;
+GUI::Hud* Program::hud = NULL;
 
 Program::Program()
 {
@@ -26,7 +51,7 @@ bool Program::Init()
         return false;
 
 
-    window = glfwCreateWindow(windowWidth, windowHeight, "Hello World", NULL, NULL);
+    window = glfwCreateWindow(WindowWidthR(), WindowHeightR(), "Hello World", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -40,7 +65,12 @@ bool Program::Init()
 
     std::cout << glGetString(GL_VERSION) << std::endl;
 
-    glViewport(0, 0, windowWidth, windowHeight);
+    glViewport(0,0,WindowWidthR(),WindowHeightR());
+    glClearColor(1,1,1,1);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glViewport(SurfaceStartingX(), WindowHeightR()-SurfaceStartingY() - SurfaceHeight(), SurfaceWidth(), SurfaceHeight());
+    //glViewport(0,0,60,60);
     glEnable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
 
@@ -52,6 +82,10 @@ bool Program::Init()
 
 void Program::WorldInit()
 {
+
+    hud = new GUI::Hud(new Shader2D());
+
+
     surface = new Surface();
     surface->meshHandler = new MeshHandler(surface);
     
@@ -89,6 +123,7 @@ void Program::WorldInit()
 
 
 
+
 void Program::Run()
 {
    
@@ -105,6 +140,13 @@ void Program::Run()
     {
         
         
+        glClearColor(0.28f,0.28f,0.28f,1);
+        glClear(GL_COLOR_BUFFER_BIT );
+
+        hud->TestHappened();
+
+        glViewport(SurfaceStartingX(), WindowHeightR()-SurfaceStartingY() - SurfaceHeight(), SurfaceWidth(), SurfaceHeight());
+       
         surface->Render(renderer);
        
         
@@ -117,14 +159,14 @@ void Program::Run()
     glfwTerminate();
 }
 
-unsigned int Program::WindowWidth()
+unsigned int Program::WindowWidthR()
 {
-    return windowWidth;
+    return windowWidthR;
 }
 
-unsigned int Program::WindowHeight()
+unsigned int Program::WindowHeightR()
 {
-    return windowHeight;
+    return windowHeightR;
 }
 
 

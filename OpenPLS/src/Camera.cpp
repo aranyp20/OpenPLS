@@ -9,7 +9,7 @@ Camera::Camera()
 
 	fp = 1; bp = 20;
 
-	aspect = (float)(Program::GetInstance().WindowWidth()) / Program::GetInstance().WindowHeight();
+	aspect = (float)(Program::SurfaceWidth()) / Program::SurfaceHeight();
 	
 	fov = 70.0f * (float)M_PI / 180.0f;
 	

@@ -15,12 +15,15 @@ int main()
 
  /////////////////////// TODO /////////////////////////
 
+-ne dobjak const char-t
+
+
 -Meshnek legyen meshranderee es annak vbo-ja vagy valahogy observeresen de a  mostrani nem jo
 -shader setuniformozzon
 
 -push_back-re valami megoldast(vbodata adásnál)
 -selectedPoints.pushBacket Selectpoint()-ra
--operationokat torolni, nem operation inputbindablleket mehagyni
+-operationokat torolni - poolba rakni (OperationFactory), nem operation inputbindablleket mehagyni
 -fg selectedpointsokat valahogy rendezni kell
 -InputManager Getmouse changginputttal kene
 -Renderer mennyi csucsot nyomjon ki

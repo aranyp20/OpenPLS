@@ -11,6 +11,11 @@ VBO::VBO(const void* data, unsigned int size)
 	glBufferData(GL_ARRAY_BUFFER, size, data, GL_DYNAMIC_DRAW);
 }
 
+VBO::VBO()
+{
+	glGenBuffers(1, &ID);
+}
+
 VBO::VBO(const std::vector<float>& v)
 {
 	count = v.size();

@@ -66,11 +66,23 @@ vec2 InputManager::GetMousePos2()
 	return mousePos2;
 }
 
-vec2 InputManager::ChangeInput(const vec2& v)
+vec2 InputManager::ChangeInput(const vec2& v, bool toSurface)
 {
-	float cX = 2.0f * v.x / Program::GetInstance().WindowWidth() - 1;
-	float cY = 1 - 2.0f * v.y / Program::GetInstance().WindowHeight();
-	return vec2(cX, cY);
+	if(toSurface){
+		
+		float forSurfaceX = v.x-Program::SurfaceStartingX();
+		float forSurfaceY = v.y-Program::SurfaceStartingY();
+
+		float cX = 2.0f * forSurfaceX / Program::SurfaceWidth() - 1;
+		float cY = 1 - 2.0f * forSurfaceY / Program::SurfaceHeight();
+		
+		return vec2(cX, cY);
+	}else{
+		float cX = 2.0f * v.x / Program::WindowWidthR() - 1;
+		float cY = 1 - 2.0f * v.y/ Program::WindowHeightR();
+		
+		return vec2(cX, cY);
+	}
 }
 
 void InputManager::AddIP(InputProcessor* ip) 

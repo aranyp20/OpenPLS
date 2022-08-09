@@ -43,7 +43,7 @@ Toloka::Arrow::Arrow(vec3 _direction,vec3 _color, vec3 _center = vec3(0,0,0)) :d
 
 void Surface::Render(Renderer& renderer)
 {
-	glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
+
 
 	mat4 mod;
 	shader.PrepareForRendering(GouraudShader::Data(light,viewCamera->GetEye(),mod,viewCamera->V(),viewCamera->P(),mod));

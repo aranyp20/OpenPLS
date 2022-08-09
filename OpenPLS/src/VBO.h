@@ -21,6 +21,8 @@ public:
 	VBO(const void* data, unsigned int size);
 	//ezt templatesen is lehetne
 	VBO(const std::vector<float>&);
+
+	VBO();
 	
 	~VBO();
 	virtual void TellData() const =0 ;
@@ -51,6 +53,7 @@ class VBO3f3f : public VBO
 public:
 	VBO3f3f(const void* data, unsigned int size) : VBO(data, size) {}
 	VBO3f3f(const std::vector<float>& v) : VBO(v) {}
+	VBO3f3f(){}
 	void TellData() const;
 };
 

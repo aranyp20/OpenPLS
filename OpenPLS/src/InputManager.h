@@ -56,7 +56,12 @@ public:
 	static vec2 GetMousePos1();
 	static vec2 GetMousePos2();
 
-	static vec2 ChangeInput(const vec2&);
+	static vec2 ChangeInput(const vec2&,bool toSurface = true);
+};
+
+class Operation : public InputBindable {
+
+
 };
 
 #endif

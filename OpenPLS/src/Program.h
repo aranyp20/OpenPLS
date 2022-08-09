@@ -15,6 +15,8 @@
 #include "Mesh.h"
 #include "InputManager.h"
 #include "Surface.h"
+#include "Gui.h"
+
 
 
 class Program
@@ -30,9 +32,15 @@ class Program
 	GLFWwindow* window;
 
 	static Surface* surface;
+	static GUI::Hud* hud;
 
-	static unsigned int windowWidth;
-	static unsigned int windowHeight;
+	static unsigned int surfaceWidth;
+	static unsigned int surfaceHeight;
+	static unsigned int surfaceStartingX;
+	static unsigned int surfaceStartingY;
+
+	static unsigned int windowWidthR;
+	static unsigned int windowHeightR;
 
 public:
 	
@@ -43,8 +51,13 @@ public:
 	void WorldInit();
 	void Run();
 
-	unsigned int WindowWidth();
-	unsigned int WindowHeight();
+	static unsigned int SurfaceWidth();
+	static unsigned int SurfaceHeight();
+	static unsigned int SurfaceStartingX();
+	static unsigned int SurfaceStartingY();
+
+	static unsigned int WindowWidthR();
+	static unsigned int WindowHeightR();
 
 };
 

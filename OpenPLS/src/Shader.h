@@ -11,6 +11,8 @@
 #include "WorldElements.h"
 
 
+
+
 struct ShaderProgramSource
 {
 	std::string VertexSource;
@@ -73,6 +75,13 @@ class NormalShader : public Shader{
 	};
 	void PrepareForRendering(NormalShader::Data);
 	NormalShader() : Shader("../shaders/Shader1.shader"){}
+};
+
+class Shader2D : public Shader{
+	public:
+	Shader2D() : Shader("../shaders/Shader2D.shader"){}
+
+
 };
 
 

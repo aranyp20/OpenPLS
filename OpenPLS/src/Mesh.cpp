@@ -198,7 +198,9 @@ bool Mesh::CheckHit(const vec2& p, const mat4& MVP)
 {
 
 
-	vec2 pp = InputManager::ChangeInput(p);
+	vec2 pp = p;
+
+	
 
 	std::vector<Hittable*> potHits;
 	for(Point* p : points){
@@ -470,7 +472,7 @@ MeshHandler::MeshHandler(Surface* s) : owner(s)
 
 InputAnswer MeshHandler::ProcessKey(int key)
 {
-	if (key == GLFW_KEY_W && CheckHit(InputManager::GetMousePos2())) {
+	if (key == GLFW_KEY_W && CheckHit(InputManager::ChangeInput(InputManager::GetMousePos2()))) {
 		return InputAnswer(InputAnswer::ReactionType::PROCESSED, NULL);
 	}
 	else if(key == GLFW_KEY_S){
@@ -549,7 +551,7 @@ Hittable::Hit Mesh::Edge::Intersect(const vec2& p, const mat4& MVP)
 
 			result.z = pos1.z + (pos2.z - pos1.z) * Interpolate(vec2(pos1.x,pos1.y),vec2(pos2.x,pos2.y),p); //cylinderes megoldas kene mert a projekcio torzizja
 		}
-	}catch(std::string){
+	}catch(GeometryException){
 		return result;
 	}
 	

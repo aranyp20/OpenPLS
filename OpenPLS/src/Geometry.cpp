@@ -4,7 +4,7 @@ float SolveQuadratic(float a, float b, float c)
 {
     float det = b*b-4*a*c;
 
-    if(det < 0)throw "No solution";
+    if(det < 0)throw GeometryException("No solution!");
 
     if(FE(det,0))return  -b / (2*a);
 
@@ -45,7 +45,7 @@ vec2 Line2D::Intersect(const Line2D& l)
 
     vec2 normal2 = l.Norm();
 
-    if(FE(dot(normal2,DIR),0))throw "Paralell lines!";
+    if(FE(dot(normal2,DIR),0))throw GeometryException("Parallel lines!");
 
     float t1 =-1*dot(normal2,START-l.p2)/dot(normal2,DIR);
     return vec2(START+DIR*t1);
@@ -80,7 +80,7 @@ float Line2D::DistanceFromSection(const vec2& p, bool endToo = true)
             if(d1<d2)return d1;
             return d2;
         }
-    }catch(std::string errormsg){
+    }catch(GeometryException){
         
         return -1;
     }
@@ -103,8 +103,8 @@ vec3 Cylinder::Intersect(const GRay& r) const
     try{
         float t = SolveQuadratic(a,b,c);
         return r.DIR * t + r.START;
-    }catch(std::string){
-        throw "Missed";
+    }catch(GeometryException){
+        throw GeometryException("Missed");
     }
 
 }
@@ -114,11 +114,11 @@ vec3 Cylinder::IntersectSection(const GRay& r) const
 {
     try{
         vec3 pos = Intersect(r);
-        if(dot(pos-p1,p2-p1) < 0)throw "Hit cylinder, missed section!";
+        if(dot(pos-p1,p2-p1) < 0)throw GeometryException("Hit cylinder, missed section!");
         return pos;
 
-    }catch(std::string errorMsg){
-        throw errorMsg;
+    }catch(GeometryException err){
+        throw err;
     }
 }
 
@@ -153,4 +153,10 @@ Triangle::Triangle(vec2 _p1,vec2 _p2,vec2 _p3) : p1(_p1), p2(_p2), p3(_p3)
 bool Triangle::Contains(const vec2& p) 
 {
     return angle(p1-p,p1-p2)<=angle(p1-p3,p1-p2) && angle(p2-p,p2-p1)<=angle(p2-p3,p2-p1) && angle(p3-p,p3-p2)<=angle(p3-p1,p3-p2) && dot(p1-p,p1-p2)>=0&&dot(p2-p,p2-p3)>=0&&dot(p3-p,p3-p2)>=0;
+}
+
+
+GeometryException::GeometryException(std::string msg)
+{
+    std::cout<<msg<<std::endl;
 }

@@ -73,5 +73,10 @@ struct Cylinder{
 };
 
 
+class GeometryException : public std::exception{
+    public:
+    GeometryException(std::string);
+};
+
 
 #endif 

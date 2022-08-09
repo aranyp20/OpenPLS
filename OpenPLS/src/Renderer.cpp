@@ -2,7 +2,7 @@
 
 void Renderer::Draw(TriangleData t,PointData p, LineData l) const
 {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //itt csak a depthet kell majd torolni es depthet belerakni a masikba vagy valahogy layert megoldani
+	glClear(GL_DEPTH_BUFFER_BIT); //itt csak a depthet kell majd torolni es depthet belerakni a masikba vagy valahogy layert megoldani
 	
 	
 	glPointSize(7);
