@@ -160,3 +160,23 @@ GeometryException::GeometryException(std::string msg)
 {
     std::cout<<msg<<std::endl;
 }
+
+Rect::Rect(float _startX, float _startY, float _width, float _height) : p1(vec2(_startX ,_startY - (_height / 2))), p2(p2 = vec2(_startX+_width,_startY-(_height/2))),width(_width)
+{
+
+}
+
+std::vector<vec2> Rect::GiveCorners()
+{
+    std::vector<vec2> result =  {p1-Norm()*(width/2),p1+Norm()*(width/2),p2+Norm()*(width/2),p2-Norm()*(width/2)};
+    return result;
+}
+
+std::vector<vec2> Rect::GiveCornersTriangle()
+{
+    std::vector<vec2> result =  {p1-Norm()*(width/2),p1+Norm()*(width/2),p2+Norm()*(width/2)};
+    result.push_back(p1-Norm()*(width/2));result.push_back(p2-Norm()*(width/2));result.push_back(p2+Norm()*(width/2));
+    return result;
+}
+
+

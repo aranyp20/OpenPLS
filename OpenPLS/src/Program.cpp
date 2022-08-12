@@ -2,12 +2,12 @@
 
 #include "Program.h"
 
-unsigned int Program::windowWidthR = 1200;
-unsigned int Program::windowHeightR = 800;
+unsigned int Program::windowWidthR = 1500;
+unsigned int Program::windowHeightR = 900;
 
-unsigned int Program::surfaceWidth = 900;
-unsigned int Program::surfaceHeight = 600;
-unsigned int Program::surfaceStartingX= 50;
+unsigned int Program::surfaceWidth = 1200;
+unsigned int Program::surfaceHeight = 750;
+unsigned int Program::surfaceStartingX= 30;
 unsigned int Program::surfaceStartingY = 50;
 
 

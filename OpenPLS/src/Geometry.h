@@ -1,6 +1,8 @@
 #ifndef __GEOMETRY_H__
 #define __GEOMETRY_H__
 
+
+#include <vector>
 #include "mymath.h"
 
 struct GRay{
@@ -24,9 +26,13 @@ struct Rect{
     float width;
 
     Rect(vec2,vec2,float);
+    Rect(float _startX, float _startY, float _width, float _height);
 
     vec2 Norm();
     bool Contains(const vec2&);
+
+    std::vector<vec2> GiveCorners();
+    std::vector<vec2> GiveCornersTriangle();
 };
 
 struct Circle{

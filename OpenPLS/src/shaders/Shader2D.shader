@@ -4,15 +4,15 @@
 
 
 layout(location = 0) in vec3 finalPosition;
-layout(location = 0) in vec3 finalColor;
+layout(location = 1) in vec3 finalColor;
 
 out vec4 colorpass;
 
 
 void main()
 {
-    colorpass = vec4(color,1);
-    gl_Position = finalPosition;
+    colorpass = vec4(finalColor,1);
+    gl_Position = vec4(finalPosition,1);
 
 }
 
@@ -27,5 +27,5 @@ out vec4 color;
 
 void main()
 {
-    color = colorPass;
+    color = colorpass;
 }
