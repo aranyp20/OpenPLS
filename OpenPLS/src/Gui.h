@@ -28,6 +28,10 @@ namespace GUI{
         std::vector<float> GiveData(Rect&);
     };
 
+    struct TransparentTheme : public ComponentTheme{
+        std::vector<float> GiveData(Rect&);
+    };
+
 
     class Subject{
         protected:
@@ -59,12 +63,29 @@ namespace GUI{
         virtual void Notify();
     };
 
-    //ez még örököljön componenttől és inputprocessurból
-    class Hud : public Subject{
+    class Component : public Subject{
+        protected:
+        std::vector<Component*> ownedComponents;
+        Rect influenceZone;
+        ComponentTheme* theme;
+        public:
+        Component(ComponentTheme* _theme = NULL);
+        bool CheckHit(vec2&);
+    
+        virtual void HandleHit(vec2&){}
+        ComponentTheme* GetTheme();
+        Rect& GetInfluenceZone();
+        //Real-time maradjon!!
+        void AddComponent(Rect,Component*,std::vector<float>&);   
+        void SetInfluenceZone(Rect&);
+         void TestHappened();
+    };
+    
+    class Hud :  public Component{
         
         public:
         Hud(Shader*);
-        void TestHappened();
+       
 
         friend class HudObserver;
     };
@@ -79,26 +100,20 @@ namespace GUI{
         void Notify();
 
         void Render();
+        std::vector<float>& GetRenderData();
     };
 
 
-    class Component : public Subject{
-        protected:
-        std::vector<Component*> ownedComponents;
-        Rect influenceZone;
-        ComponentTheme* theme;
-        public:
-        Component(Rect&);
-        bool CheckHit(vec2&);
-        void Draw();
-        virtual void HandleHit(vec2&){}
-        ComponentTheme* GetTheme();
-        Rect& GetInfluenceZone();
-        
-    };
+ 
 
     class Button : public Component{
+        public:
+        Button(ComponentTheme* _theme = NULL);
+    };
 
+    class Panel : public Component{
+        public:
+        Panel(ComponentTheme* _theme = NULL);
     };
 
 

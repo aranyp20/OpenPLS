@@ -123,7 +123,7 @@ vec3 Cylinder::IntersectSection(const GRay& r) const
 }
 
 
-Rect::Rect(vec2 _p1,vec2 _p2,float _width) : p1(_p1), p2(_p2), width(_width)
+Rect::Rect(vec2 _p1,vec2 _p2,float _height) : p1(_p1), p2(_p2), height(_height)
 {
     
 }
@@ -141,7 +141,7 @@ bool Rect::Contains(const vec2& p)
 {
 
     
-    return Triangle(p1+Norm()*(width/2),p1-Norm()*(width/2),p2+Norm()*(width/2)).Contains(p) || Triangle(p2+Norm()*(width/2),p2-Norm()*(width/2),p1-Norm()*(width/2)).Contains(p);
+    return Triangle(p1+Norm()*(height/2),p1-Norm()*(height/2),p2+Norm()*(height/2)).Contains(p) || Triangle(p2+Norm()*(height/2),p2-Norm()*(height/2),p1-Norm()*(height/2)).Contains(p);
 }
 
 Triangle::Triangle(vec2 _p1,vec2 _p2,vec2 _p3) : p1(_p1), p2(_p2), p3(_p3)
@@ -161,21 +161,25 @@ GeometryException::GeometryException(std::string msg)
     std::cout<<msg<<std::endl;
 }
 
-Rect::Rect(float _startX, float _startY, float _width, float _height) : p1(vec2(_startX ,_startY - (_height / 2))), p2(p2 = vec2(_startX+_width,_startY-(_height/2))),width(_width)
+Rect::Rect(float _startX, float _startY, float _width, float _height) : p1(vec2(_startX ,_startY - (_height / 2))), p2(p2 = vec2(_startX+_width,_startY-(_height/2))),height(_height)
 {
-
+    startX = _startX;
+    startY = _startY;
+    width = _width;
 }
 
 std::vector<vec2> Rect::GiveCorners()
 {
-    std::vector<vec2> result =  {p1-Norm()*(width/2),p1+Norm()*(width/2),p2+Norm()*(width/2),p2-Norm()*(width/2)};
+    std::vector<vec2> result ;
     return result;
 }
 
 std::vector<vec2> Rect::GiveCornersTriangle()
 {
-    std::vector<vec2> result =  {p1-Norm()*(width/2),p1+Norm()*(width/2),p2+Norm()*(width/2)};
-    result.push_back(p1-Norm()*(width/2));result.push_back(p2-Norm()*(width/2));result.push_back(p2+Norm()*(width/2));
+    std::vector<vec2> result;
+    result.push_back(p1+Norm()*(height/2));
+    result.push_back(vec2(startX+width,startY));
+    result.push_back(vec2(startX,startY+height));
     return result;
 }
 

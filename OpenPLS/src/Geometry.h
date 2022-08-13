@@ -23,10 +23,13 @@ struct Triangle{
 struct Rect{
     vec2 p1;
     vec2 p2;
-    float width;
+    float height;
+
+    
+    float startX,startY,width;
 
     Rect(vec2,vec2,float);
-    Rect(float _startX, float _startY, float _width, float _height);
+    Rect(float _startX = 0, float _startY = 0, float _width = 0, float _height = 0);
 
     vec2 Norm();
     bool Contains(const vec2&);

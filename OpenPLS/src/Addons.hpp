@@ -74,6 +74,7 @@ inline void PushBack(std::vector<float>& where, std::vector<vec3>& what, vec3 re
 }
 inline void PushBack(std::vector<float>& where, std::vector<vec2>& what,vec3 repeat, float _z)
 {
+	
 	for(auto& a : what){
 		where.push_back(a.x); where.push_back(a.y); where.push_back(_z);
 		PushBack(where,repeat);

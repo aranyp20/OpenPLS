@@ -22,20 +22,13 @@ Observer::Observer(Subject* _subject,std::vector<float>& _rd) : subject(_subject
 
 ComponentObserver::ComponentObserver(Subject* _s,std::vector<float>& _v) : Observer(_s,_v){}
 
-Hud::Hud(Shader* _shader) 
+Hud::Hud(Shader* _shader)
 {
+    influenceZone = Rect(-1,1,2,2);
     AddObserver(new HudObserver(this, _shader));
-}
 
-HudObserver::HudObserver(Hud* hud,Shader* _shader) : ComponentObserver(hud,(this->dataHere))
-{
-    vao = new VAO();
-    vbo = new VBO3f3f();
-    vao->AddVBO(*vbo);
-    
-    shader = _shader;
-    std::vector<float> back;
-    //ezek lesznek a panelok koordinatai
+
+
     vec2 p1 = InputManager::ChangeInput(vec2((float)(Program::SurfaceStartingX()+Program::SurfaceWidth()),0.0f),false);
     vec2 p2 =  InputManager::ChangeInput(vec2((float)(Program::WindowWidthR()),0.0f),false);
     vec2 p3 =  InputManager::ChangeInput(vec2((float)(Program::WindowWidthR()),(float)Program::WindowHeightR()),false);
@@ -52,8 +45,31 @@ HudObserver::HudObserver(Hud* hud,Shader* _shader) : ComponentObserver(hud,(this
     vec2 p14 = InputManager::ChangeInput(vec2(Program::SurfaceStartingX()+Program::SurfaceWidth(),Program::SurfaceStartingY()+Program::SurfaceHeight()),false);
     vec2 p15 = InputManager::ChangeInput(vec2(Program::SurfaceStartingX()+Program::SurfaceWidth(),Program::WindowHeightR()),false);
 
+    AddComponent(Rect(p1.x,p1.y-2,(p2-p1).length(),(p3-p2).length()),new Panel(),static_cast<HudObserver*>(observers[0])->GetRenderData());
+    
+}
 
-    PushBack(back,vec3(p1.x,p1.y,0));
+std::vector<float>& HudObserver::GetRenderData()
+{
+    return (this->renderData);
+}
+
+HudObserver::HudObserver(Hud* hud,Shader* _shader) : ComponentObserver(hud,(this->renderData))
+{
+    vao = new VAO();
+    vbo = new VBO3f3f();
+    vao->AddVBO(*vbo);
+    
+    shader = _shader;
+    std::vector<float> back;
+  
+    
+
+
+    
+
+
+/*     PushBack(back,vec3(p1.x,p1.y,0));
     PushBack(back,vec3(0,0,0));
     PushBack(back,vec3(p2.x,p2.y,0));
     PushBack(back,vec3(0,0,0));
@@ -101,7 +117,7 @@ HudObserver::HudObserver(Hud* hud,Shader* _shader) : ComponentObserver(hud,(this
     PushBack(back,vec3(0,0,0));
     PushBack(back,vec3(p15.x,p15.y,0));
     PushBack(back,vec3(0,0,0));
-    vbo->RefreshData(back); 
+    vbo->RefreshData(back);  */
 
 }
 
@@ -109,35 +125,43 @@ Rect& Component::GetInfluenceZone(){return influenceZone;}
 
 void ComponentObserver::Notify()
 {
+    
     FillDataHere(static_cast<Component*>(subject)->GetInfluenceZone());
 }
 
 
 void HudObserver::Notify()
 {
+    
     ComponentObserver::Notify();
     Render();
 }
 
 void HudObserver::Render()
 {
+    
     glViewport(0,0,Program::WindowWidthR(),Program::WindowHeightR());
     shader->Bind();
     vao->Bind();
+    vbo->RefreshData(renderData);
     glDrawArrays(GL_TRIANGLES,0,vao->GetCount());
+    renderData.clear();
 }
 
 
-void Hud::TestHappened()
+void Component::TestHappened()
 {
     for(auto& o : observers ){
         o->Notify();
     }
+    for(auto& c : ownedComponents){ 
+        c->TestHappened();
+    }
 }
 
-Component::Component(Rect& _iz) : influenceZone(_iz)
+Component::Component(ComponentTheme* _theme)
 {
-
+    _theme == NULL ? theme = new TransparentTheme() : theme = _theme;
 }
 
 bool Component::CheckHit(vec2& pos)
@@ -153,22 +177,16 @@ bool Component::CheckHit(vec2& pos)
     }
 }
 
-void Component::Draw()
-{
-    for(auto& o : observers){
-        o->Notify();
-    }
 
-    for(auto& c : ownedComponents){
-        c->Draw();
-    }
-}
 
 void ComponentObserver::FillDataHere(Rect& iz)
 {
+    
     Component* subjectConv = static_cast<Component*>(subject);
     std::vector<float> temp = subjectConv->GetTheme()->GiveData(iz);
     dataHere.insert(dataHere.end(),temp.begin(),temp.end());
+
+    
 }
 
 
@@ -176,8 +194,35 @@ std::vector<float> BasicTheme::GiveData(Rect& r)
 {
     std::vector<float> result;
     std::vector<vec2> temp = r.GiveCornersTriangle();
-    PushBack(result,temp,vec3(0,1,0),1.0f);
+ 
+    PushBack(result,temp,vec3(0,1,0),0.0f); 
+    
+    
+    return result; 
+}
+
+std::vector<float> TransparentTheme::GiveData(Rect& r)
+{
+    std::vector<float> result;
     return result;
 }
 
+
 ComponentTheme* Component::GetTheme(){return theme;}
+
+
+Button::Button(ComponentTheme* _theme) : Component(_theme == NULL ? new BasicTheme() : _theme){}
+
+Panel::Panel(ComponentTheme* _theme) : Component( _theme == NULL ? new BasicTheme() : _theme){}
+
+void Component::AddComponent(Rect _r, Component* _c,std::vector<float>& _rd)
+{
+    _c->AddObserver(new ComponentObserver(_c,_rd));
+    ownedComponents.push_back(_c);
+    Rect newRect(_r.startX + influenceZone.startX ,_r.startY+influenceZone.startY ,_r.width,_r.height);
+    
+    
+    _c->SetInfluenceZone(_r);
+}
+
+void Component::SetInfluenceZone(Rect& _r){influenceZone = _r;}

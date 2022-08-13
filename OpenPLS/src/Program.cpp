@@ -142,7 +142,7 @@ void Program::Run()
         
         glClearColor(0.28f,0.28f,0.28f,1);
         glClear(GL_COLOR_BUFFER_BIT );
-
+        
         hud->TestHappened();
 
         glViewport(SurfaceStartingX(), WindowHeightR()-SurfaceStartingY() - SurfaceHeight(), SurfaceWidth(), SurfaceHeight());
