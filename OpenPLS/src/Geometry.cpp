@@ -161,7 +161,7 @@ GeometryException::GeometryException(std::string msg)
     std::cout<<msg<<std::endl;
 }
 
-Rect::Rect(float _startX, float _startY, float _width, float _height) : p1(vec2(_startX ,_startY - (_height / 2))), p2(p2 = vec2(_startX+_width,_startY-(_height/2))),height(_height)
+Rect::Rect(float _startX, float _startY, float _width, float _height) : p1(vec2(_startX ,_startY + (_height / 2))), p2(p2 = vec2(_startX+_width,_startY+(_height/2))),height(_height)
 {
     startX = _startX;
     startY = _startY;
@@ -171,15 +171,22 @@ Rect::Rect(float _startX, float _startY, float _width, float _height) : p1(vec2(
 std::vector<vec2> Rect::GiveCorners()
 {
     std::vector<vec2> result ;
+    result.push_back(p1+Norm()*(height/2));
+    result.push_back(p2+Norm()*(height/2));
+    result.push_back(p2-Norm()*(height/2));
+    result.push_back(p1-Norm()*(height/2));
     return result;
 }
 
 std::vector<vec2> Rect::GiveCornersTriangle()
 {
     std::vector<vec2> result;
+    result.push_back(p1-Norm()*(height/2));
+    result.push_back(p2+Norm()*(height/2));
     result.push_back(p1+Norm()*(height/2));
-    result.push_back(vec2(startX+width,startY));
-    result.push_back(vec2(startX,startY+height));
+    result.push_back(p2-Norm()*(height/2));
+    result.push_back(p1-Norm()*(height/2));
+    result.push_back(p2+Norm()*(height/2));
     return result;
 }
 

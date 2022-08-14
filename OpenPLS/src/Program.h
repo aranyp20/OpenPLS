@@ -59,6 +59,8 @@ public:
 	static unsigned int WindowWidthR();
 	static unsigned int WindowHeightR();
 
+
+
 };
 
 #endif

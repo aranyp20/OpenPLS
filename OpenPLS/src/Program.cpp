@@ -93,6 +93,7 @@ void Program::WorldInit()
 
     InputManager::AddIP(surface->meshHandler);
     InputManager::AddIP(surface);
+    InputManager::AddIP(hud);
     
     InputManager::SetCallbacks(window);
 
@@ -168,6 +169,7 @@ unsigned int Program::WindowHeightR()
 {
     return windowHeightR;
 }
+
 
 
 

@@ -7,16 +7,12 @@
 
 class InputAnswer;
 
-class InputCollection {
-public:
-	virtual InputAnswer ProcessKey(int key) = 0;
-	InputAnswer ProcessMouseClick();
-	InputAnswer ProcessMouseMotion();
-};
+
 
 class InputBindable {
 public:
 	virtual void Update() = 0;
+	virtual void Release(){}
 };
 
 struct InputAnswer {
@@ -29,10 +25,12 @@ struct InputAnswer {
 	InputAnswer(ReactionType, InputBindable*);
 };
 
-class InputProcessor : public InputCollection{
+class InputProcessor{
 
 public:
-	
+	inline virtual InputAnswer ProcessKey(int key){return InputAnswer(InputAnswer::ReactionType::IGNORED,NULL);}
+	inline virtual InputAnswer ProcessMouseClick(){return InputAnswer(InputAnswer::ReactionType::IGNORED,NULL);}
+	inline virtual InputAnswer ProcessMouseMotion(){return InputAnswer(InputAnswer::ReactionType::IGNORED,NULL);}
 	
 	
 };
@@ -48,7 +46,7 @@ class InputManager {
 
 	static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 	static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos);
-
+	static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 public:
 	static void AddIP(InputProcessor*);
 

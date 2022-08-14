@@ -12,12 +12,40 @@ void InputManager::SetCallbacks(GLFWwindow* window)
 {
 	glfwSetKeyCallback(window, key_callback);
 	glfwSetCursorPosCallback(window, cursor_position_callback);
+	glfwSetMouseButtonCallback(window, mouse_button_callback);
+}
+
+void InputManager::mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+{
+    if (lastBind == NULL && button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS){
+		for(InputProcessor* IP : inputProcessors)
+		{
+
+
+			InputAnswer IA = IP->ProcessMouseClick();
+			if (IA.react == InputAnswer::ReactionType::BINDED) {
+				lastBind = IA.bind;
+				return;
+			}
+			else if (IA.react == InputAnswer::ReactionType::PROCESSED) {
+				return;
+			}
+		}
+	}
+	else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
+		if (lastBind != NULL) {
+			lastBind->Release();
+			lastBind = NULL;
+			return;
+		}
+	}
+        
 }
 
 void InputManager::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	
-	if (action == GLFW_PRESS) {
+	if (lastBind == NULL && action == GLFW_PRESS) {
 		for(InputProcessor* IP : inputProcessors)
 		{
 
@@ -34,7 +62,7 @@ void InputManager::key_callback(GLFWwindow* window, int key, int scancode, int a
 	}
 	else if (action == GLFW_RELEASE) {
 		if (lastBind != NULL) {
-			//delete lastBind;
+			lastBind->Release();
 			lastBind = NULL;
 			return;
 		}

@@ -9,6 +9,7 @@
 #include "VBO.h"
 
 #include "Geometry.h"
+#include "InputManager.h"
 
 
 namespace GUI{
@@ -21,15 +22,18 @@ namespace GUI{
 
 
     struct ComponentTheme{
-        virtual std::vector<float> GiveData(Rect&) = 0;
+        virtual std::vector<float> GiveData(Rect&, int) = 0;
     };
 
     struct BasicTheme : public ComponentTheme{
-        std::vector<float> GiveData(Rect&);
+        vec3 color;
+        std::vector<float> GiveData(Rect&, int);
+
+        BasicTheme(vec3);
     };
 
     struct TransparentTheme : public ComponentTheme{
-        std::vector<float> GiveData(Rect&);
+        std::vector<float> GiveData(Rect&, int);
     };
 
 
@@ -45,13 +49,16 @@ namespace GUI{
 
     class Observer{
         protected:
+        int level;
         std::vector<float>& dataHere;
         Subject* subject;
 
 
         public:
-        Observer(Subject*,std::vector<float>&);
+        Observer(Subject*,std::vector<float>&,int);
         virtual void Notify() = 0;
+        std::vector<float>& GetDataHere();
+
 
     };
 
@@ -59,33 +66,36 @@ namespace GUI{
         protected:
         virtual void FillDataHere(Rect&);
         public:
-        ComponentObserver(Subject*,std::vector<float>&);
+        ComponentObserver(Subject*,std::vector<float>&,int);
         virtual void Notify();
     };
 
     class Component : public Subject{
         protected:
+        Component* root;
+        int level;
         std::vector<Component*> ownedComponents;
         Rect influenceZone;
         ComponentTheme* theme;
         public:
-        Component(ComponentTheme* _theme = NULL);
-        bool CheckHit(vec2&);
-    
-        virtual void HandleHit(vec2&){}
+        Component(Component*,ComponentTheme* _theme = NULL);
+        InputAnswer CheckHit(const vec2&);
+        virtual InputAnswer HandleHit(const vec2&){ return InputAnswer(InputAnswer::ReactionType::IGNORED,NULL);}
         ComponentTheme* GetTheme();
         Rect& GetInfluenceZone();
         //Real-time maradjon!!
-        void AddComponent(Rect,Component*,std::vector<float>&);   
+        void AddComponent(Rect,Component*,std::vector<float>&, bool relToWindow = false);   
         void SetInfluenceZone(Rect&);
-         void TestHappened();
+        void TestHappened();
+        void SetLevel(int);
     };
     
-    class Hud :  public Component{
+    class Hud :  public Component, public InputProcessor{
         
         public:
         Hud(Shader*);
-       
+
+        InputAnswer ProcessMouseClick();
 
         friend class HudObserver;
     };
@@ -96,7 +106,7 @@ namespace GUI{
         VAO* vao;
         VBO* vbo;
         public:
-        HudObserver(Hud*,Shader*);
+        HudObserver(Hud*,Shader*,int);
         void Notify();
 
         void Render();
@@ -106,16 +116,25 @@ namespace GUI{
 
  
 
-    class Button : public Component{
+    class Button : public Component, public InputBindable{
         public:
-        Button(ComponentTheme* _theme = NULL);
+        Button(Component*,ComponentTheme* _theme = NULL);
+        InputAnswer HandleHit(const vec2&);
+        void Release();
+        void Update();
     };
 
     class Panel : public Component{
         public:
-        Panel(ComponentTheme* _theme = NULL);
+        Panel(Component*,vec3 _color = vec3(0.2f,0.2f,0.2f),ComponentTheme* _theme = NULL);
     };
 
+
+    class TimeLine : public Component{
+        public:
+        TimeLine(Component*,ComponentTheme* _theme = NULL);
+        InputAnswer HandleHit(const vec2&);
+    };
 
 
 

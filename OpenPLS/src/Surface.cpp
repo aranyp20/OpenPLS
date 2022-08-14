@@ -108,32 +108,6 @@ void Toloka::Update()
 
 
 
-void OVertMove::Update()
-{
-	FindMidPoint();
-	mat4 VP = camera->V()*camera->P();
-	vec3 wEye = camera->GetEye();
-
-	vec3 centerCam = midPoint; TransformPoint(centerCam,VP); centerCam = camera->PutToWorld(vec2(centerCam.x,centerCam.y));
-	vec3 endWorld = midPoint + axis;
-	vec3 endCam = endWorld; TransformPoint(endCam,VP);endCam = camera->PutToWorld(vec2(endCam.x,endCam.y));
-	vec3 mouseCamLast = camera->PutToWorld(InputManager::ChangeInput(InputManager::GetMousePos1()));
-	vec3 mouseCam = camera->PutToWorld(InputManager::ChangeInput(InputManager::GetMousePos2()));
-	vec3 projTemp = normalize(centerCam-endCam); 
-	vec3 moveCam = projTemp * dot(vec3(mouseCam-mouseCamLast),projTemp);
-	vec3 moveWorld = moveCam *  ((wEye-endWorld).length() / (wEye-endCam).length());
-	
-
-
-	vec3 moveVector = normalize(axis) * dot(moveWorld,normalize(axis));
-
-
-	for(auto p : controlledPoints){ //ez nem jo hogy belenyul
-		p->pos = p->pos + moveVector;
-
-	}
-	FindMidPoint();
-}
 
 
 void Toloka::WakeUp(std::vector<Mesh::Point*> ps) 
