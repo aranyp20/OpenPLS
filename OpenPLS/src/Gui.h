@@ -80,7 +80,7 @@ namespace GUI{
         public:
         Component(Component*,ComponentTheme* _theme = NULL);
         InputAnswer CheckHit(const vec2&);
-        virtual InputAnswer HandleHit(const vec2&){ return InputAnswer(InputAnswer::ReactionType::IGNORED,NULL);}
+        virtual InputAnswer HandleHit(const vec2&){ return InputAnswer();}
         ComponentTheme* GetTheme();
         Rect& GetInfluenceZone();
         //Real-time maradjon!!
@@ -112,7 +112,6 @@ namespace GUI{
         void Render();
         std::vector<float>& GetRenderData();
     };
-
 
  
 

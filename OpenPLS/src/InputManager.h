@@ -5,8 +5,9 @@
 #include <vector>
 #include "mymath.h"
 
-class InputAnswer;
 
+class InputAnswer;
+class Factory;
 
 
 class InputBindable {
@@ -17,20 +18,26 @@ public:
 
 struct InputAnswer {
 	enum ReactionType {
-		IGNORED,PROCESSED,BINDED
+		IGNORED,PROCESSED,CREATE
 	};
+	enum OperationType{
+        VERT_ROTATE, VERT_SCALE, VERT_EXTRUDE, VERT_MOVE,
+        CAMERA_MOVE
+    };
 	ReactionType react;
-	InputBindable* bind;
+	OperationType creation;
 
-	InputAnswer(ReactionType, InputBindable*);
+	InputAnswer(ReactionType, OperationType);
+	InputAnswer(ReactionType);
+	InputAnswer();
 };
 
 class InputProcessor{
 
 public:
-	inline virtual InputAnswer ProcessKey(int key){return InputAnswer(InputAnswer::ReactionType::IGNORED,NULL);}
-	inline virtual InputAnswer ProcessMouseClick(){return InputAnswer(InputAnswer::ReactionType::IGNORED,NULL);}
-	inline virtual InputAnswer ProcessMouseMotion(){return InputAnswer(InputAnswer::ReactionType::IGNORED,NULL);}
+	inline virtual InputAnswer ProcessKey(int key){return InputAnswer();}
+	inline virtual InputAnswer ProcessMouseClick(){return InputAnswer();}
+	inline virtual InputAnswer ProcessMouseMotion(){return InputAnswer();}
 	
 	
 };
@@ -42,6 +49,8 @@ class InputManager {
 
 	static vec2 mousePos1;
 	static vec2 mousePos2;
+
+	static Factory* factory;
 
 
 	static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
@@ -55,6 +64,12 @@ public:
 	static vec2 GetMousePos2();
 
 	static vec2 ChangeInput(const vec2&,bool toSurface = true);
+
+	static void ChangeBind(InputBindable*);
+
+	static Factory* GetFactory();
+
+	friend class Program;
 };
 
 class Operation : public InputBindable {

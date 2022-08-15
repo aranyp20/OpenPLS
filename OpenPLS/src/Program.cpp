@@ -1,6 +1,7 @@
 
 
 #include "Program.h"
+#include "Factory.h"
 
 unsigned int Program::windowWidthR = 1500;
 unsigned int Program::windowHeightR = 900;
@@ -30,6 +31,7 @@ unsigned int Program::SurfaceStartingY()
 
 
 Surface* Program::surface = NULL;
+
 GUI::Hud* Program::hud = NULL;
 
 Program::Program()
@@ -89,7 +91,7 @@ void Program::WorldInit()
     surface = new Surface();
     surface->meshHandler = new MeshHandler(surface);
     
-
+    InputManager::factory = new Factory(surface);
 
     InputManager::AddIP(surface->meshHandler);
     InputManager::AddIP(surface);

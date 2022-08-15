@@ -27,6 +27,7 @@ class Toloka : public InputBindable {
 	};
 
 
+
 	bool active;
 	vec3 center;
 

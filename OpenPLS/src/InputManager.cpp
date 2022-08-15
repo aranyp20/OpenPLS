@@ -1,12 +1,14 @@
 #include <iostream>
 #include "Program.h"
 #include "InputManager.h"
+#include "Factory.h"
 
 
 vec2 InputManager::mousePos1 = vec2(0, 0);
 vec2 InputManager::mousePos2 = vec2(0, 0);
 std::vector<InputProcessor*> InputManager::inputProcessors = std::vector<InputProcessor*>();
 InputBindable* InputManager::lastBind = NULL;
+Factory* InputManager::factory = NULL;
 
 void InputManager::SetCallbacks(GLFWwindow* window)
 {
@@ -23,8 +25,8 @@ void InputManager::mouse_button_callback(GLFWwindow* window, int button, int act
 
 
 			InputAnswer IA = IP->ProcessMouseClick();
-			if (IA.react == InputAnswer::ReactionType::BINDED) {
-				lastBind = IA.bind;
+			if (IA.react == InputAnswer::ReactionType::CREATE) {
+				factory->CreateOperation(IA.creation);
 				return;
 			}
 			else if (IA.react == InputAnswer::ReactionType::PROCESSED) {
@@ -51,8 +53,8 @@ void InputManager::key_callback(GLFWwindow* window, int key, int scancode, int a
 
 
 			InputAnswer IA = IP->ProcessKey(key);
-			if (IA.react == InputAnswer::ReactionType::BINDED) {
-				lastBind = IA.bind;
+			if (IA.react == InputAnswer::ReactionType::CREATE) {
+				factory->CreateOperation(IA.creation);
 				return;
 			}
 			else if (IA.react == InputAnswer::ReactionType::PROCESSED) {
@@ -81,9 +83,12 @@ void InputManager::cursor_position_callback(GLFWwindow* window, double xpos, dou
 	}
 }
 
-InputAnswer::InputAnswer(ReactionType _react, InputBindable* _bind = NULL) :react(_react),bind(_bind)
+InputAnswer::InputAnswer(ReactionType _react, OperationType _creation) :react(_react),creation(_creation)
 {
 }
+InputAnswer::InputAnswer(ReactionType _react) : react(_react){}
+
+InputAnswer::InputAnswer() : react(InputAnswer::ReactionType::IGNORED){}
 
 vec2 InputManager::GetMousePos1()
 {
@@ -119,6 +124,14 @@ void InputManager::AddIP(InputProcessor* ip)
 
 
 }
+
+void InputManager::ChangeBind(InputBindable* newBind)
+{
+	if(lastBind!=NULL)lastBind->Release();
+	lastBind=newBind;
+}
+
+Factory* InputManager::GetFactory(){return factory;}
 
 
 

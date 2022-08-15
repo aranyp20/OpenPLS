@@ -1,17 +1,20 @@
 #include "Surface.h"
 #include "Geometry.h"
+#include "Factory.h"
+
 
 InputAnswer Surface::ProcessKey(int key)
 {
 	if (key == GLFW_KEY_Q) {
-		return InputAnswer(InputAnswer::ReactionType::BINDED, new OCameraMove(viewCamera));
+		return InputAnswer(InputAnswer::ReactionType::CREATE, InputAnswer::OperationType::CAMERA_MOVE);
 	}else if(key == GLFW_KEY_A){
 		if(toloka->CheckHit()){
-			return InputAnswer(InputAnswer::ReactionType::BINDED, toloka);
+			InputManager::ChangeBind(toloka);
+			return InputAnswer(InputAnswer::ReactionType::PROCESSED);
 		}
 	}
 
-	return InputAnswer(InputAnswer::ReactionType::IGNORED, NULL);
+	return InputAnswer();
 	
 }
 
@@ -22,7 +25,7 @@ bool Toloka::CheckHit()
 	for(auto arrow : arrows){
 		if(arrow.CheckHit(InputManager::ChangeInput(InputManager::GetMousePos2()),owner->viewCamera->V()*owner->viewCamera->P())){
 			arrowActive = arrow;
-			moveOperation = new OVertMove(owner->meshHandler->activeMesh,arrowActive.direction,owner->viewCamera);
+			moveOperation = static_cast<OVertMove*>(InputManager::GetFactory()->CreateOperation(InputAnswer::OperationType::VERT_MOVE,Factory::CreationAddons(arrowActive.direction)));
 			return true;
 		}
 	}

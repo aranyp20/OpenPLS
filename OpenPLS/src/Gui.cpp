@@ -1,7 +1,7 @@
 #include "Gui.h"
 
 #include "Program.h"
-
+#include "Factory.h"
 
 
 using namespace GUI;
@@ -57,9 +57,21 @@ Hud::Hud(Shader* _shader) : Component(this)
     AddComponent(Rect(p8.x,p8.y,(p9-p8).length(),-(p10-p8).length()),panel3,static_cast<HudObserver*>(observers[0])->GetRenderData(),true);
     AddComponent(Rect(p12.x,p12.y,(p14-p12).length(),-(p14-p15).length()),panel4,static_cast<HudObserver*>(observers[0])->GetRenderData(),true);
 
+    Rect tempR = panel4->GetInfluenceZone();
+
+   
+
+
+    Rect tempR2(0.1f,0,tempR.width-0.1f,-tempR.height);
+
     panel1->AddComponent(Rect(0.05,0.1,0.1,0.1),new Button(this),static_cast<HudObserver*>(observers[0])->GetRenderData());
     panel1->AddComponent(Rect(0.2,0.1,0.1,0.1),new Button(this),static_cast<HudObserver*>(observers[0])->GetRenderData());
-    panel4->AddComponent(panel4->GetInfluenceZone(),new TimeLine(this),static_cast<HudObserver*>(observers[0])->GetRenderData(),true);
+    panel4->AddComponent(tempR2,new TimeLine(this),static_cast<HudObserver*>(observers[0])->GetRenderData());
+
+    tempR2.width = 0.1f;
+    tempR2.startX -=0.1f;
+
+    panel4->AddComponent(tempR2,new Button(this),static_cast<HudObserver*>(observers[0])->GetRenderData());
 }
 
 std::vector<float>& HudObserver::GetRenderData()
@@ -135,7 +147,7 @@ InputAnswer Component::CheckHit(const vec2& pos)
         
         return HandleHit(pos);
     }else{
-        return InputAnswer(InputAnswer::ReactionType::IGNORED,NULL);
+        return InputAnswer();
     }
 }
 
@@ -184,6 +196,7 @@ void Component::AddComponent(Rect _r, Component* _c,std::vector<float>& _rd, boo
     
     Rect newRect(_r.startX + influenceZone.startX ,-_r.startY+influenceZone.startY ,_r.width,-_r.height);
     
+  
     if(relToWindow)_c->SetInfluenceZone(_r);
     else {_c->SetInfluenceZone(newRect);}
 }
@@ -208,13 +221,17 @@ InputAnswer Button::HandleHit(const vec2&)
    
     static_cast<BasicTheme*>(theme)->color = vec3(0,1,0);
     //root->TestHappened(); //villogtatja mert nem swapbufferezik
-    return InputAnswer(InputAnswer::ReactionType::BINDED,this);
+    InputManager::GetFactory()->CreateOperation(InputAnswer::OperationType::VERT_EXTRUDE);
+    InputManager::ChangeBind(this);
+    return InputAnswer(InputAnswer::ReactionType::PROCESSED);
 }
 
 void Button::Release()
 {
 
     static_cast<BasicTheme*>(theme)->color = vec3(0.4f,0.4f,0.4f);
+
+    
 }
 
 void Button::Update()
@@ -229,7 +246,7 @@ InputAnswer TimeLine::HandleHit(const vec2& p)
 {
     
     AddComponent(Rect(p.x-influenceZone.width/200,influenceZone.startY,influenceZone.width/100,influenceZone.height),new Panel(root,vec3(1,1,0)),observers[0]->GetDataHere(),true);
-    return InputAnswer(InputAnswer::ReactionType::PROCESSED,NULL);
+    return InputAnswer(InputAnswer::ReactionType::PROCESSED);
 }
 
 

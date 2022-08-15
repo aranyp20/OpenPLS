@@ -4,6 +4,7 @@
 #include "Surface.h"
 #include "Addons.hpp"
 #include "Geometry.h"
+#include "Factory.h"
 
 void Mesh::PrintVerts() 
 {/*
@@ -501,21 +502,21 @@ MeshHandler::MeshHandler(Surface* s) : owner(s)
 InputAnswer MeshHandler::ProcessKey(int key)
 {
 	if (key == GLFW_KEY_W && CheckHit(InputManager::ChangeInput(InputManager::GetMousePos2()))) {
-		return InputAnswer(InputAnswer::ReactionType::PROCESSED, NULL);
+		return InputAnswer(InputAnswer::ReactionType::PROCESSED);
 	}
 	else if(key == GLFW_KEY_S){
-		return InputAnswer(InputAnswer::ReactionType::BINDED,new OVertScale(activeMesh));
+		return InputAnswer(InputAnswer::ReactionType::CREATE,InputAnswer::OperationType::VERT_SCALE);
 	}
 	else if(key == GLFW_KEY_R){
-		return InputAnswer(InputAnswer::ReactionType::BINDED,new OVertRotate(activeMesh,vec3(1,0,0)));
+		return InputAnswer(InputAnswer::ReactionType::CREATE,InputAnswer::OperationType::VERT_ROTATE);
 	}else if(key == GLFW_KEY_E){
 		OVertExtrude ov(activeMesh);
-		return InputAnswer(InputAnswer::ReactionType::PROCESSED, NULL);
+		return InputAnswer(InputAnswer::ReactionType::PROCESSED);
 	}
 	
 
 
-	return InputAnswer(InputAnswer::ReactionType::IGNORED,NULL);
+	return InputAnswer();
 }
 
 void MeshHandler::AddMesh(Mesh* m)
