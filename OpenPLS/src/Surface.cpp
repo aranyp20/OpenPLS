@@ -3,6 +3,16 @@
 #include "Factory.h"
 
 
+InputAnswer Surface::ProcessMouseClick()
+{
+	if(InputManager::GetFactory()->TriggerHolded() != NULL)return InputAnswer(InputAnswer::ReactionType::PROCESSED);
+	if(toloka->CheckHit()){
+			InputManager::ChangeBind(toloka);
+			return InputAnswer(InputAnswer::ReactionType::PROCESSED);
+	}
+	return InputAnswer();
+}
+
 InputAnswer Surface::ProcessKey(int key)
 {
 	if (key == GLFW_KEY_Q) {
@@ -13,7 +23,7 @@ InputAnswer Surface::ProcessKey(int key)
 			return InputAnswer(InputAnswer::ReactionType::PROCESSED);
 		}
 	}
-
+	
 	return InputAnswer();
 	
 }

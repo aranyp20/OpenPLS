@@ -78,6 +78,7 @@ public:
 
 
 	InputAnswer ProcessKey(int key);
+	InputAnswer ProcessMouseClick();
 
 	void Render(Renderer&);
 

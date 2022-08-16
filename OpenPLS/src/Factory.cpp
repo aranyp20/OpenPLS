@@ -4,8 +4,18 @@
 
 Factory::Factory(Surface* _surface) : surface(_surface){}
 
-Operation* Factory::CreateOperation(InputAnswer::OperationType which,Factory::CreationAddons addons)
+Factory::OperationHolder::OperationHolder() : active(false){}
+
+Factory::OperationHolder::OperationHolder(InputAnswer::OperationType _type,CreationAddons _addons) : active(true), type(_type), addons(_addons){}
+
+Operation* Factory::CreateOperation(InputAnswer::OperationType which,Factory::CreationAddons addons, bool delayed)
 {
+    if(delayed){
+        SetHolded(OperationHolder(which,addons));
+        return NULL;
+    }
+
+
     Operation* createdOperation;
 
 
@@ -36,6 +46,20 @@ Operation* Factory::CreateOperation(InputAnswer::OperationType which,Factory::Cr
 
     return createdOperation;
 }
+
+Operation* Factory::TriggerHolded()
+{
+    
+    if(oh.active){
+        oh.active=false;
+        return CreateOperation(oh.type,oh.addons);
+    }
+    return NULL;
+}
+
+void Factory::SetHolded(OperationHolder _oh){oh = _oh;}
+
+void Factory::ReleaseHolded(){oh.active = false;}
 
 Factory::CreationAddons::CreationAddons(){}
 Factory::CreationAddons::CreationAddons(vec3 _v) : pvec3(_v){}

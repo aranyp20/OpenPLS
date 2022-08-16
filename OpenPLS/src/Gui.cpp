@@ -64,14 +64,14 @@ Hud::Hud(Shader* _shader) : Component(this)
 
     Rect tempR2(0.1f,0,tempR.width-0.1f,-tempR.height);
 
-    panel1->AddComponent(Rect(0.05,0.1,0.1,0.1),new Button(this),static_cast<HudObserver*>(observers[0])->GetRenderData());
-    panel1->AddComponent(Rect(0.2,0.1,0.1,0.1),new Button(this),static_cast<HudObserver*>(observers[0])->GetRenderData());
+    panel1->AddComponent(Rect(0.05,0.1,0.1,0.1),new Button<Test,Test::TestData>(Test::TestData(0.1f),&(this->t),&Test::hal,this),static_cast<HudObserver*>(observers[0])->GetRenderData());
+    panel1->AddComponent(Rect(0.2,0.1,0.1,0.1),new Button<Test,Test::TestData>(Test::TestData(0.1f),&(this->t),&Test::hal,this),static_cast<HudObserver*>(observers[0])->GetRenderData());
     panel4->AddComponent(tempR2,new TimeLine(this),static_cast<HudObserver*>(observers[0])->GetRenderData());
 
     tempR2.width = 0.1f;
     tempR2.startX -=0.1f;
 
-    panel4->AddComponent(tempR2,new Button(this),static_cast<HudObserver*>(observers[0])->GetRenderData());
+    panel4->AddComponent(tempR2,new Button<Test,Test::TestData>(Test::TestData(0.1f),&(this->t),&Test::hal,this),static_cast<HudObserver*>(observers[0])->GetRenderData());
 }
 
 std::vector<float>& HudObserver::GetRenderData()
@@ -184,7 +184,7 @@ std::vector<float> TransparentTheme::GiveData(Rect& r, int level)
 ComponentTheme* Component::GetTheme(){return theme;}
 
 
-Button::Button(Component* _root,ComponentTheme* _theme) : Component(_root,_theme == NULL ? new BasicTheme(vec3(0.4f,0.4f,0.4f)) : _theme){}
+
 
 Panel::Panel(Component* _root,vec3 _color, ComponentTheme* _theme) : Component(_root, _theme == NULL ? new BasicTheme(_color) : _theme){}
 
@@ -216,28 +216,8 @@ InputAnswer Hud::ProcessMouseClick()
     return Component::CheckHit(InputManager::ChangeInput(InputManager::GetMousePos2(),false));
 }
 
-InputAnswer Button::HandleHit(const vec2&)
-{
-   
-    static_cast<BasicTheme*>(theme)->color = vec3(0,1,0);
-    //root->TestHappened(); //villogtatja mert nem swapbufferezik
-    InputManager::GetFactory()->CreateOperation(InputAnswer::OperationType::VERT_EXTRUDE);
-    InputManager::ChangeBind(this);
-    return InputAnswer(InputAnswer::ReactionType::PROCESSED);
-}
 
-void Button::Release()
-{
 
-    static_cast<BasicTheme*>(theme)->color = vec3(0.4f,0.4f,0.4f);
-
-    
-}
-
-void Button::Update()
-{
-
-}
 
 
 TimeLine::TimeLine(Component* _root,ComponentTheme* _theme ) : Component(_root,_theme == NULL ? new BasicTheme(vec3(0.1f,0.4f,0.4f)) : _theme){}

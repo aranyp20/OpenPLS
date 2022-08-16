@@ -10,7 +10,7 @@
 
 #include "Geometry.h"
 #include "InputManager.h"
-
+#include "Factory.h"
 
 namespace GUI{
 
@@ -90,8 +90,15 @@ namespace GUI{
         void SetLevel(int);
     };
     
+    struct Test{
+        struct TestData{
+            float b;
+            TestData(float a) : b(a){}
+        };
+        void hal(TestData a){std::cout<<a.b<<std::endl;}
+    };
     class Hud :  public Component, public InputProcessor{
-        
+        Test t;
         public:
         Hud(Shader*);
 
@@ -115,12 +122,47 @@ namespace GUI{
 
  
 
+
+    template <typename OBJ,typename DAT>
     class Button : public Component, public InputBindable{
+
+        typedef void(OBJ::*function_pointer)();
+        function_pointer func;
+        OBJ* obj;
+
+        DAT param;
         public:
-        Button(Component*,ComponentTheme* _theme = NULL);
-        InputAnswer HandleHit(const vec2&);
-        void Release();
-        void Update();
+
+        template<typename ...A>
+        Button(DAT _param,OBJ* _obj, void(OBJ::*f)(A...),Component* _root,ComponentTheme* _theme = NULL): param(_param),obj(_obj),func((void(OBJ::*)())f), Component(_root,_theme == NULL ? new BasicTheme(vec3(0.4f,0.4f,0.4f)) : _theme){}
+/* 
+        template<typename ...A>
+        Button<OBJ> operator=(void(OBJ::*f)(A...)){func = (void(OBJ::*)())f;return *this;} */
+
+        template<typename ...A>
+        void Call(A... a) const 
+        {
+            void(OBJ::*f)(A...) = (void(OBJ::*)(A...))(func);
+            return ((*obj).*f)(a...);
+        }
+
+        InputAnswer HandleHit(const vec2&)
+        {
+   
+            static_cast<BasicTheme*>(theme)->color = vec3(0,1,0);
+            this->Call(param);
+            InputManager::GetFactory()->CreateOperation(InputAnswer::OperationType::CAMERA_MOVE,Factory::CreationAddons(),true);
+            InputManager::ChangeBind(this);
+            return InputAnswer(InputAnswer::ReactionType::PROCESSED);
+        }
+        void Release()
+        {
+            static_cast<BasicTheme*>(theme)->color = vec3(0.4f,0.4f,0.4f);   
+        }
+        void Update()
+        {
+
+        }
     };
 
     class Panel : public Component{
