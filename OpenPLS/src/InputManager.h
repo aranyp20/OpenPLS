@@ -22,7 +22,7 @@ struct InputAnswer {
 	};
 	enum OperationType{
         VERT_ROTATE, VERT_SCALE, VERT_EXTRUDE, VERT_MOVE,
-        CAMERA_MOVE
+        CAMERA_MOVE, CAMERA_FOCUS_SET
     };
 	ReactionType react;
 	OperationType creation;

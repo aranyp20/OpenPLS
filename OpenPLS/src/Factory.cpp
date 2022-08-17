@@ -2,6 +2,8 @@
 #include "Mesh.h"
 
 
+Factory::OperationHolder Factory::oh = Factory::OperationHolder();
+
 Factory::Factory(Surface* _surface) : surface(_surface){}
 
 Factory::OperationHolder::OperationHolder() : active(false){}
@@ -10,8 +12,11 @@ Factory::OperationHolder::OperationHolder(InputAnswer::OperationType _type,Creat
 
 Operation* Factory::CreateOperation(InputAnswer::OperationType which,Factory::CreationAddons addons, bool delayed)
 {
+    
     if(delayed){
+      
         SetHolded(OperationHolder(which,addons));
+       
         return NULL;
     }
 
@@ -39,6 +44,10 @@ Operation* Factory::CreateOperation(InputAnswer::OperationType which,Factory::Cr
         case InputAnswer::OperationType::VERT_ROTATE:
             createdOperation = new OVertRotate(activeMesh,vec3(1,0,0));
         break;
+        case InputAnswer::OperationType::CAMERA_FOCUS_SET:
+            createdOperation = new OCameraFocusSet(surface->viewCamera,addons.pfloat);
+            return createdOperation;
+        break;
         default:return NULL;break;
     }
 
@@ -46,12 +55,22 @@ Operation* Factory::CreateOperation(InputAnswer::OperationType which,Factory::Cr
 
     return createdOperation;
 }
+void Factory::CreateOperation(OperationCreationParam p)
+{
+    
+    CreateOperation(p.type,p.addons,p.delayed);
+}
+
+Factory::OperationCreationParam::OperationCreationParam(InputAnswer::OperationType _type,CreationAddons _addons,bool _delayed) : type(_type), addons(_addons), delayed(_delayed)
+{
+
+}
 
 Operation* Factory::TriggerHolded()
 {
     
     if(oh.active){
-        oh.active=false;
+        
         return CreateOperation(oh.type,oh.addons);
     }
     return NULL;
@@ -63,5 +82,6 @@ void Factory::ReleaseHolded(){oh.active = false;}
 
 Factory::CreationAddons::CreationAddons(){}
 Factory::CreationAddons::CreationAddons(vec3 _v) : pvec3(_v){}
+Factory::CreationAddons::CreationAddons(float _f) : pfloat(_f){}
 
 

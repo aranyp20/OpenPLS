@@ -15,8 +15,10 @@ class Factory{
 
     struct CreationAddons{
         vec3 pvec3;
+        float pfloat;
         CreationAddons();
         CreationAddons(vec3);
+        CreationAddons(float);
     };
 
     struct OperationHolder{
@@ -30,15 +32,30 @@ class Factory{
 
 
 
+    
+
+    struct OperationCreationParam{
+        InputAnswer::OperationType type;
+        CreationAddons addons;
+        bool delayed;
+        OperationCreationParam(InputAnswer::OperationType,CreationAddons,bool delayed = false);
+    };
+
+
+
     Operation* TriggerHolded();
     void ReleaseHolded();
 
     Factory(Surface*);
 
     Operation* CreateOperation(InputAnswer::OperationType,CreationAddons addons = CreationAddons(),bool delayed = false);
+    void CreateOperation(OperationCreationParam);
+
+   
 
     private:
-    OperationHolder oh;
+    static OperationHolder oh;
+   
 
     void SetHolded(OperationHolder);
 };

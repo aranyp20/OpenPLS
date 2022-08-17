@@ -93,9 +93,9 @@ void Program::WorldInit()
     
     InputManager::factory = new Factory(surface);
 
-    InputManager::AddIP(surface->meshHandler);
-    InputManager::AddIP(surface);
     InputManager::AddIP(hud);
+    InputManager::AddIP(surface);
+    InputManager::AddIP(surface->meshHandler);
     
     InputManager::SetCallbacks(window);
 

@@ -6,16 +6,11 @@
 #include "Geometry.h"
 #include "Factory.h"
 
-void Mesh::PrintVerts() 
-{/*
-	std::cout << "Matrix is:\n";
 
-	for (int i = 0; i < edgeMatrix.Size(); i++) {
-		for (int j = 0; j < edgeMatrix.matrix[i].size(); j++) {
-			std::cout << edgeMatrix.matrix[i][j];
-		}
-		std::cout << "\n";
-	}*/
+Mesh *MeshHandler::activeMesh = NULL;
+
+void Mesh::PrintVerts() 
+{
 }
 
 
@@ -516,6 +511,17 @@ InputAnswer MeshHandler::ProcessKey(int key)
 	
 
 
+	return InputAnswer();
+}
+
+InputAnswer MeshHandler::ProcessMouseClick()
+{
+	if(InputManager::GetFactory()->TriggerHolded() != NULL)return InputAnswer(InputAnswer::ReactionType::PROCESSED);
+
+
+	if (CheckHit(InputManager::ChangeInput(InputManager::GetMousePos2()))) {
+		return InputAnswer(InputAnswer::ReactionType::PROCESSED);
+	}
 	return InputAnswer();
 }
 

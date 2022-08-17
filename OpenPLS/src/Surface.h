@@ -72,7 +72,6 @@ public:
 	Toloka *toloka;
 	Light* light;
 
-	//itt kell a camerat meg mh-t megcsin�lni
 	Surface();
 
 
@@ -92,6 +91,15 @@ public:
 	OCameraMove(Camera*);
 
 	void Update();
+};
+
+class OCameraFocusSet : public Operation {
+	Camera* camera;
+
+public:
+	OCameraFocusSet(Camera*,float);
+	void Update();
+
 };
 
 #endif

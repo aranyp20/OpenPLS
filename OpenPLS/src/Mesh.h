@@ -186,10 +186,11 @@ class MeshHandler : public InputProcessor
 	Surface *owner;
 
 public:
-	Mesh *activeMesh;
+	static Mesh *activeMesh;
 	MeshHandler(Surface *);
 
 	InputAnswer ProcessKey(int key);
+	InputAnswer ProcessMouseClick();
 	void AddMesh(Mesh *);
 	bool CheckHit(const vec2 &);
 	void Render(const Renderer& r, const Shader& vs,const Shader& es,Shader& ss);

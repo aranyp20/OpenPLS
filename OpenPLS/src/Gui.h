@@ -79,26 +79,22 @@ namespace GUI{
         ComponentTheme* theme;
         public:
         Component(Component*,ComponentTheme* _theme = NULL);
-        InputAnswer CheckHit(const vec2&);
+        
+        virtual InputAnswer CheckHit(const vec2&);
         virtual InputAnswer HandleHit(const vec2&){ return InputAnswer();}
         ComponentTheme* GetTheme();
         Rect& GetInfluenceZone();
         //Real-time maradjon!!
-        void AddComponent(Rect,Component*,std::vector<float>&, bool relToWindow = false);   
+        virtual void AddComponent(Rect,Component*,std::vector<float>&, bool relToWindow = false);   
         void SetInfluenceZone(Rect&);
         void TestHappened();
         void SetLevel(int);
+        virtual bool IfActivate(){return false;}
     };
     
-    struct Test{
-        struct TestData{
-            float b;
-            TestData(float a) : b(a){}
-        };
-        void hal(TestData a){std::cout<<a.b<<std::endl;}
-    };
+
     class Hud :  public Component, public InputProcessor{
-        Test t;
+     
         public:
         Hud(Shader*);
 
@@ -123,9 +119,9 @@ namespace GUI{
  
 
 
-    template <typename OBJ,typename DAT>
+    template <typename OBJ,typename  DAT>
     class Button : public Component, public InputBindable{
-
+        protected:
         typedef void(OBJ::*function_pointer)();
         function_pointer func;
         OBJ* obj;
@@ -135,33 +131,121 @@ namespace GUI{
 
         template<typename ...A>
         Button(DAT _param,OBJ* _obj, void(OBJ::*f)(A...),Component* _root,ComponentTheme* _theme = NULL): param(_param),obj(_obj),func((void(OBJ::*)())f), Component(_root,_theme == NULL ? new BasicTheme(vec3(0.4f,0.4f,0.4f)) : _theme){}
-/* 
-        template<typename ...A>
-        Button<OBJ> operator=(void(OBJ::*f)(A...)){func = (void(OBJ::*)())f;return *this;} */
+       
 
         template<typename ...A>
         void Call(A... a) const 
         {
             void(OBJ::*f)(A...) = (void(OBJ::*)(A...))(func);
-            return ((*obj).*f)(a...);
+            ((*obj).*f)(a...);
         }
 
-        InputAnswer HandleHit(const vec2&)
+        virtual InputAnswer HandleHit(const vec2&)
         {
-   
+           
             static_cast<BasicTheme*>(theme)->color = vec3(0,1,0);
             this->Call(param);
-            InputManager::GetFactory()->CreateOperation(InputAnswer::OperationType::CAMERA_MOVE,Factory::CreationAddons(),true);
             InputManager::ChangeBind(this);
             return InputAnswer(InputAnswer::ReactionType::PROCESSED);
         }
-        void Release()
+        virtual void Release()
         {
             static_cast<BasicTheme*>(theme)->color = vec3(0.4f,0.4f,0.4f);   
         }
         void Update()
         {
 
+        }
+  
+    };
+
+    
+
+    template<typename OBJ,typename DAT>
+    class SelButton : public Button<OBJ,DAT>{
+
+        bool pressed = false;
+        public:
+        template<typename ...A>
+        SelButton(DAT _param,OBJ* _obj, void(OBJ::*f)(A...),Component* _root,ComponentTheme* _theme = NULL) : Button<OBJ,DAT>(_param,_obj,f,_root,_theme){}
+
+
+        InputAnswer HandleHit(const vec2&)
+        {
+       
+            static_cast<BasicTheme*>(Component::theme)->color = vec3(0,1,0);
+            this->Call(Button<OBJ,DAT>::param);
+            InputManager::ChangeBind(this);
+            return InputAnswer(InputAnswer::ReactionType::PROCESSED); 
+
+        }
+
+        InputAnswer CheckHit(const vec2&){return InputAnswer();}
+
+        
+
+        void Release()
+        {
+            
+        }
+
+        bool IfActivate()
+        {
+            
+            if(!pressed) static_cast<BasicTheme*>(Component::theme)->color = vec3(0.0f,0.8f,0.4f);
+            else{static_cast<BasicTheme*>(Component::theme)->color = vec3(0.4f,0.4f,0.4f);}
+            pressed = !pressed;
+            return pressed;
+        }
+
+    };
+
+
+    class Sel : public Component, public InputBindable{
+       
+        Component* pressedButton;
+        public:
+        
+        Sel(Component* _root) : Component(_root,new BasicTheme(vec3(0.8f,0.8f,0.8f))),pressedButton(NULL)
+        {
+        }
+
+        void AddComponent(Rect _r,Component* _c,std::vector<float>& _rd, bool relToWindow = false)
+        {
+            Component::AddComponent(_r,_c,_rd);
+            float margin = std::min(fabs(influenceZone.width),fabs(influenceZone.height));
+            margin /=10;
+            int bS = ownedComponents.size();
+            float heightHere = influenceZone.height/bS + ((bS+1)*margin)/bS;
+            
+            for(int i=0;i<bS;i++){
+                Rect newRect(influenceZone.startX + margin,influenceZone.startY - i*(-heightHere+margin)-margin,influenceZone.width -2*margin,heightHere );
+                ownedComponents[i]->SetInfluenceZone(newRect);
+            }
+        }
+
+
+        void Update()
+        {
+
+        }
+
+        InputAnswer HandleHit(const vec2& p){
+            for(auto& b : ownedComponents){
+                InputAnswer itsAnswer = b->Component::CheckHit(p).react;
+                if(itsAnswer.react != InputAnswer::ReactionType::IGNORED){
+                    if(!(b->IfActivate())){
+                        InputManager::GetFactory()->ReleaseHolded();
+                        pressedButton = NULL;
+                    }else{
+                        if(pressedButton!=NULL && pressedButton!=b)pressedButton->IfActivate();
+                        pressedButton = b;
+                      
+                    }
+                    return itsAnswer;
+                }
+            }
+            return InputAnswer();
         }
     };
 

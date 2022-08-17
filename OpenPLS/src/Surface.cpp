@@ -173,6 +173,13 @@ OCameraMove::OCameraMove(Camera* _camera) : camera(_camera)
 	//camera->ReplaceEye(camera->GetEye() + vec3(1, 0, 0));
 }
 
+OCameraFocusSet::OCameraFocusSet(Camera* _camera,float _quantity) : camera(_camera)
+{
+	vec3 dirVec = normalize(camera->GetEye() - camera->GetLookat());
+	camera->ReplaceEye(dirVec * (1+_quantity));
+}
+
+
 void OCameraMove::Update()
 {
 	vec2 tVec = InputManager::GetMousePos2() - InputManager::GetMousePos1();
@@ -184,6 +191,11 @@ void OCameraMove::Update()
 	newEye = newEye + camera->GetLookat();
 	camera->ReplaceEye(newEye);
 	
+}
+
+void OCameraFocusSet::Update()
+{
+
 }
 
 Surface::Surface() : toloka(new Toloka(this))

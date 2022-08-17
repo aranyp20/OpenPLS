@@ -64,14 +64,20 @@ Hud::Hud(Shader* _shader) : Component(this)
 
     Rect tempR2(0.1f,0,tempR.width-0.1f,-tempR.height);
 
-    panel1->AddComponent(Rect(0.05,0.1,0.1,0.1),new Button<Test,Test::TestData>(Test::TestData(0.1f),&(this->t),&Test::hal,this),static_cast<HudObserver*>(observers[0])->GetRenderData());
-    panel1->AddComponent(Rect(0.2,0.1,0.1,0.1),new Button<Test,Test::TestData>(Test::TestData(0.1f),&(this->t),&Test::hal,this),static_cast<HudObserver*>(observers[0])->GetRenderData());
+    panel1->AddComponent(Rect(0.2,0.1,0.1,0.1),new Button<Factory,Factory::OperationCreationParam>(Factory::OperationCreationParam(InputAnswer::OperationType::VERT_EXTRUDE,Factory::CreationAddons()),InputManager::GetFactory(),&Factory::CreateOperation,this),static_cast<HudObserver*>(observers[0])->GetRenderData());
     panel4->AddComponent(tempR2,new TimeLine(this),static_cast<HudObserver*>(observers[0])->GetRenderData());
+  
+    Sel* sel = new Sel(this);
+    panel1->AddComponent(Rect(0.05,0.5,0.1,0.4),sel,static_cast<HudObserver*>(observers[0])->GetRenderData());
+    sel->AddComponent(Rect(),new SelButton<Factory,Factory::OperationCreationParam>(Factory::OperationCreationParam(InputAnswer::OperationType::CAMERA_MOVE,Factory::CreationAddons(),true),InputManager::GetFactory(),&Factory::CreateOperation,this),static_cast<HudObserver*>(observers[0])->GetRenderData());
+    sel->AddComponent(Rect(),new SelButton<Factory,Factory::OperationCreationParam>(Factory::OperationCreationParam(InputAnswer::OperationType::VERT_SCALE,Factory::CreationAddons(),true),InputManager::GetFactory(),&Factory::CreateOperation,this),static_cast<HudObserver*>(observers[0])->GetRenderData());
+    sel->AddComponent(Rect(),new SelButton<Factory,Factory::OperationCreationParam>(Factory::OperationCreationParam(InputAnswer::OperationType::VERT_ROTATE,Factory::CreationAddons(vec3(1,0,0)),true),InputManager::GetFactory(),&Factory::CreateOperation,this),static_cast<HudObserver*>(observers[0])->GetRenderData());
+
 
     tempR2.width = 0.1f;
     tempR2.startX -=0.1f;
 
-    panel4->AddComponent(tempR2,new Button<Test,Test::TestData>(Test::TestData(0.1f),&(this->t),&Test::hal,this),static_cast<HudObserver*>(observers[0])->GetRenderData());
+    //panel4->AddComponent(tempR2,new Button<Test,Test::TestData>(Test::TestData(0.1f),&(this->t),&Test::hal,this),static_cast<HudObserver*>(observers[0])->GetRenderData());
 }
 
 std::vector<float>& HudObserver::GetRenderData()
