@@ -9,9 +9,7 @@
 
 Mesh *MeshHandler::activeMesh = NULL;
 
-void Mesh::PrintVerts() 
-{
-}
+
 
 
 
@@ -773,4 +771,91 @@ void Mesh::EdgeMatrix::SetRelationshipBetweenPoints(Point* p1, Point* p2, Edge* 
 		matrix[placeP1][placeP2] = edge;
 	}
 
+}
+
+
+
+
+
+vec3 Mesh::CalculateMidPoint(std::vector<Point*> ps)
+{
+	vec3 sum;
+	for(auto& c : ps){
+		sum = sum + c->pos;
+	}
+	sum = sum / ps.size();
+	return sum;
+}
+
+std::vector<Mesh::Edge*> Mesh::Side::GetEdges(Mesh* m)
+{
+	std::vector<Mesh::Edge*> result;
+	for(int i = 0;i<points.size();i++){
+		int i1 = i;
+		int i2 = i+1;
+		if(i2==points.size())i2 = 0;
+		Mesh::EdgeIterator it = m->begin();
+		while(it.hasNext()){
+			if((it.GetElement1()==points[i1] && it.GetElement2()==points[i2]) || (it.GetElement1()==points[i2] && it.GetElement2()==points[i1]))result.push_back(it.GetElementEdge());
+		}
+	}
+	return result;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+
+OVertSubdivide::OVertSubdivide(Mesh* _mesh) : MeshOperation(_mesh), myMesh(_mesh)
+{
+
+}
+
+void OVertSubdivide::FillEdgePoints()
+{
+	Mesh::EdgeIterator it = myMesh->begin();
+	while(it.hasNext()){
+		edgePoints.push_back(new EdgePoint(it.GetElementEdge()));
+	}
+}
+
+void OVertSubdivide::FillSidePoints()
+{
+	for(auto& s : myMesh->sides){
+		std::vector<Mesh::Edge*> es = s->GetEdges(myMesh);
+		std::vector<OVertSubdivide::EdgePoint*> eps;
+		for(auto& ep : edgePoints){
+			for(auto& e : es){
+				if(ep->myEdge == e){
+					eps.push_back(ep);
+				}
+			}
+		}
+
+		sidePoints.push_back(new SidePoint(s,eps));
+	}
+}
+
+void OVertSubdivide::ReplaceEdgePoints()
+{
+
+}
+
+void OVertSubdivide::ReplaceSidePoints()
+{
+
+}
+
+void OVertSubdivide::CreateNewMesh()
+{
+	
+}
+
+OVertSubdivide::EdgePoint::EdgePoint(Mesh::Edge* _edge) : myEdge(_edge)
+{
+	Mesh::Point((_edge->p2->pos+_edge->p1->pos)/2);
+}
+
+OVertSubdivide::SidePoint::SidePoint(Mesh::Side* _side, std::vector<OVertSubdivide::EdgePoint*> ep) : ePoints(ep)
+{
+	Mesh::Point(Mesh::CalculateMidPoint(_side->points));
+	
 }

@@ -40,6 +40,7 @@ public: // valamikor private lesz
 		Mesh* owner;
 
 		inline Point(float x = 0, float y = 0, float z = 0) : pos(x, y, z),owner(NULL) {}
+		inline Point(const vec3& v) : pos(v.x,v.y,v.z), owner(NULL){}
 		inline Point(const Point& p) : pos(p.pos), owner(p.owner) {}
 
 
@@ -61,6 +62,8 @@ public: // valamikor private lesz
 		std::vector<Point *> points;
 
 		inline Side(std::vector<Point *> _ps) { points = _ps; }
+
+		std::vector<Edge*> GetEdges(Mesh*);
 	};
 
 private:
@@ -94,9 +97,9 @@ private:
 	EdgeMatrix edgeMatrix;
 
 	void SelectPoint(Point *);
-
-
 	void TransformToCube();
+
+
 
 	
 
@@ -126,7 +129,6 @@ public:
 	EdgeIterator begin();
 	EdgeIterator end();
 
-	void PrintVerts();
 
 	Mesh(Mesh::Shape);
 
@@ -145,11 +147,12 @@ public:
 
 	std::vector<Mesh::Point*> GiveSelecteds();
 
-
+	static vec3 CalculateMidPoint(std::vector<Point*>);
 
 	void Render(const Renderer& r, const Shader& vs,const Shader& es,Shader& ss);
 	friend class MeshRenderer;
 	friend class OVertExtrude;
+	friend class OVertSubdivide;
 };
 
 
@@ -204,7 +207,7 @@ class MeshOperation : public Operation{
 
 	void FindMidPoint();
 
-	public:
+public:
 
 	MeshOperation(Mesh*);
 	virtual void Update() = 0;
@@ -240,6 +243,39 @@ class OVertExtrude : public MeshOperation{
 	public:
 	OVertExtrude(Mesh*);
 	void Update();
+
+};
+
+class OVertSubdivide : public MeshOperation{
+	Mesh* myMesh;
+
+	struct EdgePoint : public Mesh::Point{
+		Mesh::Edge* myEdge;
+		EdgePoint(Mesh::Edge*);
+	};
+
+	struct SidePoint : public Mesh::Point{
+		std::vector<EdgePoint*> ePoints;
+		SidePoint(Mesh::Side*,std::vector<EdgePoint*>);
+	};
+	std::vector<EdgePoint*> edgePoints;
+	std::vector<SidePoint*> sidePoints;
+
+	void FillEdgePoints();
+	void FillSidePoints();
+
+	void ReplaceEdgePoints();
+	void ReplaceSidePoints();
+
+	//static valtozoban el lehetne tarulni a kulonbozo szintu halokat es tolokaval valtoztatni, hogy melyik legyen
+	void CreateNewMesh();
+
+public:
+
+	OVertSubdivide(Mesh*);
+
+
+	void Update(){}
 
 };
 

@@ -65,6 +65,9 @@ Hud::Hud(Shader* _shader) : Component(this)
     Rect tempR2(0.1f,0,tempR.width-0.1f,-tempR.height);
 
     panel1->AddComponent(Rect(0.2,0.1,0.1,0.1),new Button<Factory,Factory::OperationCreationParam>(Factory::OperationCreationParam(InputAnswer::OperationType::VERT_EXTRUDE,Factory::CreationAddons()),InputManager::GetFactory(),&Factory::CreateOperation,this),static_cast<HudObserver*>(observers[0])->GetRenderData());
+    panel1->AddComponent(Rect(0.2,0.3,0.1,0.1),new Button<Factory,Factory::OperationCreationParam>(Factory::OperationCreationParam(InputAnswer::OperationType::VERT_SUBDIVIDE,Factory::CreationAddons()),InputManager::GetFactory(),&Factory::CreateOperation,this),static_cast<HudObserver*>(observers[0])->GetRenderData());
+
+
     panel4->AddComponent(tempR2,new TimeLine(this),static_cast<HudObserver*>(observers[0])->GetRenderData());
   
     Sel* sel = new Sel(this);

@@ -48,6 +48,9 @@ Operation* Factory::CreateOperation(InputAnswer::OperationType which,Factory::Cr
             createdOperation = new OCameraFocusSet(surface->viewCamera,addons.pfloat);
             return createdOperation;
         break;
+        case InputAnswer::OperationType::VERT_SUBDIVIDE:
+            createdOperation = new OVertSubdivide(activeMesh);
+        break;
         default:return NULL;break;
     }
 
