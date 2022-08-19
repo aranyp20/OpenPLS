@@ -655,39 +655,81 @@ void OVertRotate::Update()
 
 OVertExtrude::OVertExtrude(Mesh* mesh) : MeshOperation(mesh)
 {
+	std::vector<Mesh::Side*> selectedSides;
+	std::vector<Mesh::Point*> validSelection;
+	for(auto& a : mesh->sides){
+		bool someThingMissing = false;
+		for(auto& b : a->points){
+		
+			if(!(std::find(controlledPoints.begin(),controlledPoints.end(),b)!=controlledPoints.end())){
+				someThingMissing = true;
+			}
+		}
+		if(!someThingMissing){
+			selectedSides.push_back(a);
+			for(auto& b : a->points){
+
+				if(!(std::find(validSelection.begin(),validSelection.end(),b)!=validSelection.end())){
+					validSelection.push_back(b);
+				}
+			}
+		}
+	}
+
+
+	std::map<Mesh::Side*,std::vector<Mesh::Point*>> hozza;
+
 	std::vector<Mesh::Point*> newPoints;
 	
-	for(auto p : controlledPoints){
+	for(auto p : validSelection){
 		Mesh::Point* newPoint = new Mesh::Point(*p);
 		newPoints.push_back(newPoint);
 		mesh->AddPoint(newPoint);
+
+		for(auto& a : selectedSides){
+			if(std::find(a->points.begin(),a->points.end(),p)!=a->points.end()){
+				hozza[a].push_back(newPoint);
+			}
+		}
 	}
 
-	std::map<int,int> foundPairs;
+
+	
+	
 
 	std::vector<std::vector<Mesh::Point*>> emptyFrames;
 
 	for(int i=0;i<newPoints.size();i++){
-		for(int j=0;j<newPoints.size();j++){
-			if(i!=j && foundPairs[j] != i && mesh->edgeMatrix.GetRelationshipBetweenPoints(controlledPoints[i],controlledPoints[j]) != NULL){
-				foundPairs.insert({i,j});
+		for(int j=i+1;j<newPoints.size();j++){
+			if(mesh->edgeMatrix.GetRelationshipBetweenPoints(validSelection[i],validSelection[j]) != NULL){
+				std::cout<<"add"<<std::endl;
 				mesh->edgeMatrix.SetRelationshipBetweenPoints(newPoints[i],newPoints[j],new Mesh::Edge(newPoints[i],newPoints[j],mesh));
-				std::vector<Mesh::Point*> tempP;tempP.push_back(newPoints[i]);tempP.push_back(newPoints[j]);tempP.push_back(controlledPoints[i]);tempP.push_back(controlledPoints[j]);
+				
+				std::vector<Mesh::Point*> tempP;tempP.push_back(newPoints[i]);tempP.push_back(newPoints[j]);tempP.push_back(validSelection[i]);tempP.push_back(validSelection[j]);
 				
 				
-				emptyFrames.push_back({newPoints[i],newPoints[j],controlledPoints[i],controlledPoints[j]});
+				emptyFrames.push_back({newPoints[i],newPoints[j],validSelection[i],validSelection[j]});
 			}
 		}
 	}
 
 	for(int i = 0;i<newPoints.size();i++){
-		mesh->edgeMatrix.SetRelationshipBetweenPoints(newPoints[i],controlledPoints[i],new Mesh::Edge(newPoints[i],controlledPoints[i],mesh));
+		mesh->edgeMatrix.SetRelationshipBetweenPoints(newPoints[i],validSelection[i],new Mesh::Edge(newPoints[i],validSelection[i],mesh));
 	}
 
 	for(auto& a : emptyFrames){
+		
 		mesh->AddSideExtra(a);
 	}
 
+	for(auto& a : selectedSides){
+		
+		mesh->AddSideExtra(hozza[a]);
+
+		mesh->DeleteSide(a);
+		delete a;
+	}
+	std::cout<<"Size "<<mesh->sides.size()<<std::endl;
 	mesh->selectedPoints = newPoints;
 }
 
@@ -774,7 +816,26 @@ void Mesh::EdgeMatrix::SetRelationshipBetweenPoints(Point* p1, Point* p2, Edge* 
 }
 
 
+void Mesh::DeleteEdge(Edge* _e)
+{
+ 	EdgeIterator it = begin();
+	std::vector<std::vector<unsigned int>> deleteThese;
+	while(it.hasNext()){
+		if(it.GetElementEdge()==_e){
+			std::vector<unsigned int> ta {edgeMatrix.elementIndex(it.GetElement1()),edgeMatrix.elementIndex(it.GetElement2())} ;
+			deleteThese.push_back(ta);
+		}
+	}
+	for(auto& a : deleteThese){
+		
+		edgeMatrix.matrix[a[1]][a[0]] = NULL;
+	} 
+}
 
+void Mesh::DeleteSide(Side* _s)
+{
+	sides.erase(std::remove(sides.begin(),sides.end(),_s),sides.end());
+}
 
 
 vec3 Mesh::CalculateMidPoint(std::vector<Point*> ps)
@@ -806,7 +867,24 @@ std::vector<Mesh::Edge*> Mesh::Side::GetEdges(Mesh* m)
 
 OVertSubdivide::OVertSubdivide(Mesh* _mesh) : MeshOperation(_mesh), myMesh(_mesh)
 {
+	SnapShot();
+	FillEdgePoints();
+	FillSidePoints();
+	ReplaceEdgePoints();
+	ReplaceOldPoints();
+	CreateNewMesh();
+	DeleteOldSidesAndEdges();
+}
 
+void OVertSubdivide::SnapShot()
+{
+	Mesh::EdgeIterator it = myMesh->begin();
+	while(it.hasNext()){
+		OriginalEdges.push_back(it.GetElementEdge());
+	}
+	for(auto& a : myMesh->sides){
+		OriginalSides.push_back(a);
+	}
 }
 
 void OVertSubdivide::FillEdgePoints()
@@ -822,8 +900,8 @@ void OVertSubdivide::FillSidePoints()
 	for(auto& s : myMesh->sides){
 		std::vector<Mesh::Edge*> es = s->GetEdges(myMesh);
 		std::vector<OVertSubdivide::EdgePoint*> eps;
-		for(auto& ep : edgePoints){
-			for(auto& e : es){
+		for(auto& e : es){
+			for(auto& ep : edgePoints){
 				if(ep->myEdge == e){
 					eps.push_back(ep);
 				}
@@ -839,23 +917,55 @@ void OVertSubdivide::ReplaceEdgePoints()
 
 }
 
-void OVertSubdivide::ReplaceSidePoints()
+void OVertSubdivide::ReplaceOldPoints()
 {
 
 }
 
 void OVertSubdivide::CreateNewMesh()
 {
-	
+	for(auto& te : edgePoints){
+		std::vector<Mesh::Point*> tConns {te->myEdge->p1,te->myEdge->p2};
+		myMesh->AddPoint(te->me,tConns);
+	}
+	for(auto& te : sidePoints){
+		std::vector<Mesh::Point*> tConns;
+		for(auto& tt : te->ePoints)tConns.push_back(tt->me);
+		myMesh->AddPoint(te->me,tConns);
+		
+		for(int i = 0;i<te->ePoints.size();i++){
+			int i1=i;
+			int i2 =i+1;
+			if(i2==te->ePoints.size())i2=0;
+			Mesh::Point* commonP = NULL;
+			if(te->ePoints[i1]->myEdge->p1 == te->ePoints[i2]->myEdge->p1) commonP = te->ePoints[i1]->myEdge->p1;
+			else if(te->ePoints[i1]->myEdge->p1 == te->ePoints[i2]->myEdge->p2) commonP = te->ePoints[i1]->myEdge->p1;
+			else if(te->ePoints[i1]->myEdge->p2 == te->ePoints[i2]->myEdge->p1) commonP = te->ePoints[i1]->myEdge->p2;
+			else if(te->ePoints[i1]->myEdge->p2 == te->ePoints[i2]->myEdge->p2) commonP = te->ePoints[i1]->myEdge->p2;
+			std::vector<Mesh::Point*> sss {commonP, te->ePoints[i1]->me,te->ePoints[i2]->me,te->me};
+			myMesh->AddSideExtra(sss);
+		}
+
+	}	
+}
+
+void OVertSubdivide::DeleteOldSidesAndEdges()
+{
+	for(auto& a : OriginalEdges){
+		myMesh->DeleteEdge(a); delete a;
+	}
+	for(auto& a : OriginalSides){
+		myMesh->DeleteSide(a); delete a;
+	}
 }
 
 OVertSubdivide::EdgePoint::EdgePoint(Mesh::Edge* _edge) : myEdge(_edge)
 {
-	Mesh::Point((_edge->p2->pos+_edge->p1->pos)/2);
+	me = new Mesh::Point((_edge->p2->pos+_edge->p1->pos)/2);
 }
 
 OVertSubdivide::SidePoint::SidePoint(Mesh::Side* _side, std::vector<OVertSubdivide::EdgePoint*> ep) : ePoints(ep)
 {
-	Mesh::Point(Mesh::CalculateMidPoint(_side->points));
+	me = new Mesh::Point(Mesh::CalculateMidPoint(_side->points));
 	
 }

@@ -136,6 +136,9 @@ public:
 	void AddPoint(Point *vert);
 	void AddSide(std::vector<unsigned int> &);
 	void AddSideExtra(std::vector<Point*>);
+	//ezek csinalhatnak a delete operationt
+	void DeleteSide(Side*);
+	void DeleteEdge(Edge*);
 
 	bool CheckHit(const vec2 &, const mat4 &);
 	bool ReleaseSelection();
@@ -249,26 +252,34 @@ class OVertExtrude : public MeshOperation{
 class OVertSubdivide : public MeshOperation{
 	Mesh* myMesh;
 
-	struct EdgePoint : public Mesh::Point{
+	struct EdgePoint {
+		Mesh::Point* me;
 		Mesh::Edge* myEdge;
 		EdgePoint(Mesh::Edge*);
 	};
 
-	struct SidePoint : public Mesh::Point{
+	struct SidePoint {
+		Mesh::Point* me;
 		std::vector<EdgePoint*> ePoints;
 		SidePoint(Mesh::Side*,std::vector<EdgePoint*>);
 	};
 	std::vector<EdgePoint*> edgePoints;
 	std::vector<SidePoint*> sidePoints;
 
+	std::vector<Mesh::Edge*> OriginalEdges;
+	std::vector<Mesh::Side*> OriginalSides;
+
+	void SnapShot();
+
 	void FillEdgePoints();
 	void FillSidePoints();
 
 	void ReplaceEdgePoints();
-	void ReplaceSidePoints();
+	void ReplaceOldPoints();
 
 	//static valtozoban el lehetne tarulni a kulonbozo szintu halokat es tolokaval valtoztatni, hogy melyik legyen
 	void CreateNewMesh();
+	void DeleteOldSidesAndEdges();
 
 public:
 
