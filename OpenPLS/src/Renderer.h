@@ -8,7 +8,7 @@
 
 struct RenderData
 {
-	inline RenderData() { vbo = nullptr; ibo = nullptr; }
+	inline RenderData() { vbo = NULL; ibo = NULL; }
 
 	std::vector<float> raw;
 

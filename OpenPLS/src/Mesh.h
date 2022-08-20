@@ -135,6 +135,7 @@ public:
 	void AddPoint(Point *vert, const std::vector<Point *> conns);
 	void AddPoint(Point *vert);
 	void AddSide(std::vector<unsigned int> &);
+	void AddSide(std::vector<Point*>&);
 	void AddSideExtra(std::vector<Point*>);
 	//ezek csinalhatnak a delete operationt
 	void DeleteSide(Side*);
@@ -213,6 +214,7 @@ class MeshOperation : public Operation{
 public:
 
 	MeshOperation(Mesh*);
+	
 	virtual void Update() = 0;
 
 };
@@ -249,8 +251,16 @@ class OVertExtrude : public MeshOperation{
 
 };
 
+//infmappal megcsinalni az edgepointot is
 class OVertSubdivide : public MeshOperation{
 	Mesh* myMesh;
+
+	struct InfluenceMap{
+		std::map<Mesh::Point*,std::vector<Mesh::Point*>> infMap;
+		
+		void AddInfluence(Mesh::Point* for_what,Mesh::Point* what);
+	};
+
 
 	struct EdgePoint {
 		Mesh::Point* me;
@@ -263,8 +273,12 @@ class OVertSubdivide : public MeshOperation{
 		std::vector<EdgePoint*> ePoints;
 		SidePoint(Mesh::Side*,std::vector<EdgePoint*>);
 	};
+
+	InfluenceMap im;
+
 	std::vector<EdgePoint*> edgePoints;
 	std::vector<SidePoint*> sidePoints;
+	std::vector<Mesh::Point*> oldPoints;
 
 	std::vector<Mesh::Edge*> OriginalEdges;
 	std::vector<Mesh::Side*> OriginalSides;
@@ -273,6 +287,7 @@ class OVertSubdivide : public MeshOperation{
 
 	void FillEdgePoints();
 	void FillSidePoints();
+	void FillOldPoints();
 
 	void ReplaceEdgePoints();
 	void ReplaceOldPoints();
@@ -284,6 +299,7 @@ class OVertSubdivide : public MeshOperation{
 public:
 
 	OVertSubdivide(Mesh*);
+	~OVertSubdivide();
 
 
 	void Update(){}

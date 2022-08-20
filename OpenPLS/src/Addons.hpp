@@ -9,7 +9,7 @@
 
 
 
-
+//ehelyett std::find
 template<typename T>
 bool VectorContains(std::vector<T*> where, T* what) 
 {
