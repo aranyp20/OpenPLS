@@ -71,7 +71,7 @@ Hud::Hud(Shader* _shader) : Component(this)
     panel4->AddComponent(tempR2,new TimeLine(this),static_cast<HudObserver*>(observers[0])->GetRenderData());
   
     Sel* sel = new Sel(this);
-    panel1->AddComponent(Rect(0.05,0.5,0.1,0.4),sel,static_cast<HudObserver*>(observers[0])->GetRenderData());
+    panel1->AddComponent(Rect(0.05,0.1,0.1,0.4),sel,static_cast<HudObserver*>(observers[0])->GetRenderData());
     sel->AddComponent(Rect(),new SelButton<Factory,Factory::OperationCreationParam>(Factory::OperationCreationParam(InputAnswer::OperationType::CAMERA_MOVE,Factory::CreationAddons(),true),InputManager::GetFactory(),&Factory::CreateOperation,this),static_cast<HudObserver*>(observers[0])->GetRenderData());
     sel->AddComponent(Rect(),new SelButton<Factory,Factory::OperationCreationParam>(Factory::OperationCreationParam(InputAnswer::OperationType::VERT_SCALE,Factory::CreationAddons(),true),InputManager::GetFactory(),&Factory::CreateOperation,this),static_cast<HudObserver*>(observers[0])->GetRenderData());
     sel->AddComponent(Rect(),new SelButton<Factory,Factory::OperationCreationParam>(Factory::OperationCreationParam(InputAnswer::OperationType::VERT_ROTATE,Factory::CreationAddons(vec3(1,0,0)),true),InputManager::GetFactory(),&Factory::CreateOperation,this),static_cast<HudObserver*>(observers[0])->GetRenderData());
@@ -169,6 +169,7 @@ void ComponentObserver::FillDataHere(Rect& iz)
     std::vector<float> temp = subjectConv->GetTheme()->GiveData(iz,level);
     dataHere.insert(dataHere.end(),temp.begin(),temp.end());
 
+	
     
 }
 

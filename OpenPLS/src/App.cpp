@@ -11,31 +11,35 @@ int main()
 /* ////////////////////// BUGS /////////////////////////
 
 -ha a kamer�t alulr�l akarod flippeltetni akkor n�ha elt�nik az object
-
+-edgeselectionnal parallel lines-t dob-> siman recttel kell majd
+-ha szembe van a huzóka akkor forditva huzza
 
  /////////////////////// TODO /////////////////////////
 
--ne dobjak const char-t
+-foleg a Mesh::Point-nak elore allokalt memory pool
 
 
--Meshnek legyen meshranderee es annak vbo-ja vagy valahogy observeresen de a  mostrani nem jo
--shader setuniformozzon
-
--push_back-re valami megoldast(vbodata adásnál)
--selectedPoints.pushBacket Selectpoint()-ra
 -operationokat torolni - poolba rakni (OperationFactory), nem operation inputbindablleket mehagyni
 -fg selectedpointsokat valahogy rendezni kell
 -InputManager Getmouse changginputttal kene
 -Renderer mennyi csucsot nyomjon ki
 
 
--OVertMove
+
+
+
 
  /////////////////////// TODO DONE ////////////////////////
+-push_back-re valami megoldast(vbodata adásnál)
  -Mesh konstruktor stringgel h mit csinaljon
  -Mesh-es operationoknak kulon os
 -find midpoint 
+-selectedPoints.pushBacket Selectpoint()-ra
+-Meshnek legyen meshranderee es annak vbo-ja vagy valahogy observeresen de a  mostrani nem jo
+-shader setuniformozzon
 
+-OVertMove
+-ne dobjak const char-t
 
 
 

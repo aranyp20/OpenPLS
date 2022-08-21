@@ -34,6 +34,7 @@ public: // valamikor private lesz
 		CUBE
 	};
 
+
 	struct Point : public Hittable
 	{
 		vec3 pos;
@@ -101,9 +102,37 @@ private:
 
 
 
+	struct Strategy{
+		virtual void Render(const Renderer& r, const Shader& vs,const Shader& es,Shader& ss){}
+		virtual bool CheckHit(const vec2 &, const mat4 &){}
+	};
+
+	struct StrategyEditMode : public Strategy{
+		void Render(const Renderer& r, const Shader& vs,const Shader& es,Shader& ss);
+		bool CheckHit(const vec2 &, const mat4 &);
+	};
+
+	struct StrategyObjectMode : public Strategy{
+		void Render(const Renderer& r, const Shader& vs,const Shader& es,Shader& ss);
+		bool CheckHit(const vec2 &, const mat4 &);
+	};
+	struct StrategyVertexMode : public Strategy{
+		void Render(const Renderer& r, const Shader& vs,const Shader& es,Shader& ss);
+		bool CheckHit(const vec2 &, const mat4 &);
+	};
+	
+	
+	Strategy currentStart;
 	
 
 public:
+
+	enum Mode{
+		OBJECT, EDIT, VERTEX
+	};
+
+	void ChangeMode(const Mode&);
+
 	//az nem tul jo hogy mindig mindket oldalrol meg kell vizsgalni a dolgokat
 	struct EdgeIterator
 	{
@@ -154,6 +183,7 @@ public:
 	static vec3 CalculateMidPoint(std::vector<Point*>);
 
 	void Render(const Renderer& r, const Shader& vs,const Shader& es,Shader& ss);
+
 	friend class MeshRenderer;
 	friend class OVertExtrude;
 	friend class OVertSubdivide;
@@ -187,12 +217,16 @@ public:
 
 class MeshHandler : public InputProcessor
 {
+
+
+
 	std::vector<Mesh *> meshes;
-
-
 	Surface *owner;
 
 public:
+
+	
+
 	static Mesh *activeMesh;
 	MeshHandler(Surface *);
 

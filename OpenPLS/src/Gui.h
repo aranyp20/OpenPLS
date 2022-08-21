@@ -203,10 +203,11 @@ namespace GUI{
 
     class Sel : public Component, public InputBindable{
        
+        bool vertical;
         Component* pressedButton;
         public:
         
-        Sel(Component* _root) : Component(_root,new BasicTheme(vec3(0.8f,0.8f,0.8f))),pressedButton(NULL)
+        Sel(Component* _root, bool _vertical = true) : Component(_root,new BasicTheme(vec3(0.8f,0.8f,0.8f))),pressedButton(NULL),vertical(_vertical)
         {
         }
 
@@ -214,8 +215,16 @@ namespace GUI{
         {
             Component::AddComponent(_r,_c,_rd);
             float margin = std::min(fabs(influenceZone.width),fabs(influenceZone.height));
-            margin /=10;
+            margin /= 10;
             int bS = ownedComponents.size();
+            if(!vertical){
+                float widthHere = influenceZone.width/bS + ((bS+1)*margin)/bS;
+                for(int i=0;i<bS;i++){
+                    Rect newRect(influenceZone.startX - i*(-widthHere+margin)-margin,influenceZone.startY + margin,widthHere,influenceZone.height-2*margin);
+                    ownedComponents[i]->SetInfluenceZone(newRect);
+                }
+                return;
+            }
             float heightHere = influenceZone.height/bS + ((bS+1)*margin)/bS;
             
             for(int i=0;i<bS;i++){
@@ -235,7 +244,8 @@ namespace GUI{
                 InputAnswer itsAnswer = b->Component::CheckHit(p).react;
                 if(itsAnswer.react != InputAnswer::ReactionType::IGNORED){
                     if(!(b->IfActivate())){
-                        InputManager::GetFactory()->ReleaseHolded();
+                        if(vertical)return InputAnswer();
+                        InputManager::GetFactory()->ReleaseHolded();//ennek pointerkent kene jonnie
                         pressedButton = NULL;
                     }else{
                         if(pressedButton!=NULL && pressedButton!=b)pressedButton->IfActivate();

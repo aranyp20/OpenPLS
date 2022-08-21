@@ -491,6 +491,23 @@ std::vector<float> MeshRenderer::GiveEdges()
 
 
 
+void Mesh::ChangeMode(const Mesh::Mode& _m)
+{
+	switch(_m){
+		case Mode::OBJECT:
+			currentStart = StrategyObjectMode();
+		break;
+		case Mode::EDIT:
+			currentStart = StrategyEditMode();
+		break;
+		case Mode::VERTEX:
+			currentStart = StrategyVertexMode();
+		break;
+	}
+}
+
+
+
 MeshHandler::MeshHandler(Surface* s) : owner(s)
 {
 }
@@ -888,16 +905,23 @@ void OVertSubdivide::InfluenceMap::AddInfluence(Mesh::Point* for_what,Mesh::Poin
 
 OVertSubdivide::OVertSubdivide(Mesh* _mesh) : MeshOperation(_mesh), myMesh(_mesh)
 {
-
+	std::cout<<"1"<<std::endl;
 	SnapShot();
+	std::cout<<"2"<<std::endl;
 	FillEdgePoints();
+	std::cout<<"3"<<std::endl;
 	FillSidePoints();
+	std::cout<<"4"<<std::endl;
 	FillOldPoints();
+	std::cout<<"5"<<std::endl;
 	ReplaceEdgePoints();
+	std::cout<<"6"<<std::endl;
 	ReplaceOldPoints();
+	std::cout<<"7"<<std::endl;
 	CreateNewMesh();
+	std::cout<<"8"<<std::endl;
 	DeleteOldSidesAndEdges();
-
+	std::cout<<"done"<<std::endl;
 }
 
 OVertSubdivide::~OVertSubdivide()
@@ -988,6 +1012,7 @@ void OVertSubdivide::CreateNewMesh()
 		std::vector<Mesh::Point*> tConns {te->myEdge->p1,te->myEdge->p2};
 		myMesh->AddPoint(te->me,tConns);
 	}
+	int i = 0;
 	for(auto& te : sidePoints){
 		
 		std::vector<Mesh::Point*> tConns;
