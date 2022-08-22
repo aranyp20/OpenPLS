@@ -69,7 +69,7 @@ void Mesh::TransformToCube()
 }
 
 
-Mesh::Mesh(Mesh::Shape shape) : corrupted(false)
+Mesh::Mesh(Mesh::Shape shape) : corrupted(false), currentStrat(&stratEDIT)
 {
 
 
@@ -83,17 +83,49 @@ Mesh::Mesh(Mesh::Shape shape) : corrupted(false)
 	meshRenderer = new MeshRenderer(this);//vegen kell lennie
 }
 
+void Mesh::StrategyEditMode::Render(MeshRenderer* mr, const Renderer& r, const Shader& vs,const Shader& es,Shader& ss)
+{
+
+	mr->RenderAsEdit(r, vs, es, ss);
+}
 
 void Mesh::Render(const Renderer& r, const Shader& vs,const Shader& es,Shader& ss)
 {
-	 
 
-	meshRenderer->Render(r, vs, es, ss);
-
-
+	currentStrat->Render(meshRenderer,r, vs, es, ss);
 }
 
-void MeshRenderer::Render(const Renderer& r, const Shader& vs,const Shader& es,Shader& ss)
+void MeshRenderer::RenderAsEdit(const Renderer& r, const Shader& vs,const Shader& es,Shader& ss)
+{
+
+	ss.Bind(); ss.SetUniform("material",*(owner->material));
+
+
+	sideVAO->Bind();
+	RenderData rData = GiveSides();
+	sideVBO->RefreshData(rData.raw);	
+	
+	vertVAO->Bind();
+	std::vector<float> empty;
+	vertVBO->RefreshData(GiveVertices());
+	edgeVAO->Bind();
+	edgeVBO->RefreshData(GiveEdges());
+	
+	
+
+	r.Draw(Renderer::TriangleData(sideVAO,*(rData.ibo),ss),Renderer::PointData(vertVAO,vs),Renderer::LineData(edgeVAO,es));
+}
+
+void Mesh::StrategyObjectMode::Render(MeshRenderer* mr,const Renderer& r, const Shader& vs,const Shader& es,Shader& ss)
+{
+	mr->RenderAsObject(r,vs,es,ss);
+}
+void Mesh::StrategyVertexMode::Render(MeshRenderer* mr,const Renderer& r, const Shader& vs,const Shader& es,Shader& ss)
+{
+	mr->RenderAsVertex(r,vs,es,ss);
+}
+
+void MeshRenderer::RenderAsObject(const Renderer& r, const Shader& vs,const Shader& es,Shader& ss)
 {
 	ss.Bind(); ss.SetUniform("material",*(owner->material));
 
@@ -104,6 +136,26 @@ void MeshRenderer::Render(const Renderer& r, const Shader& vs,const Shader& es,S
 	
 	vertVAO->Bind();
 	std::vector<float> empty;
+	vertVBO->RefreshData(empty);
+	edgeVAO->Bind();
+	edgeVBO->RefreshData(empty);
+	
+	
+
+	r.Draw(Renderer::TriangleData(sideVAO,*(rData.ibo),ss),Renderer::PointData(vertVAO,vs),Renderer::LineData(edgeVAO,es));
+}
+
+void MeshRenderer::RenderAsVertex(const Renderer& r, const Shader& vs,const Shader& es,Shader& ss)
+{
+	ss.Bind(); ss.SetUniform("material",*(owner->material));
+
+
+	std::vector<float> empty;
+	sideVAO->Bind();
+	RenderData rData = GiveSides();
+	sideVBO->RefreshData(empty);	
+	
+	vertVAO->Bind();
 	vertVBO->RefreshData(GiveVertices());
 	edgeVAO->Bind();
 	edgeVBO->RefreshData(GiveEdges());
@@ -189,25 +241,9 @@ void Mesh::AddSide(std::vector<unsigned int>& is)
 	sides.push_back(new Side(res));
 }
 
-bool Mesh::CheckHit(const vec2& p, const mat4& MVP)
+bool Mesh::Strategy::CheckHitCommon(Mesh* _m,const vec2& p, const mat4& MVP,std::vector<Hittable*>& potHits)
 {
-
-
 	vec2 pp = p;
-
-	
-
-	std::vector<Hittable*> potHits;
-	for(Point* p : points){
-		potHits.push_back(p);
-	}
-	
-	EdgeIterator eit = this->begin();
-	while(eit.hasNext()){
-		potHits.push_back(eit.GetElementEdge());
-	}
-
-
 	float closestZ = 2.0f;
 	Hittable* closestHit = NULL;
 	for(Hittable* h : potHits){
@@ -220,11 +256,59 @@ bool Mesh::CheckHit(const vec2& p, const mat4& MVP)
 	
 	if (closestHit != NULL) {
 		closestHit->NotifyWin();
-		Corrupt();
+		_m->Corrupt();
 
 		return true;
 	}
 	return false;
+}
+
+
+bool Mesh::StrategyObjectMode::CheckHit(Mesh* _m,const vec2& p, const mat4& MVP)
+{
+	std::vector<Hittable*> potHits;
+	for(Point* p : _m->points){
+		potHits.push_back(p);
+	}
+	
+	EdgeIterator eit = _m->begin();
+	while(eit.hasNext()){
+		potHits.push_back(eit.GetElementEdge());
+	}
+
+	return CheckHitCommon(_m,p,MVP,potHits);
+}
+
+bool Mesh::StrategyEditMode::CheckHit(Mesh* _m,const vec2& p, const mat4& MVP)
+{
+	std::vector<Hittable*> potHits;
+	for(Point* p : _m->points){
+		potHits.push_back(p);
+	}
+	EdgeIterator eit = _m->begin();
+	while(eit.hasNext()){
+		potHits.push_back(eit.GetElementEdge());
+	}
+
+	return CheckHitCommon(_m,p,MVP,potHits);
+}
+bool Mesh::StrategyVertexMode::CheckHit(Mesh* _m,const vec2& p, const mat4& MVP)
+{
+	std::vector<Hittable*> potHits;
+	for(Point* p : _m->points){
+		potHits.push_back(p);
+	}
+	EdgeIterator eit = _m->begin();
+	while(eit.hasNext()){
+		potHits.push_back(eit.GetElementEdge());
+	}
+
+	return CheckHitCommon(_m,p,MVP,potHits);
+}
+
+bool Mesh::CheckHit(const vec2& p, const mat4& MVP)
+{
+	return currentStrat->CheckHit(this,p,MVP);
 }
 
 //fel-le gyorsabban megy mint oldalra szoval aspecttel osztani kene
@@ -495,13 +579,13 @@ void Mesh::ChangeMode(const Mesh::Mode& _m)
 {
 	switch(_m){
 		case Mode::OBJECT:
-			currentStart = StrategyObjectMode();
+			currentStrat = &stratOBJ;
 		break;
 		case Mode::EDIT:
-			currentStart = StrategyEditMode();
+			currentStrat = &stratEDIT;
 		break;
 		case Mode::VERTEX:
-			currentStart = StrategyVertexMode();
+			currentStrat = &stratVERTEX;
 		break;
 	}
 }
@@ -905,23 +989,23 @@ void OVertSubdivide::InfluenceMap::AddInfluence(Mesh::Point* for_what,Mesh::Poin
 
 OVertSubdivide::OVertSubdivide(Mesh* _mesh) : MeshOperation(_mesh), myMesh(_mesh)
 {
-	std::cout<<"1"<<std::endl;
+	//std::cout<<"1"<<std::endl;
 	SnapShot();
-	std::cout<<"2"<<std::endl;
+	//std::cout<<"2"<<std::endl;
 	FillEdgePoints();
-	std::cout<<"3"<<std::endl;
+	//std::cout<<"3"<<std::endl;
 	FillSidePoints();
-	std::cout<<"4"<<std::endl;
+	//std::cout<<"4"<<std::endl;
 	FillOldPoints();
-	std::cout<<"5"<<std::endl;
+	//std::cout<<"5"<<std::endl;
 	ReplaceEdgePoints();
-	std::cout<<"6"<<std::endl;
+	//std::cout<<"6"<<std::endl;
 	ReplaceOldPoints();
-	std::cout<<"7"<<std::endl;
+	//std::cout<<"7"<<std::endl;
 	CreateNewMesh();
-	std::cout<<"8"<<std::endl;
+	//std::cout<<"8"<<std::endl;
 	DeleteOldSidesAndEdges();
-	std::cout<<"done"<<std::endl;
+	//std::cout<<"done"<<std::endl;
 }
 
 OVertSubdivide::~OVertSubdivide()

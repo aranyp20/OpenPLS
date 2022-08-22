@@ -139,9 +139,9 @@ vec2 Rect::Norm()
 
 bool Rect::Contains(const vec2& p) 
 {
+    std::vector<vec2> tris = GiveCornersTriangle();
 
-    
-    return Triangle(p1+Norm()*(height/2),p1-Norm()*(height/2),p2+Norm()*(height/2)).Contains(p) || Triangle(p2+Norm()*(height/2),p2-Norm()*(height/2),p1-Norm()*(height/2)).Contains(p);
+    return Triangle(tris[0],tris[1],tris[2]).Contains(p) || Triangle(tris[3],tris[4],tris[5]).Contains(p);
 }
 
 Triangle::Triangle(vec2 _p1,vec2 _p2,vec2 _p3) : p1(_p1), p2(_p2), p3(_p3)
@@ -152,6 +152,7 @@ Triangle::Triangle(vec2 _p1,vec2 _p2,vec2 _p3) : p1(_p1), p2(_p2), p3(_p3)
 
 bool Triangle::Contains(const vec2& p) 
 {
+
     return angle(p1-p,p1-p2)<=angle(p1-p3,p1-p2) && angle(p2-p,p2-p1)<=angle(p2-p3,p2-p1) && angle(p3-p,p3-p2)<=angle(p3-p1,p3-p2) && dot(p1-p,p1-p2)>=0&&dot(p2-p,p2-p3)>=0&&dot(p3-p,p3-p2)>=0;
 }
 

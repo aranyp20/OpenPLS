@@ -72,6 +72,7 @@ namespace GUI{
 
     class Component : public Subject{
         protected:
+        bool pressed = false;
         Component* root;
         int level;
         std::vector<Component*> ownedComponents;
@@ -89,7 +90,9 @@ namespace GUI{
         void SetInfluenceZone(Rect&);
         void TestHappened();
         void SetLevel(int);
-        virtual bool IfActivate(){return false;}
+        virtual void Activate(){}
+        virtual void InActivate(){}
+        bool IsActive(){return pressed;}
     };
     
 
@@ -122,6 +125,7 @@ namespace GUI{
     template <typename OBJ,typename  DAT>
     class Button : public Component, public InputBindable{
         protected:
+        
         typedef void(OBJ::*function_pointer)();
         function_pointer func;
         OBJ* obj;
@@ -156,6 +160,7 @@ namespace GUI{
         {
 
         }
+        
   
     };
 
@@ -164,7 +169,7 @@ namespace GUI{
     template<typename OBJ,typename DAT>
     class SelButton : public Button<OBJ,DAT>{
 
-        bool pressed = false;
+        
         public:
         template<typename ...A>
         SelButton(DAT _param,OBJ* _obj, void(OBJ::*f)(A...),Component* _root,ComponentTheme* _theme = NULL) : Button<OBJ,DAT>(_param,_obj,f,_root,_theme){}
@@ -172,10 +177,9 @@ namespace GUI{
 
         InputAnswer HandleHit(const vec2&)
         {
-       
+            
             static_cast<BasicTheme*>(Component::theme)->color = vec3(0,1,0);
             this->Call(Button<OBJ,DAT>::param);
-            InputManager::ChangeBind(this);
             return InputAnswer(InputAnswer::ReactionType::PROCESSED); 
 
         }
@@ -189,13 +193,17 @@ namespace GUI{
             
         }
 
-        bool IfActivate()
+        void Activate()
+        {
+            static_cast<BasicTheme*>(Component::theme)->color = vec3(0.0f,0.8f,0.4f);
+            Component::pressed = true;
+        }
+
+        void InActivate()
         {
             
-            if(!pressed) static_cast<BasicTheme*>(Component::theme)->color = vec3(0.0f,0.8f,0.4f);
-            else{static_cast<BasicTheme*>(Component::theme)->color = vec3(0.4f,0.4f,0.4f);}
-            pressed = !pressed;
-            return pressed;
+            static_cast<BasicTheme*>(Component::theme)->color = vec3(0.4f,0.4f,0.4f);
+            Component::pressed = false;
         }
 
     };
@@ -204,10 +212,10 @@ namespace GUI{
     class Sel : public Component, public InputBindable{
        
         bool vertical;
-        Component* pressedButton;
+  
         public:
         
-        Sel(Component* _root, bool _vertical = true) : Component(_root,new BasicTheme(vec3(0.8f,0.8f,0.8f))),pressedButton(NULL),vertical(_vertical)
+        Sel(Component* _root, bool _vertical = true) : Component(_root,new BasicTheme(vec3(0.8f,0.8f,0.8f))),vertical(_vertical)
         {
         }
 
@@ -243,15 +251,17 @@ namespace GUI{
             for(auto& b : ownedComponents){
                 InputAnswer itsAnswer = b->Component::CheckHit(p).react;
                 if(itsAnswer.react != InputAnswer::ReactionType::IGNORED){
-                    if(!(b->IfActivate())){
-                        if(vertical)return InputAnswer();
-                        InputManager::GetFactory()->ReleaseHolded();//ennek pointerkent kene jonnie
-                        pressedButton = NULL;
+                    if(b->IsActive()){
+                        InputManager::GetFactory()->ReleaseHolded();
+                        b->InActivate();
                     }else{
-                        if(pressedButton!=NULL && pressedButton!=b)pressedButton->IfActivate();
-                        pressedButton = b;
-                      
+                        for(auto& _c : ownedComponents){
+                            _c->InActivate();
+                        }
+                        b->Activate();
                     }
+                    //InputManager::ChangeBind((InputBindable*)(b));
+                    
                     return itsAnswer;
                 }
             }

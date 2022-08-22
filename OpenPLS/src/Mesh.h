@@ -13,6 +13,9 @@
 class Surface;
 class MeshRenderer;
 
+
+	
+
 class Hittable
 {
 public:
@@ -102,27 +105,7 @@ private:
 
 
 
-	struct Strategy{
-		virtual void Render(const Renderer& r, const Shader& vs,const Shader& es,Shader& ss){}
-		virtual bool CheckHit(const vec2 &, const mat4 &){}
-	};
 
-	struct StrategyEditMode : public Strategy{
-		void Render(const Renderer& r, const Shader& vs,const Shader& es,Shader& ss);
-		bool CheckHit(const vec2 &, const mat4 &);
-	};
-
-	struct StrategyObjectMode : public Strategy{
-		void Render(const Renderer& r, const Shader& vs,const Shader& es,Shader& ss);
-		bool CheckHit(const vec2 &, const mat4 &);
-	};
-	struct StrategyVertexMode : public Strategy{
-		void Render(const Renderer& r, const Shader& vs,const Shader& es,Shader& ss);
-		bool CheckHit(const vec2 &, const mat4 &);
-	};
-	
-	
-	Strategy currentStart;
 	
 
 public:
@@ -182,7 +165,34 @@ public:
 
 	static vec3 CalculateMidPoint(std::vector<Point*>);
 
+private:
+	struct Strategy{
+		virtual void Render(MeshRenderer*,const Renderer& r, const Shader& vs,const Shader& es,Shader& ss){}
+		virtual bool CheckHit(Mesh*,const vec2 &, const mat4 &){return false;}
+		bool CheckHitCommon(Mesh*,const vec2 &, const mat4 &,std::vector<Hittable*>&);
+	};
+
+	struct StrategyEditMode : public Strategy{
+		void Render(MeshRenderer*,const Renderer& r, const Shader& vs,const Shader& es,Shader& ss);
+		bool CheckHit(Mesh*,const vec2 &, const mat4 &);
+	};
+	StrategyEditMode stratEDIT;
+	struct StrategyObjectMode : public Strategy{
+		void Render(MeshRenderer*,const Renderer& r, const Shader& vs,const Shader& es,Shader& ss);
+		bool CheckHit(Mesh*,const vec2 &, const mat4 &);
+	};
+	StrategyObjectMode stratOBJ;
+	struct StrategyVertexMode : public Strategy{
+		void Render(MeshRenderer*,const Renderer& r, const Shader& vs,const Shader& es,Shader& ss);
+		bool CheckHit(Mesh*,const vec2 &, const mat4 &);
+	};
+	StrategyVertexMode stratVERTEX;
+
+	Strategy* currentStrat;
+public:
+
 	void Render(const Renderer& r, const Shader& vs,const Shader& es,Shader& ss);
+	
 
 	friend class MeshRenderer;
 	friend class OVertExtrude;
@@ -192,7 +202,7 @@ public:
 
 
 
-//� birtokolja majd a vbo-kat
+
 class MeshRenderer
 {
 	Mesh* owner;
@@ -212,7 +222,9 @@ public:
 
 	MeshRenderer(Mesh*);
 
-	void Render(const Renderer& r, const Shader& vs,const Shader& es,Shader& ss);
+	void RenderAsEdit(const Renderer& r, const Shader& vs,const Shader& es,Shader& ss);
+	void RenderAsObject(const Renderer& r, const Shader& vs,const Shader& es,Shader& ss);
+	void RenderAsVertex(const Renderer& r, const Shader& vs,const Shader& es,Shader& ss);
 };
 
 class MeshHandler : public InputProcessor
