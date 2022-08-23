@@ -29,6 +29,11 @@ unsigned int Program::SurfaceStartingY()
     return surfaceStartingY;
 }
 
+Surface* Program::GetSurface()
+{
+    return surface;
+}
+
 
 Surface* Program::surface = NULL;
 
@@ -85,17 +90,18 @@ bool Program::Init()
 void Program::WorldInit()
 {
 
-    hud = new GUI::Hud(new Shader2D());
 
 
-    surface = new Surface();
+    Program::surface = new Surface();
+
     surface->meshHandler = new MeshHandler(surface);
     
     InputManager::factory = new Factory(surface);
 
+    hud = new GUI::Hud(new Shader2D());
     InputManager::AddIP(hud);
-    InputManager::AddIP(surface);
-    InputManager::AddIP(surface->meshHandler);
+    InputManager::AddIP(Program::surface);
+    InputManager::AddIP(Program::surface->meshHandler);
     
     InputManager::SetCallbacks(window);
 
@@ -129,8 +135,7 @@ void Program::WorldInit()
 
 void Program::Run()
 {
-   
-
+  
 
     Renderer renderer;
 

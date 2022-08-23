@@ -226,9 +226,9 @@ namespace GUI{
             margin /= 10;
             int bS = ownedComponents.size();
             if(!vertical){
-                float widthHere = influenceZone.width/bS + ((bS+1)*margin)/bS;
+                float widthHere = influenceZone.width/bS - ((bS+1)*margin)/bS;
                 for(int i=0;i<bS;i++){
-                    Rect newRect(influenceZone.startX - i*(-widthHere+margin)-margin,influenceZone.startY + margin,widthHere,influenceZone.height-2*margin);
+                    Rect newRect(influenceZone.startX + i*(widthHere+margin)+margin,influenceZone.startY - margin,widthHere,influenceZone.height+2*margin);
                     ownedComponents[i]->SetInfluenceZone(newRect);
                 }
                 return;
@@ -252,8 +252,10 @@ namespace GUI{
                 InputAnswer itsAnswer = b->Component::CheckHit(p).react;
                 if(itsAnswer.react != InputAnswer::ReactionType::IGNORED){
                     if(b->IsActive()){
-                        InputManager::GetFactory()->ReleaseHolded();
-                        b->InActivate();
+                        if(vertical){
+                            InputManager::GetFactory()->ReleaseHolded();
+                            b->InActivate();
+                        }
                     }else{
                         for(auto& _c : ownedComponents){
                             _c->InActivate();

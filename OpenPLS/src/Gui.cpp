@@ -28,7 +28,7 @@ Hud::Hud(Shader* _shader) : Component(this)
     influenceZone = Rect(-1,1,2,-2);
     AddObserver(new HudObserver(this, _shader,level));
 
-    
+
 
     vec2 p1 = InputManager::ChangeInput(vec2((float)(Program::SurfaceStartingX()+Program::SurfaceWidth()),0.0f),false);
     vec2 p2 =  InputManager::ChangeInput(vec2((float)(Program::WindowWidthR()),0.0f),false);
@@ -75,6 +75,21 @@ Hud::Hud(Shader* _shader) : Component(this)
     sel->AddComponent(Rect(),new SelButton<Factory,Factory::OperationCreationParam>(Factory::OperationCreationParam(InputAnswer::OperationType::CAMERA_MOVE,Factory::CreationAddons(),true),InputManager::GetFactory(),&Factory::CreateOperation,this),static_cast<HudObserver*>(observers[0])->GetRenderData());
     sel->AddComponent(Rect(),new SelButton<Factory,Factory::OperationCreationParam>(Factory::OperationCreationParam(InputAnswer::OperationType::VERT_SCALE,Factory::CreationAddons(),true),InputManager::GetFactory(),&Factory::CreateOperation,this),static_cast<HudObserver*>(observers[0])->GetRenderData());
     sel->AddComponent(Rect(),new SelButton<Factory,Factory::OperationCreationParam>(Factory::OperationCreationParam(InputAnswer::OperationType::VERT_ROTATE,Factory::CreationAddons(vec3(1,0,0)),true),InputManager::GetFactory(),&Factory::CreateOperation,this),static_cast<HudObserver*>(observers[0])->GetRenderData());
+   
+    
+    
+    Sel* mSel = new Sel(this,false);
+    SelButton<MeshHandler,Mesh::Mode>* sb1 = new SelButton<MeshHandler,Mesh::Mode>(Mesh::Mode::OBJECT,Program::GetSurface()->meshHandler,&MeshHandler::ChangeMode,this);
+    SelButton<MeshHandler,Mesh::Mode>* sb2 = new SelButton<MeshHandler,Mesh::Mode>(Mesh::Mode::EDIT,Program::GetSurface()->meshHandler,&MeshHandler::ChangeMode,this);
+    SelButton<MeshHandler,Mesh::Mode>* sb3 = new SelButton<MeshHandler,Mesh::Mode>(Mesh::Mode::VERTEX,Program::GetSurface()->meshHandler,&MeshHandler::ChangeMode,this);
+
+
+
+    panel2->AddComponent(Rect(0.45,0.005,0.4,0.1),mSel,static_cast<HudObserver*>(observers[0])->GetRenderData());
+    
+    mSel->AddComponent(Rect(),sb1,static_cast<HudObserver*>(observers[0])->GetRenderData());
+    mSel->AddComponent(Rect(),sb2,static_cast<HudObserver*>(observers[0])->GetRenderData());
+    mSel->AddComponent(Rect(),sb3,static_cast<HudObserver*>(observers[0])->GetRenderData());
 
 
     tempR2.width = 0.1f;

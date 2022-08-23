@@ -245,6 +245,7 @@ public:
 	InputAnswer ProcessKey(int key);
 	InputAnswer ProcessMouseClick();
 	void AddMesh(Mesh *);
+	void ChangeMode(Mesh::Mode);
 	bool CheckHit(const vec2 &);
 	void Render(const Renderer& r, const Shader& vs,const Shader& es,Shader& ss);
 };

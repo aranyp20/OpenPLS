@@ -267,14 +267,6 @@ bool Mesh::Strategy::CheckHitCommon(Mesh* _m,const vec2& p, const mat4& MVP,std:
 bool Mesh::StrategyObjectMode::CheckHit(Mesh* _m,const vec2& p, const mat4& MVP)
 {
 	std::vector<Hittable*> potHits;
-	for(Point* p : _m->points){
-		potHits.push_back(p);
-	}
-	
-	EdgeIterator eit = _m->begin();
-	while(eit.hasNext()){
-		potHits.push_back(eit.GetElementEdge());
-	}
 
 	return CheckHitCommon(_m,p,MVP,potHits);
 }
@@ -573,7 +565,10 @@ std::vector<float> MeshRenderer::GiveEdges()
 	return res;
 }
 
-
+void MeshHandler::ChangeMode(Mesh::Mode m)
+{
+	activeMesh->ChangeMode(m);
+}
 
 void Mesh::ChangeMode(const Mesh::Mode& _m)
 {
