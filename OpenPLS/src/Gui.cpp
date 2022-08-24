@@ -95,6 +95,7 @@ Hud::Hud(Shader* _shader) : Component(this)
     tempR2.width = 0.1f;
     tempR2.startX -=0.1f;
 
+    panel2->AddComponent(Rect(0.01,0.005,0.4,0.1),new Slide<Surface>(Program::GetSurface(),&Surface::SetCameraDistance,this),static_cast<HudObserver*>(observers[0])->GetRenderData());
     //panel4->AddComponent(tempR2,new Button<Test,Test::TestData>(Test::TestData(0.1f),&(this->t),&Test::hal,this),static_cast<HudObserver*>(observers[0])->GetRenderData());
 }
 
@@ -222,11 +223,13 @@ void Component::AddComponent(Rect _r, Component* _c,std::vector<float>& _rd, boo
     Rect newRect(_r.startX + influenceZone.startX ,-_r.startY+influenceZone.startY ,_r.width,-_r.height);
     
   
-    if(relToWindow)_c->SetInfluenceZone(_r);
+    if(relToWindow){_c->SetInfluenceZone(_r);}
     else {_c->SetInfluenceZone(newRect);}
+
+    _c->YouAreAdded();
 }
 
-void Component::SetInfluenceZone(Rect& _r){influenceZone = _r;}
+void Component::SetInfluenceZone(const Rect& _r){influenceZone = _r;}
 
 void Component::SetLevel(int l){level = l;}
 

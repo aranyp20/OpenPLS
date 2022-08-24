@@ -13,6 +13,7 @@ int main()
 -ha a kamer�t alulr�l akarod flippeltetni akkor n�ha elt�nik az object
 -edgeselectionnal parallel lines-t dob-> siman recttel kell majd
 -ha szembe van a huzóka akkor néha forditva huzza
+-toloka checkhit-je nem a legkozelebbi arrow adja vissza
 
  /////////////////////// TODO /////////////////////////
 

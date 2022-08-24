@@ -3,6 +3,8 @@
 #include "Factory.h"
 
 
+Camera* Surface::viewCamera = NULL;
+
 InputAnswer Surface::ProcessMouseClick()
 {
 	if(InputManager::GetFactory()->TriggerHolded() != NULL)return InputAnswer(InputAnswer::ReactionType::PROCESSED);
@@ -70,6 +72,13 @@ void Surface::Render(Renderer& renderer)
     topLayerVBO->RefreshData(toloka->GiveData());
     renderer.DrawL(*topLayerVAO,shader1);
 
+}
+
+
+void Surface::SetCameraDistance(float f)
+{
+	vec3 dirVec = normalize(viewCamera->GetLookat() - viewCamera->GetEye());
+	viewCamera->ReplaceEye(viewCamera->GetLookat()+(dirVec*f*2));
 }
 
 void Toloka::Arrow::Update() 

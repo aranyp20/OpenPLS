@@ -67,7 +67,7 @@ class Surface : public InputProcessor {
 public:
 	NormalShader shader1;
 
-	Camera* viewCamera;
+	static Camera* viewCamera;
 	MeshHandler* meshHandler;
 	Toloka *toloka;
 	Light* light;
@@ -80,6 +80,7 @@ public:
 	InputAnswer ProcessMouseClick();
 
 	void Render(Renderer&);
+	void SetCameraDistance(float);
 
 };
 

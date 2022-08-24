@@ -85,14 +85,19 @@ namespace GUI{
         virtual InputAnswer HandleHit(const vec2&){ return InputAnswer();}
         ComponentTheme* GetTheme();
         Rect& GetInfluenceZone();
-        //Real-time maradjon!!
         virtual void AddComponent(Rect,Component*,std::vector<float>&, bool relToWindow = false);   
-        void SetInfluenceZone(Rect&);
+        void SetInfluenceZone(const Rect&);
         void TestHappened();
         void SetLevel(int);
         virtual void Activate(){}
         virtual void InActivate(){}
         bool IsActive(){return pressed;}
+        virtual void YouAreAdded(){}
+    };
+
+    class Panel : public Component{
+        public:
+        Panel(Component*,vec3 _color = vec3(0.2f,0.2f,0.2f),ComponentTheme* _theme = NULL);
     };
     
 
@@ -163,6 +168,63 @@ namespace GUI{
         
   
     };
+
+    template<typename OBJ>
+    class Slide : public Button<OBJ,float>{
+        void CallBackPlease(float f){
+
+        }
+
+        class Mover : public Component, public InputBindable{
+            float trackStartX,trackEndX;
+            float initialYDeffToCursor;
+            Slide<OBJ>* ownerSlide;
+            public:
+            Mover(Component* _root, float _tSX, float _tEX,Slide<OBJ>* _ownerSlide) : Component(_root, new BasicTheme(vec3(1,1,1))), trackStartX(_tSX), trackEndX(_tEX),ownerSlide(_ownerSlide){}
+
+            InputAnswer HandleHit(const vec2& p){
+                
+                initialYDeffToCursor = InputManager::ChangeInput(InputManager::GetMousePos2(),false).x - Component::influenceZone.startX;
+                InputManager::ChangeBind(this);
+                return InputAnswer(InputAnswer::ReactionType::PROCESSED);
+            }
+
+            void Update(){
+                float mX = InputManager::ChangeInput(InputManager::GetMousePos2(),false).x;
+                float potX = mX - initialYDeffToCursor;
+                float finalX;
+                if(potX<trackStartX){
+                
+                    finalX = trackStartX;
+                }else if(potX>trackEndX-influenceZone.width){
+                    
+                    finalX = trackEndX-influenceZone.width;
+                }else{
+                    
+                    finalX = potX;
+                }
+                
+                SetInfluenceZone(Rect(finalX, influenceZone.startY,influenceZone.width,influenceZone.height));
+            }
+        };
+        
+    
+        public:
+        template<typename ...A>
+        Slide(OBJ* _obj,void(OBJ::*f)(A...),Component* _root,ComponentTheme* _theme = NULL) : Button<OBJ,float>(0.0f,_obj,f,_root,_theme){}
+
+        void YouAreAdded(){
+            float trackHeight = -Component::influenceZone.height/3;
+            Rect trackRect(0,-Component::influenceZone.height/2 - trackHeight/2,Component::influenceZone.width,trackHeight);  
+            
+            Component::AddComponent(Rect(0,0,Component::influenceZone.width/4,-Component::influenceZone.height), new Mover(Component::root,Component::influenceZone.startX,Component::influenceZone.startX+Component::influenceZone.width,this),Subject::observers[0]->GetDataHere());
+            Component::AddComponent(trackRect,new Panel(Component::root),Subject::observers[0]->GetDataHere());
+
+        }
+
+
+    };
+
 
     
 
@@ -271,10 +333,7 @@ namespace GUI{
         }
     };
 
-    class Panel : public Component{
-        public:
-        Panel(Component*,vec3 _color = vec3(0.2f,0.2f,0.2f),ComponentTheme* _theme = NULL);
-    };
+   
 
 
     class TimeLine : public Component{
