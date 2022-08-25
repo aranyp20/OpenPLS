@@ -7,6 +7,9 @@ Camera::Camera()
 	wUp = vec3(0, 1, 0);
 	wEye = vec3(3, 1, 0);
 
+	originalDistance = (wEye-wLookat).length();
+	lastLookDir = normalize(wEye-wLookat);
+
 	fp = 1; bp = 20;
 
 	aspect = (float)(Program::SurfaceWidth()) / Program::SurfaceHeight();
@@ -16,7 +19,7 @@ Camera::Camera()
 	
 }
 
-mat4 Camera::V()
+mat4 Camera::V() const
 {
 	vec3 w = (wEye - wLookat); w.normalize();
 	vec3 u = (cross(wUp, w)); u.normalize();
@@ -30,7 +33,7 @@ mat4 Camera::V()
 	return translateToOrigin * rotateToAxis;
 }
 
-mat4 Camera::P()
+mat4 Camera::P() const
 {
 	return mat4(1 / (tan(fov / 2) * aspect), 0, 0, 0,
 				0, 1 / tan(fov / 2), 0, 0,
@@ -38,23 +41,36 @@ mat4 Camera::P()
 				0, 0, -2 * fp * bp / (bp - fp), 0);
 }
 
+void Camera::RecalculateLastLookDir()
+{
+	if(!FE((wEye-wLookat).length(),0)){
+		lastLookDir = normalize(wEye-wLookat);
+	}
+}
+
 void Camera::Replace(vec3 _wEye, vec3 _wLookat)
 {
 	wEye = _wEye;
 	wLookat = _wLookat;
+
+	RecalculateLastLookDir();
 }
 
 void Camera::ReplaceEye(vec3 _wEye)
 {
 	wEye = _wEye;
+
+	RecalculateLastLookDir();
 }
 
 void Camera::ReplaceLookat(vec3 _wLookat)
 {
 	wLookat = _wLookat;
+
+	RecalculateLastLookDir();
 }
 
-std::vector<vec3> Camera::GetWUV()
+std::vector<vec3> Camera::GetWUV() const
 {
 	std::vector<vec3> res;
 

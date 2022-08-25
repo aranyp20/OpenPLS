@@ -75,11 +75,6 @@ void Surface::Render(Renderer& renderer)
 }
 
 
-void Surface::SetCameraDistance(float f)
-{
-	vec3 dirVec = normalize(viewCamera->GetLookat() - viewCamera->GetEye());
-	viewCamera->ReplaceEye(viewCamera->GetLookat()+(dirVec*f*2));
-}
 
 void Toloka::Arrow::Update() 
 {
@@ -184,8 +179,8 @@ OCameraMove::OCameraMove(Camera* _camera) : camera(_camera)
 
 OCameraFocusSet::OCameraFocusSet(Camera* _camera,float _quantity) : camera(_camera)
 {
-	vec3 dirVec = normalize(camera->GetEye() - camera->GetLookat());
-	camera->ReplaceEye(dirVec * (1+_quantity));
+	
+	camera->ReplaceEye(camera->GetLastLookDir()*camera->GetOriginalDistance()*_quantity);
 }
 
 
@@ -212,4 +207,13 @@ Surface::Surface() : toloka(new Toloka(this))
 	topLayerVAO = new VAO();
 	topLayerVBO = new VBO3f3f(toloka->GiveData());
 	topLayerVAO->AddVBO(*topLayerVBO);
+}
+
+OBoxSelection::OBoxSelection(Surface* _surface) : owner(_surface), camera(_surface->viewCamera), startingPos(InputManager::ChangeInput(InputManager::GetMousePos2(),false)){}
+
+
+void OBoxSelection::Update()
+{
+	vec2 curPos = InputManager::ChangeInput(InputManager::GetMousePos2(),false);
+	selRect = Rect(startingPos.x,startingPos.y,curPos.x-startingPos.x,curPos.y-startingPos.y);
 }

@@ -4,6 +4,7 @@
 #include "Mesh.h"
 #include "Addons.hpp"
 #include "Camera.h"
+#include "Geometry.h"
 
 
 
@@ -80,7 +81,7 @@ public:
 	InputAnswer ProcessMouseClick();
 
 	void Render(Renderer&);
-	void SetCameraDistance(float);
+	
 
 };
 
@@ -101,6 +102,17 @@ public:
 	OCameraFocusSet(Camera*,float);
 	void Update();
 
+};
+
+class OBoxSelection : public Operation{
+	Surface* owner;
+	Camera* camera;
+	vec2 startingPos;
+	Rect selRect;
+public:
+	OBoxSelection(Surface*);
+
+	void Update() override;
 };
 
 #endif

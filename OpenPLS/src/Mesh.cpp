@@ -446,7 +446,7 @@ void Mesh::SelectPoint(Point* p)
 	selectedPoints.push_back(p);
 }
 
-//MEMORY LEAK
+
 RenderData MeshRenderer::GiveSides()
 {
 	RenderData res;
@@ -510,10 +510,9 @@ RenderData MeshRenderer::GiveSides()
 		}
 	}
 	res.raw = f;
-	if(res.ibo!=NULL)delete res.ibo;
-	if(res.vbo!=NULL)delete res.vbo;
-	res.ibo = new IBO(inds);
-	res.vbo = new VBO3f3f(f);
+	
+	res.ibo = NULL;
+	res.vbo = NULL;
 
 	return res;
 }

@@ -64,6 +64,11 @@ void Factory::CreateOperation(OperationCreationParam p)
     CreateOperation(p.type,p.addons,p.delayed);
 }
 
+void Factory::CreateOperation2(InputAnswer::OperationType _type, float _f)
+{
+    CreateOperation(_type,Factory::CreationAddons(_f),false);
+}
+
 Factory::OperationCreationParam::OperationCreationParam(InputAnswer::OperationType _type,CreationAddons _addons,bool _delayed) : type(_type), addons(_addons), delayed(_delayed)
 {
 

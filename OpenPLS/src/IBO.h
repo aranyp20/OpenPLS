@@ -8,6 +8,7 @@ class IBO
 private:
 	unsigned int ID;
 	unsigned int count;
+	unsigned int* data;
 public:
 	IBO(const unsigned int* data, unsigned int _count);
 	IBO(std::vector<unsigned int>&);

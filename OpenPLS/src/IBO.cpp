@@ -26,6 +26,7 @@ IBO::IBO(std::vector<unsigned int>& v)
 
 IBO::~IBO()
 {
+	delete data;
 	glDeleteBuffers(1, &ID);
 }
 

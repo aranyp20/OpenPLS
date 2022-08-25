@@ -169,18 +169,18 @@ namespace GUI{
   
     };
 
-    template<typename OBJ>
-    class Slide : public Button<OBJ,float>{
+    template<typename OBJ, typename DAT>
+    class Slide : public Button<OBJ,DAT>{
         void CallBackPlease(float f){
-
+            this->Call(Button<OBJ,DAT>::param,f);
         }
 
         class Mover : public Component, public InputBindable{
             float trackStartX,trackEndX;
             float initialYDeffToCursor;
-            Slide<OBJ>* ownerSlide;
+            Slide<OBJ,DAT>* ownerSlide;
             public:
-            Mover(Component* _root, float _tSX, float _tEX,Slide<OBJ>* _ownerSlide) : Component(_root, new BasicTheme(vec3(1,1,1))), trackStartX(_tSX), trackEndX(_tEX),ownerSlide(_ownerSlide){}
+            Mover(Component* _root, float _tSX, float _tEX,Slide<OBJ,DAT>* _ownerSlide) : Component(_root, new BasicTheme(vec3(1,1,1))), trackStartX(_tSX), trackEndX(_tEX),ownerSlide(_ownerSlide){}
 
             InputAnswer HandleHit(const vec2& p){
                 
@@ -205,19 +205,24 @@ namespace GUI{
                 }
                 
                 SetInfluenceZone(Rect(finalX, influenceZone.startY,influenceZone.width,influenceZone.height));
+                
+                float cbValue = std::fabs(influenceZone.startX - trackStartX) / (trackEndX - influenceZone.width - trackStartX);
+                
+
+                ownerSlide->CallBackPlease(cbValue);
             }
         };
         
     
         public:
         template<typename ...A>
-        Slide(OBJ* _obj,void(OBJ::*f)(A...),Component* _root,ComponentTheme* _theme = NULL) : Button<OBJ,float>(0.0f,_obj,f,_root,_theme){}
+        Slide(DAT _param,OBJ* _obj,void(OBJ::*f)(A...),Component* _root,ComponentTheme* _theme = NULL) : Button<OBJ,DAT>(_param,_obj,f,_root,_theme){}
 
         void YouAreAdded(){
             float trackHeight = -Component::influenceZone.height/3;
             Rect trackRect(0,-Component::influenceZone.height/2 - trackHeight/2,Component::influenceZone.width,trackHeight);  
             
-            Component::AddComponent(Rect(0,0,Component::influenceZone.width/4,-Component::influenceZone.height), new Mover(Component::root,Component::influenceZone.startX,Component::influenceZone.startX+Component::influenceZone.width,this),Subject::observers[0]->GetDataHere());
+            Component::AddComponent(Rect(Component::influenceZone.width-Component::influenceZone.width/4,0,Component::influenceZone.width/4,-Component::influenceZone.height), new Mover(Component::root,Component::influenceZone.startX,Component::influenceZone.startX+Component::influenceZone.width,this),Subject::observers[0]->GetDataHere());
             Component::AddComponent(trackRect,new Panel(Component::root),Subject::observers[0]->GetDataHere());
 
         }

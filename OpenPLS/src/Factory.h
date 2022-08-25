@@ -50,6 +50,7 @@ class Factory{
 
     Operation* CreateOperation(InputAnswer::OperationType,CreationAddons addons = CreationAddons(),bool delayed = false);
     void CreateOperation(OperationCreationParam);
+    void CreateOperation2(InputAnswer::OperationType,float);
 
    
 

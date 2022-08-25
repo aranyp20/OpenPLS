@@ -18,6 +18,7 @@ VBO::VBO()
 
 VBO::VBO(const std::vector<float>& v)
 {
+	
 	count = v.size();
 	float* dataT = new float[v.size()];
 	for (int i = 0; i < v.size();i++) {
@@ -47,7 +48,7 @@ void VBO::Bind() const
 
 void VBO::RefreshData(const std::vector<float>& v)
 {
-
+	if(myData!=NULL)delete myData;
 	count = v.size();
 	owner->count = count;
 

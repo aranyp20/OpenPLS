@@ -19,12 +19,12 @@ int main()
 
 -foleg a Mesh::Point-nak elore allokalt memory pool
 
-
+-2d el es csucs shader kozelebb hoz mindent szoval vigyazni kell vele
 -operationokat torolni - poolba rakni (OperationFactory), nem operation inputbindablleket mehagyni
 -fg selectedpointsokat valahogy rendezni kell
 -InputManager Getmouse changginputttal kene
 -Renderer mennyi csucsot nyomjon ki
-
+-MIN-MAX helyett std::min std::max
 
 
 
