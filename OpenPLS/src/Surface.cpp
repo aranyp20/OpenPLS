@@ -1,6 +1,7 @@
 #include "Surface.h"
 #include "Geometry.h"
 #include "Factory.h"
+#include "Program.h"
 
 
 Camera* Surface::viewCamera = NULL;
@@ -44,6 +45,41 @@ bool Toloka::CheckHit()
 	return false;
 }
 
+int Surface::RequestDataSpace()
+{
+	std::vector<int> keys;
+	int maxID=0;
+	for(auto it = outsideRenderData.begin();it !=outsideRenderData.end();it++){
+		keys.push_back(it->first);
+		maxID = std::max(maxID,it->first);
+	}
+	bool idReservations[maxID+2];
+	for(int j = 0 ;j<maxID+2;j++){
+		idReservations[j] = false;
+	}
+
+	for(auto a : keys){
+		idReservations[a] = true;
+	}
+	int i = 0;
+	while(idReservations[i])i++;
+	std::vector<float> newSpace;
+	outsideRenderData.insert({i,newSpace});
+	return i;
+}
+
+void Surface::FillData(int id, std::vector<float>& data)
+{
+	outsideRenderData[id] = data;
+}
+
+void Surface::FreeDataSpace(int id)
+{
+	outsideRenderData.erase(id);
+}
+
+
+
 bool Toloka::Arrow::CheckHit(const vec2& p, const mat4& m)
 {
 	vec3 tp3 = vec3(center+direction); TransformPoint(tp3,m);
@@ -68,9 +104,21 @@ void Surface::Render(Renderer& renderer)
 
 	glClear(GL_DEPTH_BUFFER_BIT);
 
+	std::vector<float> tLData2D;
+	for(auto it = outsideRenderData.begin();it!=outsideRenderData.end();it++){
+		std::vector<float> dh = it->second;
+		
+		tLData2D.insert(tLData2D.end(),dh.begin(),dh.end());
+	}
+
     topLayerVAO->Bind();
     topLayerVBO->RefreshData(toloka->GiveData());
     renderer.DrawL(*topLayerVAO,shader1);
+	glViewport(0,0,Program::WindowWidthR(),Program::WindowHeightR());
+
+	topLayerVAO2D->Bind();
+    topLayerVBO2D->RefreshData(tLData2D);
+    renderer.DrawL(*topLayerVAO2D,shader2D);
 
 }
 
@@ -205,15 +253,41 @@ void OCameraFocusSet::Update()
 Surface::Surface() : toloka(new Toloka(this))
 {
 	topLayerVAO = new VAO();
-	topLayerVBO = new VBO3f3f(toloka->GiveData());
+	topLayerVBO = new VBO3f3f();
 	topLayerVAO->AddVBO(*topLayerVBO);
+
+	topLayerVAO2D = new VAO();
+	topLayerVBO2D = new VBO3f3f();
+	topLayerVAO2D->AddVBO(*topLayerVBO2D);
 }
 
-OBoxSelection::OBoxSelection(Surface* _surface) : owner(_surface), camera(_surface->viewCamera), startingPos(InputManager::ChangeInput(InputManager::GetMousePos2(),false)){}
+OBoxSelection::OBoxSelection(Surface* _surface) : owner(_surface), camera(_surface->viewCamera), startingPos(InputManager::ChangeInput(InputManager::GetMousePos2(),false))
+{
+	dataSpaceIndex = owner->RequestDataSpace();
+	
+}
 
+OBoxSelection::~OBoxSelection()
+{
+	owner->FreeDataSpace(dataSpaceIndex);
+}
 
 void OBoxSelection::Update()
 {
 	vec2 curPos = InputManager::ChangeInput(InputManager::GetMousePos2(),false);
 	selRect = Rect(startingPos.x,startingPos.y,curPos.x-startingPos.x,curPos.y-startingPos.y);
+	
+	std::vector<vec2> d = selRect.GiveCorners();
+	d.push_back(d[1]);d.push_back(d[2]);d.push_back(d[0]);d.push_back(d[3]);
+
+	std::vector<float> dd;
+	PushBack(dd,d,vec3(1,1,1),0);
+	
+
+	owner->FillData(dataSpaceIndex,dd); 
+}
+
+void OBoxSelection::Release()
+{
+	
 }

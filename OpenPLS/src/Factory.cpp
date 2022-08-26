@@ -51,6 +51,9 @@ Operation* Factory::CreateOperation(InputAnswer::OperationType which,Factory::Cr
         case InputAnswer::OperationType::VERT_SUBDIVIDE:
             createdOperation = new OVertSubdivide(activeMesh);
         break;
+        case InputAnswer::OperationType::BOX_SELECTION:
+            createdOperation = new OBoxSelection(surface);
+        break;
         default:return NULL;break;
     }
 

@@ -61,11 +61,23 @@ public:
 class Surface : public InputProcessor {
 	
     GouraudShader shader;
+	Shader2D shader2D;
 
 	VAO* topLayerVAO;
 	VBO* topLayerVBO;
 
+	VAO* topLayerVAO2D;
+	VBO* topLayerVBO2D;
+
+	//ezt lehetne templatesen altalanosan addons-ba
+	std::map<int,std::vector<float>> outsideRenderData;
 public:
+	int RequestDataSpace();
+	void FillData(int, std::vector<float>&);
+	void FreeDataSpace(int);
+
+
+
 	NormalShader shader1;
 
 	static Camera* viewCamera;
@@ -106,13 +118,15 @@ public:
 
 class OBoxSelection : public Operation{
 	Surface* owner;
+	int dataSpaceIndex;
 	Camera* camera;
 	vec2 startingPos;
 	Rect selRect;
 public:
 	OBoxSelection(Surface*);
-
+	~OBoxSelection();
 	void Update() override;
+	void Release() override;
 };
 
 #endif

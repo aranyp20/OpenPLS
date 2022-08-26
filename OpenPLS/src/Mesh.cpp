@@ -303,7 +303,7 @@ bool Mesh::CheckHit(const vec2& p, const mat4& MVP)
 	return currentStrat->CheckHit(this,p,MVP);
 }
 
-//fel-le gyorsabban megy mint oldalra szoval aspecttel osztani kene
+//ennek a baja hogy a surface atallitja a viewportot (90%)
 void OVertMove::Update()
 {
 	FindMidPoint();
