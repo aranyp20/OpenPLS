@@ -138,10 +138,10 @@ std::vector<float> Toloka::Arrow::GiveData()
 {
 	std::vector<float> result;
 	vec3 ending = center + direction;
-	result.push_back(center.x);result.push_back(center.y);result.push_back(center.z);
-	result.push_back(color.x);result.push_back(color.y);result.push_back(color.z);
-	result.push_back(ending.x);result.push_back(ending.y);result.push_back(ending.z);
-	result.push_back(color.x);result.push_back(color.y);result.push_back(color.z);
+	PushBack(result,center);
+	PushBack(result,color);
+	PushBack(result,ending);
+	PushBack(result,color);
 	return result;
 }
 

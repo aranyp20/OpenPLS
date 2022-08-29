@@ -10,6 +10,10 @@
 #include "Addons.hpp"
 #include "Camera.h"
 
+
+#define MAX_MESH_POINT 10000
+
+
 class Surface;
 class MeshRenderer;
 
@@ -56,7 +60,7 @@ public: // valamikor private lesz
 		Point *p1, *p2;
 		Mesh* owner;
 
-		inline Edge(Point *_p1, Point *_p2, Mesh* _owner) : p1(_p1), p2(_p2),owner(_owner) {}
+		inline Edge(Point *_p1 = NULL, Point *_p2 = NULL, Mesh* _owner = NULL) : p1(_p1), p2(_p2),owner(_owner) {}
 
 		Hittable::Hit Intersect(const vec2 &, const mat4 &);
 		void NotifyWin();
@@ -66,6 +70,7 @@ public: // valamikor private lesz
 		std::vector<Point *> points;
 
 		inline Side(std::vector<Point *> _ps) { points = _ps; }
+		inline Side(){}
 
 		std::vector<Edge*> GetEdges(Mesh*);
 	};
@@ -109,6 +114,9 @@ private:
 	
 
 public:
+	static mem_block<Mesh::Point> pBlock;
+	static mem_block<Mesh::Edge> eBlock;
+	static mem_block<Mesh::Side> sBlock;
 
 	enum Mode{
 		OBJECT, EDIT, VERTEX
@@ -313,18 +321,22 @@ class OVertSubdivide : public MeshOperation{
 		Mesh::Point* me;
 		Mesh::Edge* myEdge;
 		EdgePoint(Mesh::Edge*);
+
+		bool operator== (const EdgePoint& rs){return me==rs.me;}
 	};
 
 	struct SidePoint {
 		Mesh::Point* me;
-		std::vector<EdgePoint*> ePoints;
-		SidePoint(Mesh::Side*,std::vector<EdgePoint*>);
+		std::vector<EdgePoint> ePoints;
+		SidePoint(Mesh::Side*,std::vector<EdgePoint>);
+
+		bool operator== (const SidePoint& rs){return me==rs.me;}
 	};
 
 	InfluenceMap im;
 
-	std::vector<EdgePoint*> edgePoints;
-	std::vector<SidePoint*> sidePoints;
+	std::vector<EdgePoint> edgePoints;
+	std::vector<SidePoint> sidePoints;
 	std::vector<Mesh::Point*> oldPoints;
 
 	std::vector<Mesh::Edge*> OriginalEdges;

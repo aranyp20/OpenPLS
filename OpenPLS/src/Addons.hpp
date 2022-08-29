@@ -3,10 +3,55 @@
 //#include "InputManager.h"
 
 #include <vector>
+#include <map>
 #include "mymath.h"
 
+class mem_alloc_exception : public std::exception{
+	public:
+	mem_alloc_exception(){
+		std::cout<<"Not enough memory in block"<<std::endl;
+	}
+};
+
+//Invokes operator=  not copy-constructor!!
+template<typename T>
+class mem_block{
+	unsigned int size;
+	T* block;
+	
+	std::map<unsigned int,bool> occupationMap;
 
 
+
+	public:
+	mem_block(unsigned int _size) : size(_size){
+		block = new T[_size];
+		for(unsigned int i=0;i<size;i++){
+			occupationMap.insert({i,false});
+		}
+	}
+	T* Allocate(const T& data){
+		for(int i=0;i<size;i++){
+			if(!occupationMap[i]){
+				occupationMap[i] = true;
+				block[i] = data;
+				return block + i;
+			}
+		}
+		throw mem_alloc_exception();
+	}
+	void Delete(T* deletable){
+		
+		unsigned int deleteIndex = deletable - block;
+		
+		occupationMap[deleteIndex] = false;
+	}
+
+	~mem_block(){
+		delete block;
+	}
+
+};
 
 
 //ehelyett std::find
@@ -80,6 +125,7 @@ inline void PushBack(std::vector<float>& where, std::vector<vec2>& what,vec3 rep
 		PushBack(where,repeat);
 	}
 }
+
 
 
 

@@ -211,7 +211,17 @@ namespace GUI{
 
                 ownerSlide->CallBackPlease(cbValue);
             }
+
         };
+
+        InputAnswer CheckHit(const vec2& pos) override{
+            for(auto& ch : Component::ownedComponents){
+        
+                InputAnswer tempAnsw = ch->CheckHit(pos);
+                if(tempAnsw.react != InputAnswer::ReactionType::IGNORED)return tempAnsw;
+            }
+            return InputAnswer();
+        }
         
     
         public:
