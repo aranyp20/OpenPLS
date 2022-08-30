@@ -17,6 +17,7 @@ class mem_alloc_exception : public std::exception{
 template<typename T>
 class mem_block{
 	unsigned int size;
+	unsigned int usedSize = 0;
 	T* block;
 	
 	std::map<unsigned int,bool> occupationMap;
@@ -26,17 +27,21 @@ class mem_block{
 	public:
 	mem_block(unsigned int _size) : size(_size){
 		block = new T[_size];
-		for(unsigned int i=0;i<size;i++){
-			occupationMap.insert({i,false});
-		}
 	}
 	T* Allocate(const T& data){
-		for(int i=0;i<size;i++){
+
+		for(int i=0;i<usedSize;i++){
 			if(!occupationMap[i]){
 				occupationMap[i] = true;
 				block[i] = data;
 				return block + i;
 			}
+		}
+		if(usedSize<size){
+			occupationMap.insert({usedSize,true});
+			block[usedSize] = data;
+			usedSize++;
+			return block + usedSize - 1;
 		}
 		throw mem_alloc_exception();
 	}
@@ -48,7 +53,7 @@ class mem_block{
 	}
 
 	~mem_block(){
-		delete block;
+		delete[] block;
 	}
 
 };
@@ -91,33 +96,33 @@ inline float Interpolate(const vec2& v1, const vec2& v2, const vec2& p){
 
 
 
-inline void PushBack(std::vector<float>& where,vec3 what)
+inline void PushBack(std::vector<float>& where,const vec3 what)
 {
 	where.push_back(what.x); where.push_back(what.y); where.push_back(what.z);
 }
 
-inline void PushBack(std::vector<float>& where, std::vector<vec3>& what)
+inline void PushBack(std::vector<float>& where, const std::vector<vec3>& what)
 {
 	for(auto& a : what){
 		where.push_back(a.x); where.push_back(a.y); where.push_back(a.z);
 	}
 }
 
-inline void PushBack(std::vector<float>& where, std::vector<vec2>& what, float _z)
+inline void PushBack(std::vector<float>& where, const std::vector<vec2>& what, float _z)
 {
 	for(auto& a : what){
 		where.push_back(a.x); where.push_back(a.y); where.push_back(_z);
 	}
 }
 
-inline void PushBack(std::vector<float>& where, std::vector<vec3>& what, vec3 repeat)
+inline void PushBack(std::vector<float>& where, const std::vector<vec3>& what, const vec3 repeat)
 {
 	for(auto& a : what){
 		where.push_back(a.x); where.push_back(a.y); where.push_back(a.z);
 		PushBack(where,repeat);
 	}
 }
-inline void PushBack(std::vector<float>& where, std::vector<vec2>& what,vec3 repeat, float _z)
+inline void PushBack(std::vector<float>& where, const std::vector<vec2>& what,const vec3 repeat, float _z)
 {
 	
 	for(auto& a : what){

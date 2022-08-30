@@ -59,6 +59,16 @@ float Line2D::DistanceFromLine(const vec2& p)
     return fabs(dot(Norm(),p-refP));
 }
 
+bool Line2D::SameSide(const vec2& _p1,const vec2& _p2)
+{
+    vec2 refP1 = p1;
+    if(FE(p1.x,_p1.x)&&FE(p1.y,_p1.y))refP1 = p2;
+    vec2 refP2 = p1;
+    if(FE(p1.x,_p2.x)&&FE(p1.y,_p2.y))refP2 = p2;
+
+    return (dot(Norm(),_p1-refP1)<0 && dot(Norm(),_p2-refP2)<0) || (dot(Norm(),_p1-refP1)>0 && dot(Norm(),_p2-refP2)>0);
+}
+
 bool Line2D::SectionContains(const vec2& p) 
 {
     return Rect(p1,p2,0.01f).Contains(p);
@@ -129,7 +139,7 @@ Rect::Rect(vec2 _p1,vec2 _p2,float _height) : p1(_p1), p2(_p2), height(_height)
 }
 
 
-vec2 Rect::Norm() 
+vec2 Rect::Norm() const
 {
     vec2 result = p1-p2;
     result.Rotate();
@@ -137,8 +147,9 @@ vec2 Rect::Norm()
     return result;
 }
 
-bool Rect::Contains(const vec2& p) 
+bool Rect::Contains(const vec2& p) const
 {
+    
     std::vector<vec2> tris = GiveCornersTriangle();
 
     return Triangle(tris[0],tris[1],tris[2]).Contains(p) || Triangle(tris[3],tris[4],tris[5]).Contains(p);
@@ -150,10 +161,13 @@ Triangle::Triangle(vec2 _p1,vec2 _p2,vec2 _p3) : p1(_p1), p2(_p2), p3(_p3)
 }
 
 
-bool Triangle::Contains(const vec2& p) 
+bool Triangle::Contains(const vec2& p) const
 {
 
-    return angle(p1-p,p1-p2)<=angle(p1-p3,p1-p2) && angle(p2-p,p2-p1)<=angle(p2-p3,p2-p1) && angle(p3-p,p3-p2)<=angle(p3-p1,p3-p2) && dot(p1-p,p1-p2)>=0&&dot(p2-p,p2-p3)>=0&&dot(p3-p,p3-p2)>=0;
+    
+    return Line2D(p1,p2).SameSide(p,p3) && Line2D(p2,p3).SameSide(p,p1) && Line2D(p1,p3).SameSide(p,p2);
+    
+
 }
 
 
@@ -167,9 +181,19 @@ Rect::Rect(float _startX, float _startY, float _width, float _height) : p1(vec2(
     startX = _startX;
     startY = _startY;
     width = _width;
+
 }
 
-std::vector<vec2> Rect::GiveCorners()
+Rect::Rect(const std::vector<vec2>& v) : Rect(v[0].x,v[0].y,fabs(v[0].x-v[1].x)>fabs(v[0].x-v[2].x)?-(v[0].x-v[1].x) : -(v[0].x-v[2].x),fabs(v[0].y-v[1].y)>fabs(v[0].y-v[2].y)?-(v[0].y-v[1].y):-(v[0].y-v[2].y))
+{
+    
+  
+
+   
+}
+
+
+std::vector<vec2> Rect::GiveCorners() const
 {
     std::vector<vec2> result ;
     result.push_back(p1+Norm()*(height/2));
@@ -179,7 +203,7 @@ std::vector<vec2> Rect::GiveCorners()
     return result;
 }
 
-std::vector<vec2> Rect::GiveCornersTriangle()
+std::vector<vec2> Rect::GiveCornersTriangle() const
 {
     std::vector<vec2> result;
     result.push_back(p1-Norm()*(height/2));
@@ -191,4 +215,33 @@ std::vector<vec2> Rect::GiveCornersTriangle()
     return result;
 }
 
+void Rect::Recalculate()
+{
+    p1 = vec2(startX ,startY + (height / 2));
+    p2 = vec2(startX+width,startY+(height/2));
+}
+
+void Rect::SetHeight(float f)
+{
+    height = f;
+    Recalculate();
+}
+
+void Rect::SetWidth(float f)
+{
+    width = f;
+    Recalculate();
+}
+
+void Rect::SetStartingX(float f)
+{
+    startX = f;
+    Recalculate();
+}
+
+void Rect::SetStartingY(float f)
+{
+    startY = f;
+    Recalculate();
+}
 

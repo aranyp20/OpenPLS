@@ -38,6 +38,7 @@ void InputManager::mouse_button_callback(GLFWwindow* window, int button, int act
 		if (lastBind != NULL) {
 			lastBind->Release();
 			lastBind = NULL;
+			factory->DeleteActiveOperations();
 			return;
 		}
 	}
@@ -101,22 +102,50 @@ vec2 InputManager::GetMousePos2()
 
 vec2 InputManager::ChangeInput(const vec2& v, bool toSurface)
 {
-	if(toSurface){
-		
-		float forSurfaceX = v.x-Program::SurfaceStartingX();
-		float forSurfaceY = v.y-Program::SurfaceStartingY();
 
-		float cX = 2.0f * forSurfaceX / Program::SurfaceWidth() - 1;
-		float cY = 1 - 2.0f * forSurfaceY / Program::SurfaceHeight();
-		
-		return vec2(cX, cY);
-	}else{
-		float cX = 2.0f * v.x / Program::WindowWidthR() - 1;
-		float cY = 1 - 2.0f * v.y/ Program::WindowHeightR();
-		
-		return vec2(cX, cY);
-	}
+	vec2 result;
+
+	if(toSurface)result = WindowToSurface(v);
+	else{result = WindowToNormalized(v);}
+
+	return result;
+
 }
+
+vec2 InputManager::NormalizedToWindow(const vec2& v)
+{
+	float cX = (v.x+1)*Program::WindowWidthR() / 2;
+	float cY = (v.y-1)*(-1)*Program::WindowHeightR()/2;
+
+	return vec2(cX,cY);
+}
+
+vec2 InputManager::WindowToNormalized(const vec2& v)
+{
+	float cX = 2.0f * v.x / Program::WindowWidthR() - 1;
+	float cY = 1 - 2.0f * v.y/ Program::WindowHeightR();
+
+	
+
+	return vec2(cX,cY);
+}
+
+vec2 InputManager::WindowToSurface(const vec2& v)
+{
+	float forSurfaceX = v.x-Program::SurfaceStartingX();
+	float forSurfaceY = v.y-Program::SurfaceStartingY();
+
+	float cX = 2.0f * forSurfaceX / Program::SurfaceWidth() - 1;
+	float cY = 1 - 2.0f * forSurfaceY / Program::SurfaceHeight();
+		
+	return vec2(cX, cY);
+}
+
+vec2 InputManager::NormalizedToSurface(const vec2& v)
+{
+	return WindowToSurface(NormalizedToWindow(v));
+}
+
 
 void InputManager::AddIP(InputProcessor* ip) 
 {

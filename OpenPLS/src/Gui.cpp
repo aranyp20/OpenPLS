@@ -51,31 +51,32 @@ Hud::Hud(Shader* _shader) : Component(this)
     Panel* panel3 = new Panel(this);
     Panel* panel4 = new Panel(this);
     
+    std::vector<float>& rData = static_cast<HudObserver*>(observers[0])->GetRenderData();
 
-    AddComponent(Rect(p1.x,p1.y,(p2-p1).length(),-(p3-p2).length()),panel1,static_cast<HudObserver*>(observers[0])->GetRenderData(),true);
-    AddComponent(Rect(p5.x,p5.y,(p5-p1).length(),-(p6-p5).length()),panel2,static_cast<HudObserver*>(observers[0])->GetRenderData(),true);
-    AddComponent(Rect(p8.x,p8.y,(p9-p8).length(),-(p10-p8).length()),panel3,static_cast<HudObserver*>(observers[0])->GetRenderData(),true);
-    AddComponent(Rect(p12.x,p12.y,(p14-p12).length(),-(p14-p15).length()),panel4,static_cast<HudObserver*>(observers[0])->GetRenderData(),true);
+    AddComponent(Rect(p1.x,p1.y,(p2-p1).length(),-(p3-p2).length()),panel1,rData,true);
+    AddComponent(Rect(p5.x,p5.y,(p5-p1).length(),-(p6-p5).length()),panel2,rData,true);
+    AddComponent(Rect(p8.x,p8.y,(p9-p8).length(),-(p10-p8).length()),panel3,rData,true);
+    AddComponent(Rect(p12.x,p12.y,(p14-p12).length(),-(p14-p15).length()),panel4,rData,true);
 
     Rect tempR = panel4->GetInfluenceZone();
 
    
 
 
-    Rect tempR2(0.1f,0,tempR.width-0.1f,-tempR.height);
 
-    panel1->AddComponent(Rect(0.2,0.1,0.1,0.1),new Button<Factory,Factory::OperationCreationParam>(Factory::OperationCreationParam(InputAnswer::OperationType::VERT_EXTRUDE,Factory::CreationAddons()),InputManager::GetFactory(),&Factory::CreateOperation,this),static_cast<HudObserver*>(observers[0])->GetRenderData());
-    panel1->AddComponent(Rect(0.2,0.3,0.1,0.1),new Button<Factory,Factory::OperationCreationParam>(Factory::OperationCreationParam(InputAnswer::OperationType::VERT_SUBDIVIDE,Factory::CreationAddons()),InputManager::GetFactory(),&Factory::CreateOperation,this),static_cast<HudObserver*>(observers[0])->GetRenderData());
+    panel1->AddComponent(Rect(0.2,0.1,0.1,0.1),new Button<Factory,Factory::OperationCreationParam>(Factory::OperationCreationParam(InputAnswer::OperationType::VERT_EXTRUDE,Factory::CreationAddons()),InputManager::GetFactory(),&Factory::CreateOperation,this),rData);
+    panel1->AddComponent(Rect(0.2,0.3,0.1,0.1),new Button<Factory,Factory::OperationCreationParam>(Factory::OperationCreationParam(InputAnswer::OperationType::VERT_SUBDIVIDE,Factory::CreationAddons()),InputManager::GetFactory(),&Factory::CreateOperation,this),rData);
 
+    Rect tempR2(0.1f,-tempR.height/10,tempR.width-0.1f,-tempR.height + tempR.height/5);
 
-    panel4->AddComponent(tempR2,new TimeLine(this),static_cast<HudObserver*>(observers[0])->GetRenderData());
+    panel4->AddComponent(tempR2,new TimeLine(this),rData);
   
     Sel* sel = new Sel(this);
-    panel1->AddComponent(Rect(0.05,0.1,0.1,0.55),sel,static_cast<HudObserver*>(observers[0])->GetRenderData());
-    sel->AddComponent(Rect(),new SelButton<Factory,Factory::OperationCreationParam>(Factory::OperationCreationParam(InputAnswer::OperationType::CAMERA_MOVE,Factory::CreationAddons(),true),InputManager::GetFactory(),&Factory::CreateOperation,this),static_cast<HudObserver*>(observers[0])->GetRenderData());
-    sel->AddComponent(Rect(),new SelButton<Factory,Factory::OperationCreationParam>(Factory::OperationCreationParam(InputAnswer::OperationType::VERT_SCALE,Factory::CreationAddons(),true),InputManager::GetFactory(),&Factory::CreateOperation,this),static_cast<HudObserver*>(observers[0])->GetRenderData());
-    sel->AddComponent(Rect(),new SelButton<Factory,Factory::OperationCreationParam>(Factory::OperationCreationParam(InputAnswer::OperationType::VERT_ROTATE,Factory::CreationAddons(vec3(1,0,0)),true),InputManager::GetFactory(),&Factory::CreateOperation,this),static_cast<HudObserver*>(observers[0])->GetRenderData());
-    sel->AddComponent(Rect(),new SelButton<Factory,Factory::OperationCreationParam>(Factory::OperationCreationParam(InputAnswer::OperationType::BOX_SELECTION,Factory::CreationAddons(),true),InputManager::GetFactory(),&Factory::CreateOperation,this),static_cast<HudObserver*>(observers[0])->GetRenderData());
+    panel1->AddComponent(Rect(0.05,0.1,0.1,0.55),sel,rData);
+    sel->AddComponent(Rect(),new SelButton<Factory,Factory::OperationCreationParam>(Factory::OperationCreationParam(InputAnswer::OperationType::CAMERA_MOVE,Factory::CreationAddons(),true),InputManager::GetFactory(),&Factory::CreateOperation,this),rData);
+    sel->AddComponent(Rect(),new SelButton<Factory,Factory::OperationCreationParam>(Factory::OperationCreationParam(InputAnswer::OperationType::VERT_SCALE,Factory::CreationAddons(),true),InputManager::GetFactory(),&Factory::CreateOperation,this),rData);
+    sel->AddComponent(Rect(),new SelButton<Factory,Factory::OperationCreationParam>(Factory::OperationCreationParam(InputAnswer::OperationType::VERT_ROTATE,Factory::CreationAddons(vec3(1,0,0)),true),InputManager::GetFactory(),&Factory::CreateOperation,this),rData);
+    sel->AddComponent(Rect(),new SelButton<Factory,Factory::OperationCreationParam>(Factory::OperationCreationParam(InputAnswer::OperationType::BOX_SELECTION,Factory::CreationAddons(),true),InputManager::GetFactory(),&Factory::CreateOperation,this),rData);
 
     
     
@@ -86,17 +87,17 @@ Hud::Hud(Shader* _shader) : Component(this)
 
 
 
-    panel2->AddComponent(Rect(0.45,0.005,0.4,0.1),mSel,static_cast<HudObserver*>(observers[0])->GetRenderData());
+    panel2->AddComponent(Rect(0.45,0.005,0.4,0.1),mSel,rData);
     
-    mSel->AddComponent(Rect(),sb1,static_cast<HudObserver*>(observers[0])->GetRenderData());
-    mSel->AddComponent(Rect(),sb2,static_cast<HudObserver*>(observers[0])->GetRenderData());
-    mSel->AddComponent(Rect(),sb3,static_cast<HudObserver*>(observers[0])->GetRenderData());
+    mSel->AddComponent(Rect(),sb1,rData);
+    mSel->AddComponent(Rect(),sb2,rData);
+    mSel->AddComponent(Rect(),sb3,rData);
 
 
     tempR2.width = 0.1f;
     tempR2.startX -=0.1f;
 
-    panel2->AddComponent(Rect(0.01,0.005,0.4,0.1),new Slide<Factory,InputAnswer::OperationType>(InputAnswer::OperationType::CAMERA_FOCUS_SET,InputManager::GetFactory(),&Factory::CreateOperation2,this),static_cast<HudObserver*>(observers[0])->GetRenderData());
+    panel2->AddComponent(Rect(0.04,0.04,0.4,0.04),new Slide<Factory,InputAnswer::OperationType>(InputAnswer::OperationType::CAMERA_FOCUS_SET,InputManager::GetFactory(),&Factory::CreateOperation2,this),rData);
     //panel4->AddComponent(tempR2,new Button<Test,Test::TestData>(Test::TestData(0.1f),&(this->t),&Test::hal,this),static_cast<HudObserver*>(observers[0])->GetRenderData());
 }
 
@@ -191,17 +192,20 @@ void ComponentObserver::FillDataHere(Rect& iz)
 }
 
 
-std::vector<float> BasicTheme::GiveData(Rect& r, int level)
+std::vector<float> BasicTheme::GiveData(const Rect& r, int level)
 {
     std::vector<float> result;
+    
     std::vector<vec2> temp = r.GiveCornersTriangle();
  
-    PushBack(result,temp,color,0-(level*0.01)); 
+    PushBack(result,temp,color,0-(level*0.1)); 
    
+
+
     return result; 
 }
 
-std::vector<float> TransparentTheme::GiveData(Rect& r, int level)
+std::vector<float> TransparentTheme::GiveData(const Rect& r, int level)
 {
     std::vector<float> result;
     return result;
@@ -213,7 +217,7 @@ ComponentTheme* Component::GetTheme(){return theme;}
 
 
 
-Panel::Panel(Component* _root,vec3 _color, ComponentTheme* _theme) : Component(_root, _theme == NULL ? new BasicTheme(_color) : _theme){}
+Panel::Panel(Component* _root,vec3 _color, ComponentTheme* _theme) : Component(_root, _theme == NULL ? new PressableTheme() : _theme){}
 
 void Component::AddComponent(Rect _r, Component* _c,std::vector<float>& _rd, bool relToWindow)
 {
@@ -260,3 +264,67 @@ InputAnswer TimeLine::HandleHit(const vec2& p)
 
 
 std::vector<float>& Observer::GetDataHere(){return dataHere;}
+
+
+std::vector<float> PressableTheme::GiveData(const Rect& r, int level)
+{
+    float il = 0-level*0.1;
+
+    std::vector<float> result;
+   
+   
+
+    std::vector<vec3> collector1 = {vec3(r.startX,r.startY,il),vec3(r.startX+r.width,r.startY,il),vec3(r.startX+r.width,r.startY+r.height,il),vec3(r.startX,r.startY+r.height,il)};
+
+    vec3 topCol =  vec3(0.2,0.2,0.2);
+    vec3 botCol = vec3(0.1,0.1,0.1);
+
+    if(pressed){
+        topCol = topCol * 2.5f;
+        botCol = botCol * 2.5f;
+    }
+
+    PushBack(result,std::vector<vec3>{collector1[0],topCol,collector1[1],topCol,collector1[2],botCol,collector1[0],topCol,collector1[2],botCol,collector1[3],botCol});
+
+    il -= 0.01;
+
+    float margin = std::min(0.015f,std::min(fabs(r.width),fabs(r.height)) / 10);
+    
+   
+
+
+    std::vector<vec3> ocp{vec3(r.startX,r.startY,il),vec3(r.startX+r.width,r.startY,il),vec3(r.startX+r.width,r.startY+r.height,il),vec3(r.startX,r.startY+r.height,il)};
+    std::vector<vec3> omp{vec3(r.startX + r.width/2,r.startY,il),vec3(r.startX+r.width,r.startY+r.height/2,il),vec3(r.startX+r.width/2,r.startY+r.height,il),vec3(r.startX,r.startY+ r.height/2,il)};
+    std::vector<vec3> icp{vec3(r.startX+margin,r.startY-margin,il),vec3(r.startX+r.width-margin,r.startY-margin,il),vec3(r.startX+r.width-margin,r.startY+r.height+margin,il),vec3(r.startX+margin,r.startY+r.height+margin,il)};
+    std::vector<vec3> imp{vec3(r.startX+r.width/2,r.startY-margin,il),vec3(r.startX+r.width-margin,r.startY+r.height/2,il),vec3(r.startX+r.width/2,r.startY+r.height+margin,il),vec3(r.startX+margin,r.startY+r.height/2,il)};
+    
+
+    vec3 ocpC(0.1,0.1,0.1);
+    vec3 ompC(0.12,0.12,0.12);
+    vec3 icpC(0.15,0.15,0.15);
+    vec3 impC(0.5,0.5,0.5);
+
+
+
+    std::vector<vec3>collector{ocp[0],ocpC,icp[0],icpC,imp[0],impC,ocp[0],ocpC,omp[0],ompC,imp[0],impC,
+        ocp[1],ocpC,icp[1],icpC,imp[0],impC,ocp[1],ocpC,omp[0],ompC,imp[0],impC,
+        ocp[1],ocpC,icp[1],icpC,imp[1],impC,ocp[1],ocpC,omp[1],ompC,imp[1],impC,
+        ocp[2],ocpC,icp[2],icpC,imp[1],impC,ocp[2],ocpC,omp[1],ompC,imp[1],impC,
+        ocp[2],ocpC,icp[2],icpC,imp[2],impC,ocp[2],ocpC,omp[2],ompC,imp[2],impC,
+        ocp[3],ocpC,icp[3],icpC,imp[2],impC,ocp[3],ocpC,omp[2],ompC,imp[2],impC,
+        ocp[3],ocpC,icp[3],icpC,imp[3],impC,ocp[3],ocpC,omp[3],ompC,imp[3],impC,
+        ocp[0],ocpC,icp[0],icpC,imp[3],impC,ocp[0],ocpC,omp[3],ompC,imp[3],impC
+    };
+
+    PushBack(result,collector);
+
+    
+
+    
+    
+
+
+
+
+    return result;
+}

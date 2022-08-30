@@ -14,7 +14,7 @@
 ////////////////////////////////VEC2/////////////////////////////////////////
 struct vec2 {
 	float x, y;
-	explicit vec2(float _x, float _y):x(_x),y(_y){}
+	explicit vec2(float _x = 0, float _y = 0):x(_x),y(_y){}
 
 	vec2 operator*(float num) const { return vec2(x * num, y * num); }
 	vec2 operator/(float num) const { return vec2(x / num, y / num); }

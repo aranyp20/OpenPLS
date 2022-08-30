@@ -1,0 +1,60 @@
+Date : 2022-08-05 21:05:57
+Directory : /home/peti/Desktop/OpenPLS/OpenPLS/src
+Total : 31 files,  1913 codes, 77 comments, 596 blanks, all 2586 lines
+
+Languages
++--------------+------------+------------+------------+------------+------------+
+| language     | files      | code       | comment    | blank      | total      |
++--------------+------------+------------+------------+------------+------------+
+| C++          |         27 |      1,539 |         72 |        567 |      2,178 |
+| JSON         |          1 |        302 |          0 |          0 |        302 |
+| ShaderLab    |          2 |         63 |          4 |         28 |         95 |
+| Shell Script |          1 |          9 |          1 |          1 |         11 |
++--------------+------------+------------+------------+------------+------------+
+
+Directories
++---------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                | files      | code       | comment    | blank      | total      |
++---------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                   |         31 |      1,913 |         77 |        596 |      2,586 |
+| out                                                                 |          1 |        302 |          0 |          0 |        302 |
+| shaders                                                             |          2 |         63 |          4 |         28 |         95 |
++---------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++---------------------------------------------------------------------+--------------+------------+------------+------------+------------+
+| filename                                                            | language     | code       | comment    | blank      | total      |
++---------------------------------------------------------------------+--------------+------------+------------+------------+------------+
+| /home/peti/Desktop/OpenPLS/OpenPLS/src/Addons.cpp                   | C++          |          1 |          0 |          0 |          1 |
+| /home/peti/Desktop/OpenPLS/OpenPLS/src/Addons.hpp                   | C++          |         17 |          3 |         13 |         33 |
+| /home/peti/Desktop/OpenPLS/OpenPLS/src/App.cpp                      | C++          |          6 |         10 |          4 |         20 |
+| /home/peti/Desktop/OpenPLS/OpenPLS/src/Camera.cpp                   | C++          |         54 |          0 |         17 |         71 |
+| /home/peti/Desktop/OpenPLS/OpenPLS/src/Camera.h                     | C++          |         20 |          0 |         12 |         32 |
+| /home/peti/Desktop/OpenPLS/OpenPLS/src/Geometry.cpp                 | C++          |        105 |          1 |         42 |        148 |
+| /home/peti/Desktop/OpenPLS/OpenPLS/src/Geometry.h                   | C++          |         40 |          2 |         27 |         69 |
+| /home/peti/Desktop/OpenPLS/OpenPLS/src/IBO.cpp                      | C++          |         29 |          0 |          8 |         37 |
+| /home/peti/Desktop/OpenPLS/OpenPLS/src/IBO.h                        | C++          |         16 |          0 |          3 |         19 |
+| /home/peti/Desktop/OpenPLS/OpenPLS/src/InputManager.cpp             | C++          |         65 |          0 |         20 |         85 |
+| /home/peti/Desktop/OpenPLS/OpenPLS/src/InputManager.h               | C++          |         42 |          0 |         20 |         62 |
+| /home/peti/Desktop/OpenPLS/OpenPLS/src/Mesh.cpp                     | C++          |        266 |         33 |         89 |        388 |
+| /home/peti/Desktop/OpenPLS/OpenPLS/src/Mesh.h                       | C++          |        117 |          3 |         44 |        164 |
+| /home/peti/Desktop/OpenPLS/OpenPLS/src/Program.cpp                  | C++          |        165 |          7 |         66 |        238 |
+| /home/peti/Desktop/OpenPLS/OpenPLS/src/Program.h                    | C++          |         34 |          0 |         16 |         50 |
+| /home/peti/Desktop/OpenPLS/OpenPLS/src/Renderer.cpp                 | C++          |         17 |          0 |          6 |         23 |
+| /home/peti/Desktop/OpenPLS/OpenPLS/src/Renderer.h                   | C++          |         30 |          0 |         10 |         40 |
+| /home/peti/Desktop/OpenPLS/OpenPLS/src/Shader.cpp                   | C++          |        121 |          2 |         36 |        159 |
+| /home/peti/Desktop/OpenPLS/OpenPLS/src/Shader.h                     | C++          |         36 |          0 |          6 |         42 |
+| /home/peti/Desktop/OpenPLS/OpenPLS/src/Surface.cpp                  | C++          |         22 |          1 |          8 |         31 |
+| /home/peti/Desktop/OpenPLS/OpenPLS/src/Surface.h                    | C++          |         22 |          1 |         15 |         38 |
+| /home/peti/Desktop/OpenPLS/OpenPLS/src/VAO.cpp                      | C++          |         23 |          0 |          8 |         31 |
+| /home/peti/Desktop/OpenPLS/OpenPLS/src/VAO.h                        | C++          |         16 |          0 |          8 |         24 |
+| /home/peti/Desktop/OpenPLS/OpenPLS/src/VBO.cpp                      | C++          |         59 |          0 |         20 |         79 |
+| /home/peti/Desktop/OpenPLS/OpenPLS/src/VBO.h                        | C++          |         44 |          3 |          8 |         55 |
+| /home/peti/Desktop/OpenPLS/OpenPLS/src/WorldElements.h              | C++          |         14 |          0 |          5 |         19 |
+| /home/peti/Desktop/OpenPLS/OpenPLS/src/mymath.h                     | C++          |        158 |          6 |         56 |        220 |
+| /home/peti/Desktop/OpenPLS/OpenPLS/src/out/linecount.json           | JSON         |        302 |          0 |          0 |        302 |
+| /home/peti/Desktop/OpenPLS/OpenPLS/src/run.sh                       | Shell Script |          9 |          1 |          1 |         11 |
+| /home/peti/Desktop/OpenPLS/OpenPLS/src/shaders/GouraudShader.shader | ShaderLab    |         42 |          4 |         15 |         61 |
+| /home/peti/Desktop/OpenPLS/OpenPLS/src/shaders/Shader1.shader       | ShaderLab    |         21 |          0 |         13 |         34 |
+| Total                                                               |              |      1,913 |         77 |        596 |      2,586 |
++---------------------------------------------------------------------+--------------+------------+------------+------------+------------+

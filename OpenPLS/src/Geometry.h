@@ -17,7 +17,7 @@ struct Triangle{
 
     Triangle(vec2,vec2,vec2);
 
-    bool Contains(const vec2&);
+    bool Contains(const vec2&) const;
 };
 
 struct Rect{
@@ -30,12 +30,24 @@ struct Rect{
 
     Rect(vec2,vec2,float);
     Rect(float _startX = 0, float _startY = 0, float _width = 0, float _height = 0);
+    Rect(const std::vector<vec2>&);
 
-    vec2 Norm();
-    bool Contains(const vec2&);
 
-    std::vector<vec2> GiveCorners();
-    std::vector<vec2> GiveCornersTriangle();
+    void SetWidth(float);
+    void SetHeight(float);
+    void SetStartingX(float);
+    void SetStartingY(float);
+
+    vec2 Norm() const;
+    bool Contains(const vec2&) const;
+
+    std::vector<vec2> GiveCorners() const;
+    std::vector<vec2> GiveCornersTriangle() const;
+
+
+    private:
+
+    void Recalculate();
 };
 
 struct Circle{
@@ -60,6 +72,7 @@ struct Line2D{
 
     vec2 Intersect(const Line2D&);
 
+    bool SameSide(const vec2&,const vec2&);
 
     float DistanceFromSection(const vec2&, bool endToo);
     float DistanceFromLine(const vec2&);

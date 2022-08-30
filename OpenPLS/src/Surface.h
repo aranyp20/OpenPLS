@@ -2,6 +2,7 @@
 #define SURFACE_H
 
 #include "Mesh.h"
+#include "MeshOperation.h"
 #include "Addons.hpp"
 #include "Camera.h"
 #include "Geometry.h"
@@ -119,12 +120,12 @@ public:
 class OBoxSelection : public Operation{
 	Surface* owner;
 	int dataSpaceIndex;
-	Camera* camera;
+	
 	vec2 startingPos;
 	Rect selRect;
 public:
 	OBoxSelection(Surface*);
-	~OBoxSelection();
+	~OBoxSelection() override;
 	void Update() override;
 	void Release() override;
 };

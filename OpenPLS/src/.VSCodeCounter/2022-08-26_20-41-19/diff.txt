@@ -1,0 +1,46 @@
+Date : 2022-08-26 20:41:19
+Directory : /home/peti/Desktop/OpenPLS/OpenPLS/src
+Total : 22 files,  550 codes, 18 comments, 187 blanks, all 755 lines
+
+Languages
++----------+------------+------------+------------+------------+------------+
+| language | files      | code       | comment    | blank      | total      |
++----------+------------+------------+------------+------------+------------+
+| C++      |         22 |        550 |         18 |        187 |        755 |
++----------+------------+------------+------------+------------+------------+
+
+Directories
++-------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                  | files      | code       | comment    | blank      | total      |
++-------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                     |         22 |        550 |         18 |        187 |        755 |
++-------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++-------------------------------------------------------+----------+------------+------------+------------+------------+
+| filename                                              | language | code       | comment    | blank      | total      |
++-------------------------------------------------------+----------+------------+------------+------------+------------+
+| /home/peti/Desktop/OpenPLS/OpenPLS/src/Addons.hpp     | C++      |          0 |          1 |         -1 |          0 |
+| /home/peti/Desktop/OpenPLS/OpenPLS/src/App.cpp        | C++      |          0 |          5 |          0 |          5 |
+| /home/peti/Desktop/OpenPLS/OpenPLS/src/Camera.cpp     | C++      |         11 |          0 |          5 |         16 |
+| /home/peti/Desktop/OpenPLS/OpenPLS/src/Camera.h       | C++      |          5 |          0 |          0 |          5 |
+| /home/peti/Desktop/OpenPLS/OpenPLS/src/Factory.cpp    | C++      |         10 |          0 |          1 |         11 |
+| /home/peti/Desktop/OpenPLS/OpenPLS/src/Factory.h      | C++      |          1 |          0 |          0 |          1 |
+| /home/peti/Desktop/OpenPLS/OpenPLS/src/Geometry.cpp   | C++      |          1 |          0 |          0 |          1 |
+| /home/peti/Desktop/OpenPLS/OpenPLS/src/Gui.cpp        | C++      |         12 |          0 |         11 |         23 |
+| /home/peti/Desktop/OpenPLS/OpenPLS/src/Gui.h          | C++      |         59 |          0 |         27 |         86 |
+| /home/peti/Desktop/OpenPLS/OpenPLS/src/IBO.cpp        | C++      |          1 |          0 |          0 |          1 |
+| /home/peti/Desktop/OpenPLS/OpenPLS/src/IBO.h          | C++      |          1 |          0 |          0 |          1 |
+| /home/peti/Desktop/OpenPLS/OpenPLS/src/InputManager.h | C++      |          2 |          0 |          0 |          2 |
+| /home/peti/Desktop/OpenPLS/OpenPLS/src/Mesh.cpp       | C++      |        284 |          9 |         73 |        366 |
+| /home/peti/Desktop/OpenPLS/OpenPLS/src/Mesh.h         | C++      |         71 |          2 |         37 |        110 |
+| /home/peti/Desktop/OpenPLS/OpenPLS/src/Program.cpp    | C++      |          4 |          0 |          1 |          5 |
+| /home/peti/Desktop/OpenPLS/OpenPLS/src/Program.h      | C++      |          1 |          0 |          1 |          2 |
+| /home/peti/Desktop/OpenPLS/OpenPLS/src/Renderer.cpp   | C++      |          0 |          0 |          2 |          2 |
+| /home/peti/Desktop/OpenPLS/OpenPLS/src/Renderer.h     | C++      |          0 |          0 |          1 |          1 |
+| /home/peti/Desktop/OpenPLS/OpenPLS/src/Surface.cpp    | C++      |         63 |          0 |         23 |         86 |
+| /home/peti/Desktop/OpenPLS/OpenPLS/src/Surface.h      | C++      |         20 |          1 |          6 |         27 |
+| /home/peti/Desktop/OpenPLS/OpenPLS/src/VBO.cpp        | C++      |          1 |          0 |          0 |          1 |
+| /home/peti/Desktop/OpenPLS/OpenPLS/src/mymath.h       | C++      |          3 |          0 |          0 |          3 |
+| Total                                                 |          |        550 |         18 |        187 |        755 |
++-------------------------------------------------------+----------+------------+------------+------------+------------+

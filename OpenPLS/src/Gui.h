@@ -22,18 +22,27 @@ namespace GUI{
 
 
     struct ComponentTheme{
-        virtual std::vector<float> GiveData(Rect&, int) = 0;
+        bool pressed = false;
+        virtual std::vector<float> GiveData(const Rect&, int) = 0;
     };
+
+    struct PressableTheme : public ComponentTheme{
+
+        std::vector<float> GiveData(const Rect&, int) override;        
+    };
+
 
     struct BasicTheme : public ComponentTheme{
         vec3 color;
-        std::vector<float> GiveData(Rect&, int);
+        std::vector<float> GiveData(const Rect&, int) override;
 
         BasicTheme(vec3);
     };
 
+
+
     struct TransparentTheme : public ComponentTheme{
-        std::vector<float> GiveData(Rect&, int);
+        std::vector<float> GiveData(const Rect&, int) override;
     };
 
 
@@ -139,7 +148,7 @@ namespace GUI{
         public:
 
         template<typename ...A>
-        Button(DAT _param,OBJ* _obj, void(OBJ::*f)(A...),Component* _root,ComponentTheme* _theme = NULL): param(_param),obj(_obj),func((void(OBJ::*)())f), Component(_root,_theme == NULL ? new BasicTheme(vec3(0.4f,0.4f,0.4f)) : _theme){}
+        Button(DAT _param,OBJ* _obj, void(OBJ::*f)(A...),Component* _root,ComponentTheme* _theme = NULL): param(_param),obj(_obj),func((void(OBJ::*)())f), Component(_root,_theme == NULL ? new PressableTheme() : _theme){}
        
 
         template<typename ...A>
@@ -151,7 +160,7 @@ namespace GUI{
 
         virtual InputAnswer HandleHit(const vec2&)
         {
-           
+            theme->pressed = true;
             static_cast<BasicTheme*>(theme)->color = vec3(0,1,0);
             this->Call(param);
             InputManager::ChangeBind(this);
@@ -159,6 +168,7 @@ namespace GUI{
         }
         virtual void Release()
         {
+            theme->pressed = false;
             static_cast<BasicTheme*>(theme)->color = vec3(0.4f,0.4f,0.4f);   
         }
         void Update()
@@ -224,6 +234,7 @@ namespace GUI{
         }
         
     
+
         public:
         template<typename ...A>
         Slide(DAT _param,OBJ* _obj,void(OBJ::*f)(A...),Component* _root,ComponentTheme* _theme = NULL) : Button<OBJ,DAT>(_param,_obj,f,_root,_theme){}
@@ -272,14 +283,13 @@ namespace GUI{
 
         void Activate()
         {
-            static_cast<BasicTheme*>(Component::theme)->color = vec3(0.0f,0.8f,0.4f);
+            Component::theme->pressed=true;
             Component::pressed = true;
         }
 
         void InActivate()
         {
-            
-            static_cast<BasicTheme*>(Component::theme)->color = vec3(0.4f,0.4f,0.4f);
+            Component::theme->pressed=false;
             Component::pressed = false;
         }
 
@@ -292,7 +302,7 @@ namespace GUI{
   
         public:
         
-        Sel(Component* _root, bool _vertical = true) : Component(_root,new BasicTheme(vec3(0.8f,0.8f,0.8f))),vertical(_vertical)
+        Sel(Component* _root, bool _vertical = true) : Component(_root,new BasicTheme(vec3(0.3f,0.3f,0.3f))),vertical(_vertical)
         {
         }
 

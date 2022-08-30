@@ -11,6 +11,8 @@ class Factory{
 
     Surface* surface;
 
+    std::vector<Operation*> activeOperations;
+
     public:
 
     struct CreationAddons{
@@ -52,13 +54,15 @@ class Factory{
     void CreateOperation(OperationCreationParam);
     void CreateOperation2(InputAnswer::OperationType,float);
 
-   
+    void DeleteActiveOperations();
 
     private:
     static OperationHolder oh;
    
 
     void SetHolded(OperationHolder);
+
+    void CreateOperationC(Operation*,bool needBind);
 };
 
 

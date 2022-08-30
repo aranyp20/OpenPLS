@@ -77,9 +77,10 @@ bool Program::Init()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glViewport(SurfaceStartingX(), WindowHeightR()-SurfaceStartingY() - SurfaceHeight(), SurfaceWidth(), SurfaceHeight());
-    //glViewport(0,0,60,60);
+
     glEnable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
+    glfwSetWindowAttrib(window, GLFW_RESIZABLE, false);    
 
     WorldInit();
 
@@ -136,6 +137,8 @@ void Program::WorldInit()
 void Program::Run()
 {
   
+   
+
 
 
 

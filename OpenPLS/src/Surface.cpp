@@ -261,14 +261,20 @@ Surface::Surface() : toloka(new Toloka(this))
 	topLayerVAO2D->AddVBO(*topLayerVBO2D);
 }
 
-OBoxSelection::OBoxSelection(Surface* _surface) : owner(_surface), camera(_surface->viewCamera), startingPos(InputManager::ChangeInput(InputManager::GetMousePos2(),false))
+OBoxSelection::OBoxSelection(Surface* _surface) : owner(_surface),  startingPos(InputManager::ChangeInput(InputManager::GetMousePos2(),false))
 {
 	dataSpaceIndex = owner->RequestDataSpace();
 	
-}
 
+}
 OBoxSelection::~OBoxSelection()
 {
+ 	std::vector<vec2> corners = selRect.GiveCorners();
+	std::vector<vec2> scorners;
+	for(auto& a : corners)scorners.push_back(InputManager::NormalizedToSurface(a));
+	Rect surfRect(scorners);
+	
+	owner->meshHandler->SelectPoints(surfRect); 
 	owner->FreeDataSpace(dataSpaceIndex);
 }
 

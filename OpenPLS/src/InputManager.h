@@ -67,6 +67,11 @@ public:
 
 	static vec2 ChangeInput(const vec2&,bool toSurface = true);
 
+	static vec2 NormalizedToWindow(const vec2&);
+	static vec2 WindowToNormalized(const vec2&);
+	static vec2 WindowToSurface(const vec2&);
+	static vec2 NormalizedToSurface(const vec2&);
+
 	static void ChangeBind(InputBindable*);
 
 	static Factory* GetFactory();
@@ -75,7 +80,8 @@ public:
 };
 
 class Operation : public InputBindable {
-
+	public:
+	virtual ~Operation(){}
 
 };
 

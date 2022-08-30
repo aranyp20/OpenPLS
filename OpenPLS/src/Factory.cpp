@@ -26,6 +26,7 @@ Operation* Factory::CreateOperation(InputAnswer::OperationType which,Factory::Cr
 
     Mesh* activeMesh = surface->meshHandler->activeMesh;
 
+    bool needBind = true;
 
     switch(which){
         case InputAnswer::OperationType::VERT_EXTRUDE: 
@@ -33,7 +34,7 @@ Operation* Factory::CreateOperation(InputAnswer::OperationType which,Factory::Cr
         break;
         case InputAnswer::OperationType::VERT_MOVE:
             createdOperation = new OVertMove(activeMesh,addons.pvec3,surface->viewCamera);
-            return createdOperation;
+            needBind = false;
         break;
         case InputAnswer::OperationType::CAMERA_MOVE:
             createdOperation = new OCameraMove(surface->viewCamera);
@@ -46,7 +47,7 @@ Operation* Factory::CreateOperation(InputAnswer::OperationType which,Factory::Cr
         break;
         case InputAnswer::OperationType::CAMERA_FOCUS_SET:
             createdOperation = new OCameraFocusSet(surface->viewCamera,addons.pfloat);
-            return createdOperation;
+            needBind = false;
         break;
         case InputAnswer::OperationType::VERT_SUBDIVIDE:
             createdOperation = new OVertSubdivide(activeMesh);
@@ -57,10 +58,24 @@ Operation* Factory::CreateOperation(InputAnswer::OperationType which,Factory::Cr
         default:return NULL;break;
     }
 
-    InputManager::ChangeBind(createdOperation);
+    CreateOperationC(createdOperation,needBind);    
 
     return createdOperation;
 }
+
+void Factory::CreateOperationC(Operation* op, bool needBind){
+    if(needBind)InputManager::ChangeBind(op);
+    activeOperations.push_back(op);
+}
+
+void Factory::DeleteActiveOperations()
+{
+    for(auto& a : activeOperations){
+        delete a;
+    }
+    activeOperations.clear();
+}
+
 void Factory::CreateOperation(OperationCreationParam p)
 {
     
