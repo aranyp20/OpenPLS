@@ -67,7 +67,7 @@ Hud::Hud(Shader* _shader) : Component(this)
     panel1->AddComponent(Rect(0.2,0.1,0.1,0.1),new Button<Factory,Factory::OperationCreationParam>(Factory::OperationCreationParam(InputAnswer::OperationType::VERT_EXTRUDE,Factory::CreationAddons()),InputManager::GetFactory(),&Factory::CreateOperation,this),rData);
     panel1->AddComponent(Rect(0.2,0.3,0.1,0.1),new Button<Factory,Factory::OperationCreationParam>(Factory::OperationCreationParam(InputAnswer::OperationType::VERT_SUBDIVIDE,Factory::CreationAddons()),InputManager::GetFactory(),&Factory::CreateOperation,this),rData);
 
-    Rect tempR2(0.1f,-tempR.height/10,tempR.width-0.1f,-tempR.height + tempR.height/5);
+    Rect tempR2(0.1f,PressableTheme::CalculateMargin(tempR),tempR.width-0.1f-PressableTheme::CalculateMargin(tempR),-tempR.height - 2*PressableTheme::CalculateMargin(tempR));
 
     panel4->AddComponent(tempR2,new TimeLine(this),rData);
   
@@ -85,10 +85,10 @@ Hud::Hud(Shader* _shader) : Component(this)
     SelButton<MeshHandler,Mesh::Mode>* sb2 = new SelButton<MeshHandler,Mesh::Mode>(Mesh::Mode::EDIT,Program::GetSurface()->meshHandler,&MeshHandler::ChangeMode,this);
     SelButton<MeshHandler,Mesh::Mode>* sb3 = new SelButton<MeshHandler,Mesh::Mode>(Mesh::Mode::VERTEX,Program::GetSurface()->meshHandler,&MeshHandler::ChangeMode,this);
 
-
-
-    panel2->AddComponent(Rect(0.45,0.005,0.4,0.1),mSel,rData);
+    panel2->AddComponent(Rect(0.45,PressableTheme::CalculateMargin(panel2->GetInfluenceZone()),0.4,-panel2->GetInfluenceZone().height-2*PressableTheme::CalculateMargin(panel2->GetInfluenceZone())),mSel,rData);
     
+
+
     mSel->AddComponent(Rect(),sb1,rData);
     mSel->AddComponent(Rect(),sb2,rData);
     mSel->AddComponent(Rect(),sb3,rData);
@@ -280,15 +280,16 @@ std::vector<float> PressableTheme::GiveData(const Rect& r, int level)
     vec3 botCol = vec3(0.1,0.1,0.1);
 
     if(pressed){
-        topCol = topCol * 2.5f;
-        botCol = botCol * 2.5f;
+    
+        topCol = vec3(0.4,0,0);
+        botCol = vec3(0.15,0,0);
     }
 
     PushBack(result,std::vector<vec3>{collector1[0],topCol,collector1[1],topCol,collector1[2],botCol,collector1[0],topCol,collector1[2],botCol,collector1[3],botCol});
 
     il -= 0.01;
 
-    float margin = std::min(0.015f,std::min(fabs(r.width),fabs(r.height)) / 10);
+    float margin = PressableTheme::CalculateMargin(r);
     
    
 
@@ -304,6 +305,7 @@ std::vector<float> PressableTheme::GiveData(const Rect& r, int level)
     vec3 icpC(0.15,0.15,0.15);
     vec3 impC(0.5,0.5,0.5);
 
+    if(pressed)impC = vec3(0.3,0,0);
 
 
     std::vector<vec3>collector{ocp[0],ocpC,icp[0],icpC,imp[0],impC,ocp[0],ocpC,omp[0],ompC,imp[0],impC,
@@ -327,4 +329,9 @@ std::vector<float> PressableTheme::GiveData(const Rect& r, int level)
 
 
     return result;
+}
+
+float PressableTheme::CalculateMargin(const Rect& r)
+{
+    return std::min(0.015f,std::min(fabs(r.width),fabs(r.height)) / 10);
 }

@@ -218,12 +218,6 @@ inline bool FE(float a, float b){
 	return fabs(a-b)<0.0001f;
 }
 
-inline float MIN(float a, float b){
-	if(a<b)return a;
-	return b;
-}
-inline float MAX(float a, float b){
-	return !MIN(a,b);
-}
+
 
 #endif

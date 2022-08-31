@@ -33,7 +33,7 @@ public:
 	inline float GetOriginalDistance() const {return originalDistance;}
 	inline vec3 GetLastLookDir() const {return lastLookDir;}
 
-	vec3 PutToWorld(const vec2&);
+	vec3 PutToWorld(const vec2&);//from surface to world
 };
 
 

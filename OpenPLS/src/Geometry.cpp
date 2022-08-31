@@ -12,7 +12,7 @@ float SolveQuadratic(float a, float b, float c)
     float r1 = (-b + sqrtf(det))/(2*a);
     float r2 = (-b - sqrtf(det))/(2*a);
 
-    return MIN(r1,r2);
+    return std::min(r1,r2);
 
 }
 

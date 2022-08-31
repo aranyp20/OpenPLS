@@ -7,7 +7,16 @@
 #include "Camera.h"
 #include "Geometry.h"
 
+class Target{
+	Surface* owner;
+	vec3 pos;
 
+	public:
+
+	Target(Surface*);
+
+	void Replace(const vec3&);
+};
 
 class Toloka : public InputBindable {
 
@@ -70,14 +79,15 @@ class Surface : public InputProcessor {
 	VAO* topLayerVAO2D;
 	VBO* topLayerVBO2D;
 
-	//ezt lehetne templatesen altalanosan addons-ba
-	std::map<int,std::vector<float>> outsideRenderData;
+
+
+	Target* target;
 public:
-	int RequestDataSpace();
-	void FillData(int, std::vector<float>&);
-	void FreeDataSpace(int);
+	DataSpace<std::vector<float>> lines2d;
+	
+	
 
-
+	void ReplaceTarget(const vec3&);
 
 	NormalShader shader1;
 
@@ -98,7 +108,13 @@ public:
 
 };
 
+class OTargetReplace : public Operation{
+	
 
+	public:
+
+	OTargetReplace(Surface*);
+};
 
 class OCameraMove : public Operation {
 	Camera* camera;

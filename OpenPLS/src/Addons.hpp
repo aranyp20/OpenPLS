@@ -59,6 +59,59 @@ class mem_block{
 };
 
 
+template<typename T>
+class DataSpace{
+
+	std::map<int,T> data;
+
+public:
+
+	int RequestDataSpace()
+	{
+		std::vector<int> keys;
+		int maxID=0;
+		for(auto it = data.begin();it !=data.end();it++){
+			keys.push_back(it->first);
+			maxID = std::max(maxID,it->first);
+		}
+		bool idReservations[maxID+2];
+		for(int j = 0 ;j<maxID+2;j++){
+			idReservations[j] = false;
+		}
+
+		for(auto a : keys){
+			idReservations[a] = true;
+		}
+		int i = 0;
+		while(idReservations[i])i++;
+		T newSpace;
+		data.insert({i,newSpace});
+		return i;
+	}
+
+	void FillData(int id, T& _data)
+	{
+		data[id] = _data;
+	}
+
+	void FreeDataSpace(int id)
+	{
+		data.erase(id);
+	}
+
+	std::vector<T> GetData()
+	{
+		std::vector<T> result;
+
+		for(auto it = data.begin();it !=data.end();it++){
+			result.push_back(it->second);
+		}
+		return result;
+	}
+
+
+};
+
 //ehelyett std::find
 template<typename T>
 bool VectorContains(std::vector<T*> where, T* what) 
@@ -86,6 +139,7 @@ struct VectorPair{
 		}
 	}
 };
+
 
 //improve this
 //from v1.

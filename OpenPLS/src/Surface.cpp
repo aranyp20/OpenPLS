@@ -45,38 +45,7 @@ bool Toloka::CheckHit()
 	return false;
 }
 
-int Surface::RequestDataSpace()
-{
-	std::vector<int> keys;
-	int maxID=0;
-	for(auto it = outsideRenderData.begin();it !=outsideRenderData.end();it++){
-		keys.push_back(it->first);
-		maxID = std::max(maxID,it->first);
-	}
-	bool idReservations[maxID+2];
-	for(int j = 0 ;j<maxID+2;j++){
-		idReservations[j] = false;
-	}
 
-	for(auto a : keys){
-		idReservations[a] = true;
-	}
-	int i = 0;
-	while(idReservations[i])i++;
-	std::vector<float> newSpace;
-	outsideRenderData.insert({i,newSpace});
-	return i;
-}
-
-void Surface::FillData(int id, std::vector<float>& data)
-{
-	outsideRenderData[id] = data;
-}
-
-void Surface::FreeDataSpace(int id)
-{
-	outsideRenderData.erase(id);
-}
 
 
 
@@ -105,15 +74,20 @@ void Surface::Render(Renderer& renderer)
 	glClear(GL_DEPTH_BUFFER_BIT);
 
 	std::vector<float> tLData2D;
+
+	std::vector<std::vector<float>> outsideRenderData = lines2d.GetData();
 	for(auto it = outsideRenderData.begin();it!=outsideRenderData.end();it++){
-		std::vector<float> dh = it->second;
-		
+		std::vector<float> dh = *it;
 		tLData2D.insert(tLData2D.end(),dh.begin(),dh.end());
 	}
 
     topLayerVAO->Bind();
     topLayerVBO->RefreshData(toloka->GiveData());
     renderer.DrawL(*topLayerVAO,shader1);
+
+
+
+
 	glViewport(0,0,Program::WindowWidthR(),Program::WindowHeightR());
 
 	topLayerVAO2D->Bind();
@@ -263,7 +237,7 @@ Surface::Surface() : toloka(new Toloka(this))
 
 OBoxSelection::OBoxSelection(Surface* _surface) : owner(_surface),  startingPos(InputManager::ChangeInput(InputManager::GetMousePos2(),false))
 {
-	dataSpaceIndex = owner->RequestDataSpace();
+	dataSpaceIndex = owner->lines2d.RequestDataSpace();
 	
 
 }
@@ -275,7 +249,7 @@ OBoxSelection::~OBoxSelection()
 	Rect surfRect(scorners);
 	
 	owner->meshHandler->SelectPoints(surfRect); 
-	owner->FreeDataSpace(dataSpaceIndex);
+	owner->lines2d.FreeDataSpace(dataSpaceIndex);
 }
 
 void OBoxSelection::Update()
@@ -290,10 +264,29 @@ void OBoxSelection::Update()
 	PushBack(dd,d,vec3(1,1,1),0);
 	
 
-	owner->FillData(dataSpaceIndex,dd); 
+	owner->lines2d.FillData(dataSpaceIndex,dd); 
 }
 
 void OBoxSelection::Release()
 {
 	
+}
+
+void Surface::ReplaceTarget(const vec3& p)
+{
+	target->Replace(p);
+}
+
+OTargetReplace::OTargetReplace(Surface* _owner)
+{
+	vec3 pos = _owner->viewCamera->PutToWorld(InputManager::WindowToNormalized(InputManager::GetMousePos2()));
+	pos = pos + _owner->viewCamera->GetWUV()[0];
+	_owner->ReplaceTarget(pos);
+}
+
+Target::Target(Surface* _owner) : owner(_owner) {}
+
+void Target::Replace(const vec3& p)
+{
+	pos = p;
 }
