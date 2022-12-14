@@ -76,10 +76,10 @@ class Surface : public InputProcessor {
 	VAO* topLayerVAO;
 	VBO* topLayerVBO;
 
+
+
 	VAO* topLayerVAO2D;
 	VBO* topLayerVBO2D;
-
-
 
 	Target* target;
 public:

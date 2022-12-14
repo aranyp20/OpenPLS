@@ -122,7 +122,7 @@ void Program::WorldInit()
 
     Light* light = new Light();
     light->wLightPos = vec4(5, 5, 4, 1);
-    light->La = vec3(1, 1, 1);
+    light->La = vec3(1, 1, 1.8);
     light->Le = vec3(1, 1, 3);
 
     surface->light = light;

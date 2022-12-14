@@ -343,11 +343,7 @@ Mesh::EdgeIterator Mesh::begin()
 	return EdgeIterator(*this);
 }
 
-//nem valoszinu hogy jo
-//Mesh::EdgeIterator Mesh::EdgeIterator::end()
-//{
-//	return EdgeIterator(parent, parent.edgeMatrix.Size()-1,parent.edgeMatrix.Size()-2);
-//}
+
 
 Mesh::Point* Mesh::EdgeIterator::GetElement1()
 {
@@ -388,24 +384,7 @@ bool Mesh::EdgeIterator::hasNext()
 	return true;
 }
 
-//Mesh::EdgeIterator& Mesh::EdgeIterator::operator++()
-//{
-//	int highestValidRow = column - 1;
-//	if (row == highestValidRow) {
-//		if (column < parent.edgeMatrix.size() - 1) {
-//			row = 0;
-//			column++;
-//		}
-//		else {
-//			//end
-//		}
-//	}
-//	else {
-//		row++;
-//	}
-//
-//	return *this;
-//}
+
 
 unsigned int Mesh::EdgeMatrix::elementIndex(Point* p)
 {
@@ -424,7 +403,7 @@ Mesh::Point* Mesh::EdgeMatrix::indexElement(int i)
 
 void Mesh::SelectPoint(Point* p) 
 {
-	if(VectorContains<Point>(selectedPoints,p))return;
+	if(std::find(selectedPoints.begin(),selectedPoints.end(),p)!=selectedPoints.end())return;
 	selectedPoints.push_back(p);
 }
 
@@ -467,28 +446,6 @@ RenderData MeshRenderer::GiveSides()
 
 			}
 
-
-
-/* 			for (int i = 0; i < 4; i++) {
-				f.push_back(s->points[i]->pos.x);
-				f.push_back(s->points[i]->pos.y);
-				f.push_back(s->points[i]->pos.z);
-				f.push_back(norm.x);
-				f.push_back(norm.y);
-				f.push_back(norm.z);
-
-			}
-
-
-			inds.push_back(iHelp * 4);
-			inds.push_back(iHelp * 4 + 1);
-			inds.push_back(iHelp * 4 + 2);
-
-			inds.push_back(iHelp * 4);
-			inds.push_back(iHelp * 4 + 2);
-			inds.push_back(iHelp * 4 + 3); 
-
-			iHelp++; */
 		}
 	}
 	res.raw = f;
@@ -506,7 +463,7 @@ std::vector<float> MeshRenderer::GiveVertices()
 		res.push_back(p->pos.x);
 		res.push_back(p->pos.y);
 		res.push_back(p->pos.z);
-		if (VectorContains<Mesh::Point>(owner->selectedPoints, p)) {
+		if (std::find(owner->selectedPoints.begin(),owner->selectedPoints.end(), p) != owner->selectedPoints.end()) {
 			res.push_back(1); res.push_back(1); res.push_back(1);
 		}
 		else {
@@ -528,7 +485,7 @@ std::vector<float> MeshRenderer::GiveEdges()
 		res.push_back(it.GetElement1()->pos.x);
 		res.push_back(it.GetElement1()->pos.y);
 		res.push_back(it.GetElement1()->pos.z);
-		if(VectorContains<Mesh::Point>(owner->selectedPoints,it.GetElement1())){
+		if(std::find(owner->selectedPoints.begin(),owner->selectedPoints.end(),it.GetElement1())!=owner->selectedPoints.end()){
 			res.push_back(1); res.push_back(1); res.push_back(1);
 		}else{
 			res.push_back(0); res.push_back(0); res.push_back(0);
@@ -537,7 +494,7 @@ std::vector<float> MeshRenderer::GiveEdges()
 		res.push_back(it.GetElement2()->pos.x);
 		res.push_back(it.GetElement2()->pos.y);
 		res.push_back(it.GetElement2()->pos.z);
-		if(VectorContains<Mesh::Point>(owner->selectedPoints,it.GetElement2())){
+		if(std::find(owner->selectedPoints.begin(),owner->selectedPoints.end(),it.GetElement2())!=owner->selectedPoints.end()){
 			res.push_back(1); res.push_back(1); res.push_back(1);
 		}else{
 			res.push_back(0); res.push_back(0); res.push_back(0);

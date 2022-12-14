@@ -16,6 +16,8 @@
 #include "InputManager.h"
 #include "Surface.h"
 #include "Gui.h"
+#include "Animation.h"
+#include "AnimationRunner.h"
 
 
 
