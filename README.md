@@ -14,4 +14,4 @@
 - Edit mode - can edit, vertices-edges-sides are all visible
 - Vertex mode - can edit, vertices-edges are visible
 
-### Note that it also provides some 'quality of life' features like camera movement.
+Note that it also provides some 'quality of life' features like camera movement.
