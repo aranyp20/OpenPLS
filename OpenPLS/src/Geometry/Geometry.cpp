@@ -38,7 +38,7 @@ vec2 Line2D::Norm() const
     return result;
 }
 
-vec2 Line2D::Intersect(const Line2D& l) 
+vec2 Line2D::Intersect(const Line2D& l)  const
 {
     vec2 DIR = p2 - p1;
     vec2 START = p1;
@@ -51,7 +51,7 @@ vec2 Line2D::Intersect(const Line2D& l)
     return vec2(START+DIR*t1);
 }
 
-float Line2D::DistanceFromLine(const vec2& p) 
+float Line2D::DistanceFromLine(const vec2& p) const
 {
     vec2 refP = p1;
     if(FE(p1.x,p.x)&&FE(p1.y,p.y))refP = p2;
@@ -69,13 +69,13 @@ bool Line2D::SameSide(const vec2& _p1,const vec2& _p2)
     return (dot(Norm(),_p1-refP1)<0 && dot(Norm(),_p2-refP2)<0) || (dot(Norm(),_p1-refP1)>0 && dot(Norm(),_p2-refP2)>0);
 }
 
-bool Line2D::SectionContains(const vec2& p) 
+bool Line2D::SectionContains(const vec2& p) const
 {
     return Rect(p1,p2,0.01f).Contains(p);
 }
 
 
-float Line2D::DistanceFromSection(const vec2& p, bool endToo = true) 
+float Line2D::DistanceFromSection(const vec2& p, bool endToo = true) const
 {
     try{
         if(SectionContains(p))return 0;
