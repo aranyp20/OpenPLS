@@ -9,7 +9,7 @@
 - Vertex selection, edge selection
 - Box selection
 
-## The editable object can be handled in 3 different ways:
+## A object can be edited in 3 different ways:
 - Object mode - cant edit, sides are visible
 - Edit mode - can edit, vertices-edges-sides are all visible
 - Vertex mode - can edit, vertices-edges are visible
