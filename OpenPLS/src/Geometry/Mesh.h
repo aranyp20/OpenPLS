@@ -35,7 +35,7 @@ public:
 
 class Mesh
 {
-public: // valamikor private lesz
+public: 
 
 	enum Shape{
 		CUBE
@@ -72,7 +72,7 @@ public: // valamikor private lesz
 		inline Side(std::vector<Point *> _ps) { points = _ps; }
 		inline Side(){}
 
-		std::vector<Edge*> GetEdges(Mesh*);
+		std::vector<Edge*> GetEdges(Mesh*) const;
 	};
 
 private:
@@ -89,7 +89,7 @@ private:
 
 	struct EdgeMatrix
 	{
-		inline int Size() { return matrix.size(); }
+		inline int Size() const { return matrix.size(); }
 
 		unsigned int elementIndex(Point *);
 		Point *indexElement(int);
@@ -99,7 +99,6 @@ private:
 
 		std::vector<std::vector<Edge *>> matrix;
 
-		// ennel gyorsabb es szebbet vagy legalabb osszeszervezni (nem is biztos hogy kell ez)
 		std::vector<Point *> orderVec;
 	};
 
@@ -124,17 +123,15 @@ public:
 
 	void ChangeMode(const Mode&);
 
-	//az nem tul jo hogy mindig mindket oldalrol meg kell vizsgalni a dolgokat
 	struct EdgeIterator
 	{
 		EdgeIterator(Mesh &_parent, int _row, int _column);
 
-		// EdgeIterator& operator++();
 
-		Point *GetElement1();
-		Point *GetElement2();
+		Point *GetElement1() const;
+		Point *GetElement2() const;
 
-		Edge* GetElementEdge();
+		Edge* GetElementEdge() const;
 
 		bool hasNext();
 
@@ -170,14 +167,14 @@ public:
 	void Corrupt() { corrupted = true; }
 	void UnCorrupt() { corrupted = false; }
 
-	std::vector<Mesh::Point*> GiveSelecteds();
+	std::vector<Mesh::Point*> GiveSelecteds() const;
 
 	static vec3 CalculateMidPoint(std::vector<Point*>);
 
 private:
 	struct Strategy{
 		virtual void Render(MeshRenderer*,const Renderer& r, const Shader& vs,const Shader& es,Shader& ss){}
-		virtual bool CheckHit(Mesh*,const vec2 &, const mat4 &){return false;}
+		virtual bool CheckHit(Mesh*,const vec2 &, const mat4 &) {return false;}
 		bool CheckHitCommon(Mesh*,const vec2 &, const mat4 &,std::vector<Hittable*>&);
 	};
 
@@ -200,7 +197,7 @@ private:
 	Strategy* currentStrat;
 public:
 
-	void Render(const Renderer& r, const Shader& vs,const Shader& es,Shader& ss);
+	void Render(const Renderer& r, const Shader& vs,const Shader& es,Shader& ss) const;
 	
 
 	friend class MeshRenderer;
@@ -223,9 +220,9 @@ class MeshRenderer
 	VBO* edgeVBO;
 	VBO* sideVBO;
 
-	RenderData GiveSides();
-	std::vector<float> GiveVertices();
-	std::vector<float> GiveEdges();
+	RenderData GiveSides() const;
+	std::vector<float> GiveVertices() const;
+	std::vector<float> GiveEdges() const;
 public:
 	
 
@@ -256,7 +253,7 @@ public:
 	void AddMesh(Mesh *);
 	void ChangeMode(Mesh::Mode);
 	bool CheckHit(const vec2 &);
-	void Render(const Renderer& r, const Shader& vs,const Shader& es,Shader& ss);
+	void Render(const Renderer& r, const Shader& vs,const Shader& es,Shader& ss) const;
 
 	void SelectPoints(const Rect&);
 };

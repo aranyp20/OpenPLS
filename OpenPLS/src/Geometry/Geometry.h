@@ -70,13 +70,13 @@ struct Line2D{
 
     vec2 Norm() const;
 
-    vec2 Intersect(const Line2D&);
+    vec2 Intersect(const Line2D&) const;
 
     bool SameSide(const vec2&,const vec2&);
 
-    float DistanceFromSection(const vec2&, bool endToo);
-    float DistanceFromLine(const vec2&);
-    bool SectionContains(const vec2&);
+    float DistanceFromSection(const vec2&, bool endToo) const;
+    float DistanceFromLine(const vec2&) const;
+    bool SectionContains(const vec2&) const;
 };
 
 //Untested class!!!

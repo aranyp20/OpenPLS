@@ -97,7 +97,7 @@ void Mesh::StrategyEditMode::Render(MeshRenderer* mr, const Renderer& r, const S
 	mr->RenderAsEdit(r, vs, es, ss);
 }
 
-void Mesh::Render(const Renderer& r, const Shader& vs,const Shader& es,Shader& ss)
+void Mesh::Render(const Renderer& r, const Shader& vs,const Shader& es,Shader& ss) const
 {
 
 	currentStrat->Render(meshRenderer,r, vs, es, ss);
@@ -190,7 +190,7 @@ MeshRenderer::MeshRenderer(Mesh* _owner) : owner(_owner)
 	sideVAO->AddVBO(*sideVBO);
 }
 
-void MeshHandler::Render(const Renderer& r, const Shader& vs,const Shader& es,Shader& ss)
+void MeshHandler::Render(const Renderer& r, const Shader& vs,const Shader& es,Shader& ss) const
 {
 	activeMesh->Render(r,vs,es,ss);
 }
@@ -328,7 +328,7 @@ void Mesh::Transform(const mat4& m)
 	M = M * m;
 }
 
-std::vector<Mesh::Point*> Mesh::GiveSelecteds()
+std::vector<Mesh::Point*> Mesh::GiveSelecteds() const
 {
 	return selectedPoints;
 }
@@ -343,24 +343,19 @@ Mesh::EdgeIterator Mesh::begin()
 	return EdgeIterator(*this);
 }
 
-//nem valoszinu hogy jo
-//Mesh::EdgeIterator Mesh::EdgeIterator::end()
-//{
-//	return EdgeIterator(parent, parent.edgeMatrix.Size()-1,parent.edgeMatrix.Size()-2);
-//}
 
-Mesh::Point* Mesh::EdgeIterator::GetElement1()
+Mesh::Point* Mesh::EdgeIterator::GetElement1() const
 {
 	return parent.edgeMatrix.indexElement(row);
 }
 
-Mesh::Point* Mesh::EdgeIterator::GetElement2()
+Mesh::Point* Mesh::EdgeIterator::GetElement2() const
 {
 	return parent.edgeMatrix.indexElement(column);
 }
 
 
-Mesh::Edge* Mesh::EdgeIterator::GetElementEdge() 
+Mesh::Edge* Mesh::EdgeIterator::GetElementEdge() const
 {
 	return parent.edgeMatrix.matrix[column][row];
 }
@@ -388,24 +383,6 @@ bool Mesh::EdgeIterator::hasNext()
 	return true;
 }
 
-//Mesh::EdgeIterator& Mesh::EdgeIterator::operator++()
-//{
-//	int highestValidRow = column - 1;
-//	if (row == highestValidRow) {
-//		if (column < parent.edgeMatrix.size() - 1) {
-//			row = 0;
-//			column++;
-//		}
-//		else {
-//			//end
-//		}
-//	}
-//	else {
-//		row++;
-//	}
-//
-//	return *this;
-//}
 
 unsigned int Mesh::EdgeMatrix::elementIndex(Point* p)
 {
@@ -429,7 +406,7 @@ void Mesh::SelectPoint(Point* p)
 }
 
 
-RenderData MeshRenderer::GiveSides()
+RenderData MeshRenderer::GiveSides() const
 {
 	RenderData res;
 	
@@ -468,27 +445,6 @@ RenderData MeshRenderer::GiveSides()
 			}
 
 
-
-/* 			for (int i = 0; i < 4; i++) {
-				f.push_back(s->points[i]->pos.x);
-				f.push_back(s->points[i]->pos.y);
-				f.push_back(s->points[i]->pos.z);
-				f.push_back(norm.x);
-				f.push_back(norm.y);
-				f.push_back(norm.z);
-
-			}
-
-
-			inds.push_back(iHelp * 4);
-			inds.push_back(iHelp * 4 + 1);
-			inds.push_back(iHelp * 4 + 2);
-
-			inds.push_back(iHelp * 4);
-			inds.push_back(iHelp * 4 + 2);
-			inds.push_back(iHelp * 4 + 3); 
-
-			iHelp++; */
 		}
 	}
 	res.raw = f;
@@ -499,7 +455,7 @@ RenderData MeshRenderer::GiveSides()
 	return res;
 }
 
-std::vector<float> MeshRenderer::GiveVertices()
+std::vector<float> MeshRenderer::GiveVertices() const
 {
 	std::vector<float> res;
 	for (Mesh::Point* p : owner->points) {
@@ -518,7 +474,7 @@ std::vector<float> MeshRenderer::GiveVertices()
 	return res;
 }
 
-std::vector<float> MeshRenderer::GiveEdges()
+std::vector<float> MeshRenderer::GiveEdges() const
 {
 	
 	std::vector<float> res;
@@ -621,7 +577,7 @@ bool MeshHandler::CheckHit(const vec2& p)
 }
 
 
-Hittable::Hit Mesh::Point::Intersect(const vec2& pp, const mat4& MVP) 
+Hittable::Hit Mesh::Point::Intersect(const vec2& pp, const mat4& MVP)
 {
 	
 	Hittable::Hit result;
@@ -792,7 +748,7 @@ vec3 Mesh::CalculateMidPoint(std::vector<Point*> ps)
 	return sum;
 }
 
-std::vector<Mesh::Edge*> Mesh::Side::GetEdges(Mesh* m)
+std::vector<Mesh::Edge*> Mesh::Side::GetEdges(Mesh* m) const
 {
 	std::vector<Mesh::Edge*> result;
 	for(int i = 0;i<points.size();i++){
@@ -808,7 +764,6 @@ std::vector<Mesh::Edge*> Mesh::Side::GetEdges(Mesh* m)
 }
 
 
-//Rectet surface koordinatarendszerebe kell atrakni
 void Mesh::SelectPoints(const Rect& rect, const Camera* cam)
 {
 	
