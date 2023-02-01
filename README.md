@@ -1,4 +1,4 @@
-# Simple 3D modeller for creating Wavefront Object files
+# Simple 3D modeller
 
 ## Supported operations are:
 - Move vertices
